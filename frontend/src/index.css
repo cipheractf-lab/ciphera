@@ -1,0 +1,104 @@
+@import "@fontsource-variable/geist";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #000000;
+  --foreground: #F9FAFB;
+  --card: #3B0764;
+  --card-foreground: #F9FAFB;
+  --popover: #3B0764;
+  --popover-foreground: #F9FAFB;
+  --primary: #A855F7;
+  --primary-foreground: #F9FAFB;
+  --secondary: #581C87;
+  --secondary-foreground: #F9FAFB;
+  --muted: #2E1065;
+  --muted-foreground: #C4B5FD;
+  --accent: #A855F7;
+  --accent-foreground: #F9FAFB;
+  --destructive: #DC2626;
+  --border: #2E1065;
+  --input: #4C1D95;
+  --ring: #A855F7;
+  --radius: 1rem;
+  font-family: 'Geist Variable', system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark;
+  color: rgba(255, 255, 255, 0.87);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: clamp(14px, 1vw, 16px);
+}
+
+.dark {
+  --background: #000000;
+  --foreground: #F9FAFB;
+  --card: #3B0764;
+  --card-foreground: #F9FAFB;
+  --popover: #3B0764;
+  --popover-foreground: #F9FAFB;
+  --primary: #A855F7;
+  --primary-foreground: #F9FAFB;
+  --secondary: #581C87;
+  --secondary-foreground: #F9FAFB;
+  --muted: #2E1065;
+  --muted-foreground: #C4B5FD;
+  --accent: #A855F7;
+  --accent-foreground: #F9FAFB;
+  --destructive: #DC2626;
+  --border: #2E1065;
+  --input: #4C1D95;
+  --ring: #A855F7;
+}
+
+html {
+  scroll-behavior: smooth;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body,
+#root {
+  width: 100%;
+  max-width: 100vw;
+  min-height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(168, 85, 247, 0.12), transparent 28%),
+    radial-gradient(circle at 82% 12%, rgba(88, 28, 135, 0.16), transparent 30%),
+    var(--background);
+  color: var(--foreground);
+  font-size: clamp(14px, 1vw, 16px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply font-sans;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}

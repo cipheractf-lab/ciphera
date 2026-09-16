@@ -1,0 +1,396 @@
+/* Common styles for profile components */
+.level-card,
+.achievements-card,
+.skill-tree-card,
+.stats-card {
+  background-color: #2D1451;
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #2a3e56;
+}
+
+/* Level Card Styles */
+.level-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.level-badge {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: white;
+  margin-right: 1rem;
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+}
+
+.level-info {
+  flex: 1;
+}
+
+.level-title {
+  font-size: 1.5rem;
+  margin: 0 0 0.3rem 0;
+  background: linear-gradient(90deg, #ffffff, #A855F7);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.level-subtitle {
+  color: #a0a0a0;
+  margin: 0;
+}
+
+.level-progress-container {
+  margin-bottom: 1.5rem;
+}
+
+.level-progress-bar {
+  height: 10px;
+  background-color: #2a3e56;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.level-progress-fill {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.3s ease;
+}
+
+.level-progress-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #a0a0a0;
+}
+
+.next-level-info {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  border-radius: 5px;
+  border-left: 3px solid #A855F7;
+}
+
+.next-level-label {
+  color: #a0a0a0;
+  margin-right: 0.5rem;
+}
+
+.next-level-name {
+  font-weight: bold;
+}
+
+.points-needed {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #A855F7;
+}
+
+.max-level-reached {
+  text-align: center;
+  padding: 1rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
+  color: #A855F7;
+  font-weight: bold;
+}
+
+/* Achievements Card Styles */
+.achievements-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.achievements-header h3 {
+  margin: 0;
+  color: #A855F7;
+}
+
+.achievements-stats {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #a0a0a0;
+  font-size: 0.9rem;
+}
+
+.toggle-achievements-btn {
+  background: none;
+  border: 1px solid #A855F7;
+  color: #A855F7;
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+}
+
+.toggle-achievements-btn:hover {
+  background-color: rgba(168, 85, 247, 0.1);
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.achievement-item {
+  display: flex;
+  background-color: rgba(26, 46, 70, 0.5);
+  border-radius: 8px;
+  padding: 1rem;
+  transition: all 0.3s ease;
+  border: 1px solid #2a3e56;
+}
+
+.achievement-item.unlocked {
+  border-color: #A855F7;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.1);
+}
+
+.achievement-item.locked {
+  opacity: 0.6;
+}
+
+.achievement-icon {
+  font-size: 2rem;
+  margin-right: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.achievement-content {
+  flex: 1;
+}
+
+.achievement-name {
+  margin: 0 0 0.3rem 0;
+  color: white;
+}
+
+.achievement-description {
+  font-size: 0.9rem;
+  color: #a0a0a0;
+  margin: 0 0 0.8rem 0;
+}
+
+.achievement-progress-container {
+  margin-top: 0.8rem;
+}
+
+.achievement-progress-bar {
+  height: 6px;
+  background-color: #2a3e56;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 0.3rem;
+}
+
+.achievement-progress-fill {
+  height: 100%;
+  background-color: #A855F7;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.achievement-progress-text {
+  font-size: 0.8rem;
+  color: #a0a0a0;
+  text-align: right;
+}
+
+.no-achievements {
+  text-align: center;
+  padding: 2rem;
+  color: #a0a0a0;
+}
+
+/* Skill Tree Card Styles */
+.skill-tree-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.skill-category {
+  background-color: rgba(26, 46, 70, 0.5);
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid #2a3e56;
+}
+
+.skill-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.skill-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  margin-right: 1rem;
+}
+
+.skill-info {
+  flex: 1;
+}
+
+.skill-info h4 {
+  margin: 0 0 0.3rem 0;
+  font-size: 1rem;
+}
+
+.skill-mastery {
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.skill-progress-container {
+  margin-top: 0.8rem;
+}
+
+.skill-progress-bar {
+  height: 8px;
+  background-color: #2a3e56;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.skill-progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.skill-progress-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #a0a0a0;
+}
+
+/* Stats Card Styles */
+.stats-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-item {
+  text-align: center;
+  background-color: rgba(26, 46, 70, 0.5);
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid #2a3e56;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #A855F7;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #a0a0a0;
+}
+
+.stats-card h4 {
+  margin: 0 0 1rem 0;
+  color: #ffffff;
+}
+
+.category-breakdown {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.category-stat {
+  background-color: rgba(26, 46, 70, 0.5);
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid #2a3e56;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.category-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  margin-right: 0.8rem;
+}
+
+.category-info {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.category-name {
+  font-weight: bold;
+  color: white;
+}
+
+.category-count {
+  font-size: 0.8rem;
+  color: #a0a0a0;
+}
+
+.category-progress-bar {
+  height: 6px;
+  background-color: #2a3e56;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.category-progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .achievements-grid,
+  .skill-tree-grid,
+  .category-breakdown {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats-overview {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

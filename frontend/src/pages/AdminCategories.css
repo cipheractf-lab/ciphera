@@ -1,0 +1,511 @@
+/* HTB-Style Admin Categories Page */
+.htb-admin-categories-container {
+  position: relative;
+  min-height: 100vh;
+  background: linear-gradient(180deg, rgba(8, 4, 24, 0.95) 0%, rgba(0, 0, 0, 1) 100%);
+  overflow: hidden;
+}
+
+.htb-admin-categories-grid-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(107, 33, 168, 0.22) 0%, rgba(59, 7, 100, 0.16) 34%, rgba(0, 0, 0, 0.92) 100%),
+    radial-gradient(circle at 15% 18%, rgba(168, 85, 247, 0.18), transparent 24%),
+    radial-gradient(circle at 82% 12%, rgba(88, 28, 135, 0.2), transparent 28%),
+    radial-gradient(circle at 72% 78%, rgba(76, 29, 149, 0.14), transparent 30%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.htb-admin-categories-orb {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+  filter: blur(110px);
+  opacity: 0.75;
+  z-index: 0;
+}
+
+.htb-admin-categories-orb--primary {
+  top: 8%;
+  left: 5%;
+  width: 18rem;
+  height: 18rem;
+  background: rgba(168, 85, 247, 0.24);
+}
+
+.htb-admin-categories-orb--secondary {
+  top: 24%;
+  right: 10%;
+  width: 22rem;
+  height: 22rem;
+  background: rgba(88, 28, 135, 0.2);
+}
+
+.htb-admin-categories-orb--tertiary {
+  bottom: 8%;
+  left: 34%;
+  width: 16rem;
+  height: 16rem;
+  background: rgba(59, 7, 100, 0.24);
+}
+
+/* Header */
+.htb-admin-categories-header {
+  position: relative;
+  z-index: 5;
+  text-align: center;
+  width: min(100%, 1320px);
+  margin: 0 auto;
+  padding: 0.75rem 1.5rem 1rem;
+  border-bottom: none;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+.htb-header-content {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.htb-header-icon {
+  color: var(--primary);
+  margin-bottom: 0.8rem;
+  filter: drop-shadow(0 0 20px var(--primary-glow));
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+.htb-admin-categories-header h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.7rem, 2.1vw, 2.15rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.55rem;
+  text-transform: none;
+}
+
+.htb-highlight {
+  color: var(--primary);
+  text-shadow: 0 0 20px var(--primary-glow);
+}
+
+.htb-admin-categories-header p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Alert Messages */
+.htb-alert {
+  position: fixed;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 32px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.htb-alert-success {
+  background: rgba(40, 167, 69, 0.15);
+  border: 1px solid #28a745;
+  color: #28a745;
+}
+
+.htb-alert-error {
+  background: rgba(220, 53, 69, 0.15);
+  border: 1px solid #dc3545;
+  color: #dc3545;
+}
+
+/* Main Content */
+.htb-admin-categories-main {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 1320px);
+  margin: 0 auto;
+  padding: 0 1.5rem 4rem;
+}
+
+/* Section */
+.htb-category-section {
+  margin-bottom: 2rem;
+}
+
+.htb-section-header {
+  margin-bottom: 1rem;
+}
+
+.htb-section-header h2 {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.htb-title-line {
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(to right, var(--primary), transparent);
+  animation: lineGrow 2s ease-in-out infinite;
+}
+
+@keyframes lineGrow {
+  0%, 100% { width: 80px; opacity: 1; }
+  50% { width: 100px; opacity: 0.7; }
+}
+
+/* Add Category Form */
+.htb-add-category-form {
+  padding: 1.2rem;
+  background:
+    linear-gradient(165deg, rgba(17, 24, 39, 0.52) 0%, rgba(15, 23, 42, 0.3) 100%),
+    radial-gradient(circle at 12% 0%, rgba(196, 181, 253, 0.12), transparent 42%);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 22px 64px rgba(2, 6, 23, 0.36);
+  backdrop-filter: blur(24px) saturate(130%);
+  -webkit-backdrop-filter: blur(24px) saturate(130%);
+}
+
+.htb-form-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 20px;
+  align-items: start;
+}
+
+.htb-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.htb-form-group label {
+  font-weight: 600;
+  font-size: 0.938rem;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.htb-input {
+  padding: 14px 16px;
+  background: rgba(10, 14, 26, 0.62);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-family: var(--font-body);
+  transition: all 0.3s ease;
+}
+
+.htb-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.htb-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+}
+
+.htb-input-disabled {
+  padding: 14px 16px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  color: var(--text-tertiary);
+  font-size: 1rem;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.htb-input-hint {
+  font-size: 0.813rem;
+  color: var(--text-tertiary);
+  font-style: italic;
+  position: absolute;
+  left: 0;
+  top: calc(100% + 6px);
+}
+
+.htb-btn-add {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  background: linear-gradient(135deg, #d8b4fe 0%, #c084fc 55%, #a855f7 100%);
+  color: #1f1144;
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  align-self: start;
+  margin-top: 36px;
+}
+
+.htb-btn-add:hover {
+  background: linear-gradient(135deg, #e2c6ff 0%, #cf97ff 55%, #b878ff 100%);
+  box-shadow: 0 0 30px rgba(168, 85, 247, 0.35);
+}
+
+/* Categories Grid */
+.htb-categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+/* Category Card */
+.htb-category-card {
+  padding: 24px;
+  background:
+    linear-gradient(165deg, rgba(17, 24, 39, 0.52) 0%, rgba(15, 23, 42, 0.3) 100%),
+    radial-gradient(circle at 12% 0%, rgba(196, 181, 253, 0.12), transparent 42%);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-left: 3px solid rgba(168, 85, 247, 0.7);
+  border-radius: var(--radius-lg);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(22px) saturate(125%);
+  -webkit-backdrop-filter: blur(22px) saturate(125%);
+}
+
+.htb-category-card:hover {
+  border-left-color: rgba(216, 180, 254, 0.9);
+  box-shadow: 0 18px 42px rgba(2, 6, 23, 0.35);
+}
+
+/* View Mode */
+.htb-category-view-mode {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.htb-category-info {
+  flex: 1;
+}
+
+.htb-category-id {
+  display: inline-block;
+  padding: 4px 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.813rem;
+  color: var(--primary);
+  margin-bottom: 8px;
+}
+
+.htb-category-name {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.htb-category-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.htb-btn-edit,
+.htb-btn-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.htb-btn-edit {
+  background: rgba(168, 85, 247, 0.1);
+  color: var(--primary);
+}
+
+.htb-btn-edit:hover {
+  background: rgba(168, 85, 247, 0.2);
+  border-color: var(--primary);
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+}
+
+.htb-btn-delete {
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+.htb-btn-delete:hover {
+  background: rgba(220, 53, 69, 0.2);
+  border-color: #dc3545;
+  box-shadow: 0 0 20px rgba(220, 53, 69, 0.2);
+}
+
+/* Edit Mode */
+.htb-category-edit-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.htb-edit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.htb-edit-field label {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.htb-edit-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.htb-btn-save,
+.htb-btn-cancel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.htb-btn-save {
+  background: rgba(40, 167, 69, 0.15);
+  color: #28a745;
+}
+
+.htb-btn-save:hover {
+  background: rgba(40, 167, 69, 0.25);
+  border-color: #28a745;
+  box-shadow: 0 0 20px rgba(40, 167, 69, 0.2);
+}
+
+.htb-btn-cancel {
+  background: rgba(108, 117, 125, 0.15);
+  color: var(--text-secondary);
+}
+
+.htb-btn-cancel:hover {
+  background: rgba(108, 117, 125, 0.25);
+  border-color: var(--text-secondary);
+}
+
+/* Info Box */
+.htb-info-box {
+  display: flex;
+  gap: 16px;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.44);
+  border: 1px solid rgba(251, 191, 36, 0.34);
+  border-left: 4px solid #fbbf24;
+  border-radius: var(--radius-lg);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  backdrop-filter: blur(14px) saturate(120%);
+}
+
+.htb-info-box svg {
+  flex-shrink: 0;
+  color: #ffc107;
+  margin-top: 2px;
+}
+
+.htb-info-box strong {
+  color: var(--text-primary);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .htb-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .htb-categories-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .htb-admin-categories-header {
+    padding: 0.7rem 1rem 0.9rem;
+  }
+
+  .htb-admin-categories-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .htb-admin-categories-main {
+    padding: 0 1rem 2.8rem;
+  }
+
+  .htb-categories-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .htb-add-category-form {
+    padding: 24px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .htb-admin-categories-header {
+    padding: 0.8rem 0.85rem 0.9rem;
+  }
+
+  .htb-admin-categories-main {
+    padding: 0 0.85rem 2.4rem;
+  }
+
+  .htb-admin-categories-header h1 {
+    font-size: 1.6rem;
+  }
+
+  .htb-category-view-mode {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .htb-category-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

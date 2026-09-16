@@ -1,0 +1,242 @@
+.pill-nav {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  padding: 8px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(12, 4, 22, 0.95) 0%, rgba(6, 0, 16, 0.92) 100%);
+  box-shadow: 0 18px 44px rgba(4, 0, 10, 0.24);
+  min-height: 64px;
+}
+
+.pill-nav__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 6px 12px 6px 8px;
+  color: #f9f5ff;
+  text-decoration: none;
+}
+
+.pill-nav__logo-shell {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, rgba(196, 181, 253, 0.2) 0%, rgba(168, 85, 247, 0.22) 100%);
+  border: 1px solid rgba(196, 181, 253, 0.2);
+  box-shadow: 0 0 24px rgba(168, 85, 247, 0.2);
+}
+
+.pill-nav__logo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pill-nav__logo-fallback {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #f9f5ff;
+}
+
+.pill-nav__brand-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.pill-nav__brand-wordmark {
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #f9f5ff;
+  white-space: nowrap;
+}
+
+.pill-nav__brand-accent {
+  color: #c4b5fd;
+}
+
+.pill-nav__brand-tag {
+  font-size: 0.64rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #b39adf;
+}
+
+.pill-nav__desktop {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+}
+
+.pill-nav__track {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  padding: 6px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+
+.pill-nav__indicator {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 0;
+  border-radius: 9999px;
+  background: var(--pill-fill);
+  box-shadow: 0 8px 22px rgba(255, 255, 255, 0.14);
+  opacity: 0;
+  transition: transform 200ms ease, width 200ms ease, opacity 160ms ease;
+}
+
+.pill-nav__indicator.is-visible {
+  opacity: 1;
+}
+
+.pill-nav__item {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  padding: 12px 16px;
+  border-radius: 9999px;
+  color: rgba(249, 245, 255, 0.74);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition: color 160ms ease;
+  white-space: nowrap;
+}
+
+.pill-nav__item:hover {
+  color: var(--pill-hover-text);
+}
+
+.pill-nav__item.is-indicated,
+.pill-nav__item.is-active.is-indicated {
+  color: var(--pill-text);
+}
+
+.pill-nav__mobile-toggle {
+  display: none;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(196, 181, 253, 0.16);
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #f9f5ff;
+  cursor: pointer;
+}
+
+.pill-nav__mobile-panel {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 28px;
+  border: 1px solid rgba(196, 181, 253, 0.12);
+  background: rgba(8, 2, 18, 0.98);
+  box-shadow: 0 28px 64px rgba(4, 0, 10, 0.44);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+.pill-nav__mobile-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mobile-menu-link {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 46px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.04);
+  color: #d8c8ff;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.mobile-menu-link:hover,
+.mobile-menu-link.is-active {
+  background: rgba(168, 85, 247, 0.14);
+  border-color: rgba(196, 181, 253, 0.2);
+  color: #f9f5ff;
+}
+
+.mobile-menu-link--danger {
+  color: #fca5a5;
+}
+
+.mobile-menu-link--danger:hover {
+  background: rgba(127, 29, 29, 0.18);
+  border-color: rgba(252, 165, 165, 0.18);
+  color: #fee2e2;
+}
+
+@media (max-width: 1024px) {
+  .pill-nav {
+    min-height: 58px;
+  }
+
+  .pill-nav__desktop {
+    display: none;
+  }
+
+  .pill-nav__mobile-toggle {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 640px) {
+  .pill-nav {
+    padding: 6px;
+    gap: 8px;
+  }
+
+  .pill-nav__brand {
+    padding: 6px 8px 6px 6px;
+  }
+
+  .pill-nav__brand-tag {
+    display: none;
+  }
+
+  .pill-nav__brand-wordmark {
+    font-size: 0.9rem;
+  }
+
+  .pill-nav__logo-shell {
+    width: 38px;
+    height: 38px;
+  }
+}

@@ -1,0 +1,50 @@
+/* Force enable text selection and right-click across the entire platform */
+
+/* Enable text selection on all elements */
+* {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+}
+
+/* Specifically target common text elements */
+p, span, div, h1, h2, h3, h4, h5, h6, li, td, th, label, a, pre, code {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+}
+
+/* Only disable selection on interactive elements where it makes sense */
+button, input[type="button"], input[type="submit"], input[type="reset"], 
+input[type="checkbox"], input[type="radio"] {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}
+
+/* Ensure text inputs allow selection */
+input[type="text"], input[type="email"], input[type="password"], 
+input[type="url"], input[type="search"], textarea {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+}
+
+/* Override any pointer-events restrictions */
+* {
+  pointer-events: auto !important;
+}
+
+/* Ensure context menu is enabled */
+html, body, * {
+  -webkit-touch-callout: default !important;
+  -webkit-user-select: text !important;
+  -khtml-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+}

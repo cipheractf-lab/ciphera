@@ -1,0 +1,436 @@
+/* HTB-Inspired Professional Authentication */
+
+/* Container */
+.htb-auth-container {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  overflow: hidden;
+}
+
+.htb-auth-container-login {
+  background: linear-gradient(180deg, rgba(8, 4, 24, 0.98) 0%, rgba(4, 2, 16, 1) 100%);
+  isolation: isolate;
+}
+
+.htb-auth-container-login::before,
+.htb-auth-container-login::after {
+  content: '';
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.htb-auth-container-login::before {
+  top: 10%;
+  left: 9%;
+  width: 20rem;
+  height: 20rem;
+  background: rgba(168, 85, 247, 0.22);
+}
+
+.htb-auth-container-login::after {
+  right: 8%;
+  bottom: 12%;
+  width: 22rem;
+  height: 22rem;
+  background: rgba(91, 33, 182, 0.2);
+}
+
+.htb-auth-login-blur-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(76, 29, 149, 0.16) 0%, rgba(17, 24, 39, 0.06) 38%, rgba(2, 6, 23, 0.75) 100%),
+    radial-gradient(circle at 20% 18%, rgba(192, 132, 252, 0.12), transparent 24%),
+    radial-gradient(circle at 78% 20%, rgba(126, 34, 206, 0.16), transparent 28%),
+    radial-gradient(circle at 55% 68%, rgba(76, 29, 149, 0.12), transparent 32%);
+}
+
+/* Animated Grid Background */
+.htb-auth-grid-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(var(--border-primary) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-primary) 1px, transparent 1px);
+  background-size: 50px 50px;
+  opacity: 0.15;
+  animation: gridMove 30s linear infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@keyframes gridMove {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(50px, 50px); }
+}
+
+/* Main Content */
+.htb-auth-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 100px;
+  max-width: 1200px;
+  width: 100%;
+  padding: 40px;
+}
+
+.htb-auth-content-login {
+  align-items: center;
+  gap: clamp(56px, 7vw, 96px);
+  max-width: 1180px;
+  padding: 32px 40px 40px;
+  top: -20px;
+}
+
+/* Left Side - Branding */
+.htb-auth-brand {
+  flex: 1;
+  max-width: 500px;
+}
+
+.htb-auth-brand-login {
+  max-width: 520px;
+}
+
+.htb-auth-brand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  background: rgba(168, 85, 247, 0.1);
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-lg);
+  color: var(--primary);
+  margin-bottom: 32px;
+  box-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
+}
+
+.htb-auth-brand-title {
+  font-family: var(--font-heading);
+  font-size: 3.5rem;
+  font-weight: 900;
+  line-height: 1.1;
+  color: var(--text-primary);
+  margin-bottom: 24px;
+  letter-spacing: -1px;
+}
+
+.htb-auth-brand-title-login {
+  margin-bottom: 18px;
+  line-height: 1.02;
+}
+
+.htb-gradient-text {
+  background: linear-gradient(135deg, var(--primary) 0%, #00ff88 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.htb-gradient-text-login {
+  background: linear-gradient(135deg, #f5e7ff 0%, #d8b4fe 24%, #c084fc 48%, #8b5cf6 74%, #6d28d9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.htb-auth-brand-subtitle {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  max-width: 450px;
+}
+
+.htb-auth-brand-subtitle-login {
+  max-width: 420px;
+  color: rgba(226, 232, 240, 0.76);
+}
+
+/* Right Side - Auth Card */
+.htb-auth-card {
+  flex: 0 0 460px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  padding: 48px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.htb-auth-card-login {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(14, 18, 36, 0.78) 0%, rgba(10, 14, 30, 0.56) 100%);
+  border: 1px solid rgba(192, 132, 252, 0.16);
+  box-shadow: 0 28px 80px rgba(2, 6, 23, 0.42);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.htb-auth-card-login::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 28%, transparent 72%, rgba(192, 132, 252, 0.08));
+}
+
+.htb-auth-card-header {
+  margin-bottom: 32px;
+}
+
+.htb-auth-card-header h2 {
+  font-family: var(--font-heading);
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.htb-auth-card-header p {
+  font-size: 0.938rem;
+  color: var(--text-secondary);
+}
+
+/* Form */
+.htb-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Footer */
+.htb-auth-footer {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-primary);
+  text-align: center;
+}
+
+.htb-auth-footer-text {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.htb-auth-link {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.htb-auth-link:hover {
+  color: #00ff88;
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .htb-auth-content {
+    gap: 60px;
+  }
+
+  .htb-auth-content-login {
+    gap: 48px;
+    padding: 28px 28px 36px;
+    top: -12px;
+  }
+
+  .htb-auth-brand-title {
+    font-size: 3rem;
+  }
+
+  .htb-auth-brand-title-login {
+    font-size: 2.85rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .htb-auth-content {
+    flex-direction: column;
+    gap: 40px;
+    padding: 40px 20px;
+  }
+
+  .htb-auth-content-login {
+    gap: 28px;
+    padding: 32px 20px 40px;
+    top: 0;
+  }
+
+  .htb-auth-brand {
+    text-align: center;
+    max-width: 100%;
+  }
+
+  .htb-auth-brand-icon {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .htb-auth-brand-title {
+    font-size: 2.5rem;
+  }
+
+  .htb-auth-brand-title-login {
+    font-size: 2.35rem;
+    margin-bottom: 14px;
+  }
+
+  .htb-auth-brand-subtitle {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .htb-auth-card {
+    flex: 1;
+    width: 100%;
+    max-width: 500px;
+    padding: 32px 24px;
+  }
+
+  .htb-auth-card-login {
+    max-width: 520px;
+  }
+}
+
+@media (max-width: 480px) {
+  .htb-auth-brand-title {
+    font-size: 2rem;
+  }
+
+  .htb-auth-brand-title-login {
+    font-size: 1.95rem;
+  }
+
+  .htb-auth-brand-subtitle {
+    font-size: 1rem;
+  }
+
+  .htb-auth-card {
+    padding: 24px 20px;
+  }
+
+  .htb-auth-card-header h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Register Page HTB Styles */
+.htb-register-info {
+  padding: 1.5rem 0;
+}
+
+.htb-register-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.htb-register-description {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.htb-register-requirements {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.htb-register-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(168, 85, 247, 0.03);
+  border: 1px solid rgba(168, 85, 247, 0.1);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.htb-register-item:hover {
+  background: rgba(168, 85, 247, 0.05);
+  border-color: rgba(168, 85, 247, 0.2);
+  transform: translateX(4px);
+}
+
+.htb-register-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  background: rgba(168, 85, 247, 0.1);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.htb-register-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.htb-register-details strong {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.htb-register-details span {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.htb-register-contact {
+  padding: 1.5rem;
+  background: rgba(168, 85, 247, 0.03);
+  border: 1px solid rgba(168, 85, 247, 0.1);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.htb-register-email-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(168, 85, 247, 0.1));
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 8px;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.htb-register-email-button:hover {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(168, 85, 247, 0.15));
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.2);
+}

@@ -1,0 +1,514 @@
+.tutorials-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  color: #e0e0e0;
+}
+
+.tutorials-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.tutorials-header h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+.highlight {
+  color: #A855F7;
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+}
+
+.tutorials-header p {
+  font-size: 1.2rem;
+  color: #a0a0a0;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.tutorials-filters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.search-box {
+  position: relative;
+  flex: 1;
+  min-width: 300px;
+  max-width: 500px;
+  margin: 0 auto;
+  perspective: 1000px;
+  isolation: isolate;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 1.2rem 1.5rem 1.2rem 3.5rem;
+  background: rgba(15, 25, 35, 0.8);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 1.1rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.1);
+  backdrop-filter: blur(5px);
+  transform-style: preserve-3d;
+  letter-spacing: 0.5px;
+  position: relative;
+  z-index: 1;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: #A855F7;
+  box-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
+  transform: translateY(-2px) translateZ(20px);
+  background: rgba(15, 25, 35, 0.9);
+}
+
+.search-box input::placeholder {
+  color: rgba(160, 160, 160, 0.7);
+  font-style: italic;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #A855F7;
+  font-size: 1.3rem;
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+  animation: pulse 2s infinite;
+  z-index: 2;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.7;
+    transform: translateY(-50%) scale(1) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1) rotate(180deg);
+  }
+  100% {
+    opacity: 0.7;
+    transform: translateY(-50%) scale(1) rotate(360deg);
+  }
+}
+
+/* Holographic border effect */
+.search-box::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #A855F7, #D8B4FE, #A855F7);
+  border-radius: 14px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.search-box:focus-within::before {
+  opacity: 0.3;
+  animation: borderRotate 3s linear infinite;
+}
+
+@keyframes borderRotate {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(360deg);
+  }
+}
+
+/* Scanning line effect */
+.search-box::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #A855F7, transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.search-box:focus-within::after {
+  opacity: 1;
+  animation: scanline 2s linear infinite;
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Particle effects */
+.search-box .particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.search-box .particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #A855F7;
+  border-radius: 50%;
+  opacity: 0;
+  animation: particleFloat 3s infinite;
+}
+
+.search-box:focus-within .particle {
+  animation-play-state: running;
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(-100px) translateX(20px);
+    opacity: 0;
+  }
+}
+
+/* Generate 10 particles with different positions and delays */
+.search-box .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+.search-box .particle:nth-child(2) { left: 20%; animation-delay: 0.3s; }
+.search-box .particle:nth-child(3) { left: 30%; animation-delay: 0.6s; }
+.search-box .particle:nth-child(4) { left: 40%; animation-delay: 0.9s; }
+.search-box .particle:nth-child(5) { left: 50%; animation-delay: 1.2s; }
+.search-box .particle:nth-child(6) { left: 60%; animation-delay: 1.5s; }
+.search-box .particle:nth-child(7) { left: 70%; animation-delay: 1.8s; }
+.search-box .particle:nth-child(8) { left: 80%; animation-delay: 2.1s; }
+.search-box .particle:nth-child(9) { left: 90%; animation-delay: 2.4s; }
+.search-box .particle:nth-child(10) { left: 95%; animation-delay: 2.7s; }
+
+/* Holographic overlay */
+.search-box .holographic-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(168, 85, 247, 0.05) 0%,
+    rgba(196, 181, 253, 0.05) 50%,
+    rgba(168, 85, 247, 0.05) 100%
+  );
+  border-radius: 12px;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.search-box:focus-within .holographic-overlay {
+  opacity: 1;
+  animation: holographicPulse 2s infinite;
+}
+
+@keyframes holographicPulse {
+  0% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0.3;
+  }
+}
+
+.filter-group {
+  display: flex;
+  gap: 1rem;
+}
+
+.filter-group select {
+  padding: 0.8rem 1rem;
+  background: rgba(15, 25, 35, 0.8);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter-group select:focus {
+  outline: none;
+  border-color: #A855F7;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+}
+
+.tutorials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.tutorial-card {
+  background: rgba(26, 46, 70, 0.5);
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid #2D1451;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.tutorial-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.tutorial-level {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.tutorial-level.beginner {
+  background: rgba(168, 85, 247, 0.1);
+  color: #A855F7;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.tutorial-level.intermediate {
+  background: rgba(255, 170, 0, 0.1);
+  color: #ffaa00;
+  border: 1px solid rgba(255, 170, 0, 0.3);
+}
+
+.tutorial-level.advanced {
+  background: rgba(255, 0, 85, 0.1);
+  color: #ff0055;
+  border: 1px solid rgba(255, 0, 85, 0.3);
+}
+
+.tutorial-content {
+  flex: 1;
+}
+
+.tutorial-card h2 {
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+  padding-right: 100px;
+}
+
+.tutorial-duration {
+  color: #A855F7;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tutorial-description {
+  color: #a0a0a0;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.tutorial-category {
+  margin-bottom: 1rem;
+  color: #a0a0a0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.prerequisites-list {
+  margin-bottom: 1.5rem;
+}
+
+.prerequisites-list h3 {
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.prerequisites-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.prerequisites-list li {
+  color: #a0a0a0;
+  margin-bottom: 0.5rem;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.prerequisites-list li:before {
+  content: '•';
+  color: #A855F7;
+  position: absolute;
+  left: 0;
+}
+
+.tutorial-meta {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #a0a0a0;
+  margin-bottom: 1.5rem;
+}
+
+.tutorial-meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.start-tutorial {
+  background: linear-gradient(135deg, #2D1451, #0f1f2b);
+  color: #A855F7;
+  border: 1px solid #A855F7;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.start-tutorial:hover {
+  background: #A855F7;
+  color: #0a1929;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+}
+
+.arrow-icon {
+  transition: transform 0.3s ease;
+}
+
+.start-tutorial:hover .arrow-icon {
+  transform: translateX(5px);
+}
+
+.loading-container, .error-container, .no-tutorials {
+  text-align: center;
+  padding: 3rem;
+  background: rgba(26, 46, 70, 0.5);
+  border-radius: 8px;
+  border: 1px solid #2D1451;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(168, 85, 247, 0.1);
+  border-radius: 50%;
+  border-top-color: #A855F7;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error-icon, .no-results-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #A855F7;
+}
+
+.error-container button, .no-tutorials button {
+  background: #A855F7;
+  color: #0a1929;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.error-container button:hover, .no-tutorials button:hover {
+  background: #7E22CE;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .tutorials-container {
+    padding: 1rem;
+  }
+
+  .tutorials-header h1 {
+    font-size: 2rem;
+  }
+
+  .tutorials-filters {
+    flex-direction: column;
+  }
+
+  .filter-group {
+    width: 100%;
+  }
+
+  .filter-group select {
+    flex: 1;
+  }
+
+  .tutorials-grid {
+    grid-template-columns: 1fr;
+  }
+} 

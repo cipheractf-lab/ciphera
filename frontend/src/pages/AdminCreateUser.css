@@ -1,0 +1,254 @@
+.admin-create-user {
+  min-height: 100vh;
+  padding: 0.9rem 1.5rem 2.5rem;
+  background:
+    linear-gradient(180deg, rgba(107, 33, 168, 0.22) 0%, rgba(59, 7, 100, 0.16) 34%, rgba(0, 0, 0, 0.92) 100%),
+    radial-gradient(circle at 15% 18%, rgba(168, 85, 247, 0.18), transparent 24%),
+    radial-gradient(circle at 82% 12%, rgba(88, 28, 135, 0.2), transparent 28%),
+    radial-gradient(circle at 72% 78%, rgba(76, 29, 149, 0.14), transparent 30%),
+    linear-gradient(180deg, rgba(8, 4, 24, 0.95) 0%, rgba(0, 0, 0, 1) 100%);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.create-user-container {
+  max-width: 600px;
+  width: 100%;
+  background: linear-gradient(180deg, rgba(17, 24, 39, 0.42) 0%, rgba(15, 23, 42, 0.2) 100%);
+  padding: 2.1rem;
+  border-radius: 16px;
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  box-shadow: 0 18px 40px rgba(2, 6, 23, 0.28);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+
+.create-user-header {
+  margin-bottom: 1.6rem;
+  text-align: center;
+}
+
+.create-user-header h1 {
+  font-size: 2.15rem;
+  color: #ffffff;
+  margin: 0 0 0.5rem 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+}
+
+.create-user-header .highlight {
+  color: #A855F7;
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+}
+
+.create-user-header p {
+  color: #90a5c2;
+  font-size: 0.97rem;
+  margin: 0;
+}
+
+.create-user-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.admin-create-user .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-create-user .form-group label {
+  display: block;
+  color: #dae4f2;
+  margin-bottom: 0.55rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.admin-create-user .form-group input,
+.admin-create-user .form-group select {
+  width: 100%;
+  padding: 0.8rem 0.9rem;
+  background: rgba(10, 14, 26, 0.62);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 8px;
+  color: #e0e0e0;
+  font-size: 0.98rem;
+  transition: all 0.25s ease;
+}
+
+.admin-create-user .form-group input::placeholder {
+  color: #606080;
+}
+
+.admin-create-user .form-group input:focus,
+.admin-create-user .form-group select:focus {
+  outline: none;
+  border-color: #A855F7;
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.14);
+  background: rgba(10, 14, 26, 0.72);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+}
+
+.type-row {
+  grid-template-columns: 210px;
+}
+
+.type-group select {
+  min-height: 2.9rem;
+}
+
+.checkbox-row {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+}
+
+.checkbox-row .form-group {
+  margin: 0;
+}
+
+.checkbox-row .form-group label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  min-height: 2.1rem;
+}
+
+.checkbox-row .form-group input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  accent-color: #a855f7;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 0.3rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 0.75rem 1.35rem;
+  border: 1px solid;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  min-width: 120px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: rgba(49, 18, 87, 0.24);
+  color: rgba(226, 232, 240, 0.82);
+  border-color: rgba(139, 92, 246, 0.18);
+  box-shadow: none;
+}
+
+.btn-primary:hover:not(:disabled) {
+  border-color: rgba(168, 85, 247, 0.5);
+  color: #d8b4fe;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: rgba(127, 29, 29, 0.22);
+  color: #ff6464;
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.btn-secondary:hover {
+  background: rgba(127, 29, 29, 0.32);
+}
+
+.error-message {
+  background: rgba(255, 68, 68, 0.15);
+  color: #ff6666;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  border-left: 3px solid #ff4444;
+  font-weight: 500;
+  animation: slideIn 0.3s ease;
+}
+
+.success-message {
+  background: rgba(168, 85, 247, 0.15);
+  color: #A855F7;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  border-left: 3px solid #A855F7;
+  font-weight: 500;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-create-user {
+    padding: 0.8rem 0.75rem 1.5rem;
+  }
+
+  .create-user-container {
+    padding: 2rem;
+  }
+
+  .create-user-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .type-row,
+  .checkbox-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+  }
+}

@@ -1,0 +1,258 @@
+.new-thread-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  color: #e0e0e0;
+}
+
+.new-thread-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.new-thread-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: #ffffff;
+  position: relative;
+  display: inline-block;
+}
+
+.new-thread-header h1::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(90deg, #D8B4FE, #A855F7);
+  border-radius: 3px;
+}
+
+.highlight {
+  color: #A855F7;
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+}
+
+.new-thread-subtitle {
+  color: #a0a0a0;
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 1rem auto;
+}
+
+.new-thread-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+/* Thread Form */
+.thread-form-wrapper {
+  background-color: rgba(26, 46, 70, 0.5);
+  border: 1px solid #2D1451;
+  border-radius: 8px;
+  padding: 2rem;
+}
+
+.form-error {
+  background-color: rgba(255, 0, 0, 0.1);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  color: #ff6b6b;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.thread-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  color: #ffffff;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.required {
+  color: #ff6b6b;
+  margin-left: 0.25rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  border: 1px solid #2D1451;
+  background-color: rgba(15, 25, 35, 0.8);
+  color: #e0e0e0;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #A855F7;
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 200px;
+  line-height: 1.5;
+}
+
+.form-hint {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #a0a0a0;
+  background-color: rgba(15, 25, 35, 0.8);
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+}
+
+.form-hint p {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-hint ul {
+  margin-left: 1.5rem;
+}
+
+.form-hint li {
+  margin-bottom: 0.25rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.cancel-button,
+.submit-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.cancel-button {
+  background-color: transparent;
+  border: 1px solid #a0a0a0;
+  color: #a0a0a0;
+  text-decoration: none;
+}
+
+.cancel-button:hover {
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+.submit-button {
+  background: linear-gradient(90deg, #D8B4FE, #A855F7);
+  color: #0a0e17;
+  border: none;
+}
+
+.submit-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(168, 85, 247, 0.2);
+}
+
+.submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Thread Guidelines */
+.thread-guidelines {
+  background-color: rgba(26, 46, 70, 0.5);
+  border: 1px solid #2D1451;
+  border-radius: 8px;
+  padding: 1.5rem;
+  align-self: start;
+}
+
+.thread-guidelines h2 {
+  color: #ffffff;
+  font-size: 1.3rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.thread-guidelines h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, #D8B4FE, #A855F7);
+  border-radius: 2px;
+}
+
+.guidelines-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.guideline-item {
+  display: flex;
+  gap: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.guideline-item:hover {
+  transform: translateX(5px);
+}
+
+.guideline-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.guideline-text h3 {
+  color: #A855F7;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.guideline-text p {
+  color: #a0a0a0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 900px) {
+  .new-thread-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .thread-guidelines {
+    order: -1;
+    margin-bottom: 2rem;
+  }
+}

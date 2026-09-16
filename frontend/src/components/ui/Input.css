@@ -1,0 +1,106 @@
+.cyber-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.cyber-input-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cyber-input-required {
+  color: var(--danger);
+  margin-left: 4px;
+}
+
+.cyber-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.cyber-input {
+  width: 100%;
+  padding: 12px 16px;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-normal);
+  outline: none;
+}
+
+.cyber-input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+  background: var(--bg-tertiary);
+}
+
+.cyber-input:hover:not(:focus) {
+  border-color: var(--bg-hover);
+}
+
+.cyber-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.cyber-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--bg-tertiary);
+}
+
+/* With icon */
+.cyber-input--with-icon {
+  padding-left: 44px;
+}
+
+.cyber-input-icon {
+  position: absolute;
+  left: 14px;
+  display: flex;
+  align-items: center;
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+/* Error state */
+.cyber-input--error {
+  border-color: var(--danger);
+}
+
+.cyber-input--error:focus {
+  box-shadow: 0 0 0 3px var(--danger-glow);
+}
+
+.cyber-input-error {
+  font-size: 0.813rem;
+  color: var(--danger);
+  font-family: var(--font-mono);
+}
+
+.cyber-input-hint {
+  font-size: 0.813rem;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+
+/* Full width */
+.cyber-input--full {
+  width: 100%;
+}
+
+/* Textarea */
+textarea.cyber-input {
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.5;
+}

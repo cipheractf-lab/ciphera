@@ -1,0 +1,475 @@
+.analytics-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  color: #e0e0e0;
+}
+
+.analytics-header {
+  background: linear-gradient(135deg, rgba(26, 46, 70, 0.95), rgba(15, 25, 35, 0.95));
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  text-align: center;
+}
+
+.analytics-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.analytics-header .highlight {
+  color: #A855F7;
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+}
+
+.analytics-header p {
+  color: #a0a0a0;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.analytics-section {
+  background: linear-gradient(135deg, rgba(26, 46, 70, 0.8), rgba(15, 25, 35, 0.8));
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.analytics-section h2 {
+  color: #A855F7;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 2px solid rgba(168, 85, 247, 0.2);
+  padding-bottom: 1rem;
+}
+
+.analytics-section .subtle {
+  color: #8aa1a8;
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.progression-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.progression-search {
+  background: rgba(15, 25, 35, 0.8);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  color: #e0e0e0;
+  border-radius: 6px;
+  padding: 0.65rem 0.75rem;
+}
+
+.progression-search:focus {
+  outline: none;
+  border-color: rgba(168, 85, 247, 0.55);
+}
+
+.progression-legend {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #b9c6ca;
+  font-size: 0.85rem;
+}
+
+.legend-box {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.legend-box.solved {
+  background: #28a745;
+}
+
+.legend-box.attempted {
+  background: #ffc107;
+}
+
+.legend-box.unopened {
+  background: #f8f9fa;
+}
+
+.progression-meta {
+  color: #8fa2a9;
+  font-size: 0.82rem;
+  margin-bottom: 0.75rem;
+}
+
+.progression-table-wrap {
+  overflow: auto;
+  border: 1px solid rgba(168, 85, 247, 0.15);
+  border-radius: 6px;
+  max-height: 70vh;
+}
+
+.progression-table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+}
+
+.progression-table th,
+.progression-table td {
+  border: 1px solid rgba(168, 85, 247, 0.08);
+  padding: 0.45rem;
+  text-align: center;
+  font-size: 0.78rem;
+}
+
+.progression-table thead th {
+  background: rgba(10, 18, 26, 0.98);
+  color: #d8eff0;
+  position: sticky;
+  top: 0;
+  z-index: 4;
+}
+
+.challenge-header {
+  min-width: 130px;
+  max-width: 130px;
+}
+
+.challenge-header div {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.challenge-header small {
+  color: #7eaab0;
+}
+
+.progression-cell {
+  font-weight: 700;
+  min-width: 35px;
+}
+
+.cell-solved {
+  background: #28a745;
+  color: #fff;
+}
+
+.cell-attempted {
+  background: #ffc107;
+  color: #1f2124;
+}
+
+.cell-unopened {
+  background: #f8f9fa;
+  color: #6c757d;
+}
+
+.sticky-col {
+  position: sticky;
+  background: rgba(15, 25, 35, 0.98);
+  z-index: 3;
+}
+
+.sticky-place {
+  left: 0;
+  min-width: 70px;
+}
+
+.sticky-name {
+  left: 70px;
+  min-width: 190px;
+  text-align: left !important;
+  padding-left: 0.75rem !important;
+}
+
+.sticky-score {
+  left: 260px;
+  min-width: 90px;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.stat-card {
+  background: rgba(15, 25, 35, 0.6);
+  border: 1px solid rgba(168, 85, 247, 0.15);
+  border-radius: 6px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.stat-label {
+  color: #a0a0a0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #A855F7;
+  margin-bottom: 0.5rem;
+}
+
+.stat-sublabel {
+  color: #888;
+  font-size: 0.8rem;
+}
+
+.engagement-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.engagement-card {
+  background: rgba(15, 25, 35, 0.6);
+  border: 1px solid rgba(168, 85, 247, 0.15);
+  border-radius: 6px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.engagement-label {
+  color: #a0a0a0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+
+.engagement-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.engagement-desc {
+  color: #888;
+  font-size: 0.8rem;
+}
+
+.challenge-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.stats-subsection h3 {
+  color: #A855F7;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.category-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.category-item {
+  background: rgba(15, 25, 35, 0.4);
+  border: 1px solid rgba(168, 85, 247, 0.1);
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.category-name {
+  color: #ffffff;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.category-count,
+.category-solved {
+  color: #a0a0a0;
+  font-size: 0.85rem;
+}
+
+.challenge-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.challenge-item {
+  background: rgba(15, 25, 35, 0.4);
+  border: 1px solid rgba(168, 85, 247, 0.1);
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.challenge-rank {
+  color: #A855F7;
+  font-weight: 600;
+  min-width: 40px;
+}
+
+.challenge-name {
+  flex: 1;
+  color: #ffffff;
+}
+
+.challenge-solves {
+  color: #a0a0a0;
+  font-size: 0.85rem;
+}
+
+.traffic-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.traffic-card {
+  background: rgba(15, 25, 35, 0.6);
+  border: 1px solid rgba(168, 85, 247, 0.15);
+  border-radius: 6px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.traffic-label {
+  color: #a0a0a0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+
+.traffic-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #A855F7;
+  margin-bottom: 0.5rem;
+}
+
+.traffic-desc {
+  color: #888;
+  font-size: 0.8rem;
+}
+
+.scoreboard-table {
+  background: rgba(15, 25, 35, 0.4);
+  border: 1px solid rgba(168, 85, 247, 0.15);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 60px 1fr 150px 150px;
+  background: rgba(168, 85, 247, 0.05);
+  border-bottom: 1px solid rgba(168, 85, 247, 0.15);
+  padding: 1rem;
+  font-weight: 600;
+  color: #A855F7;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 60px 1fr 150px 150px;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(168, 85, 247, 0.05);
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.table-row:hover {
+  background: rgba(168, 85, 247, 0.05);
+}
+
+.col-rank {
+  color: #A855F7;
+  font-weight: 600;
+}
+
+.col-username {
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.col-points,
+.col-challenges {
+  color: #d0d0d0;
+  text-align: center;
+}
+
+.loading {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #A855F7;
+  font-size: 1.1rem;
+}
+
+.error-message {
+  background: rgba(255, 68, 68, 0.1);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  color: #ff6b6b;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .analytics-container {
+    padding: 1rem;
+  }
+
+  .analytics-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .cards-grid,
+  .engagement-grid,
+  .traffic-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .challenge-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .table-header,
+  .table-row {
+    grid-template-columns: 40px 1fr 80px 80px;
+    font-size: 0.8rem;
+  }
+
+  .challenge-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

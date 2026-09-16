@@ -1,0 +1,147 @@
+.blocked-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, rgba(20, 20, 30, 0.95), rgba(10, 15, 25, 0.95));
+  padding: 2rem;
+}
+
+.blocked-card {
+  background: linear-gradient(135deg, rgba(30, 40, 60, 0.9), rgba(15, 25, 40, 0.9));
+  border: 2px solid rgba(255, 68, 68, 0.4);
+  border-radius: 16px;
+  padding: 3rem;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 0 40px rgba(255, 68, 68, 0.2);
+  text-align: center;
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.blocked-icon {
+  font-size: 5rem;
+  margin-bottom: 1rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.blocked-card h1 {
+  font-size: 2.5rem;
+  color: #ff4444;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 20px rgba(255, 68, 68, 0.5);
+}
+
+.blocked-message {
+  font-size: 1.3rem;
+  color: #ff6666;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.blocked-submessage {
+  color: #b0b0b0;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.blocked-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.contact-info {
+  color: #e0e0e0;
+  font-size: 1rem;
+  line-height: 1.6;
+  background: rgba(255, 68, 68, 0.1);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #ff4444;
+}
+
+.logout-btn {
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, rgba(255, 68, 68, 0.2), rgba(200, 50, 50, 0.2));
+  border: 2px solid rgba(255, 68, 68, 0.6);
+  border-radius: 8px;
+  color: #ff4444;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.logout-btn:hover {
+  background: linear-gradient(135deg, rgba(255, 68, 68, 0.3), rgba(200, 50, 50, 0.3));
+  box-shadow: 0 0 20px rgba(255, 68, 68, 0.4);
+  transform: translateY(-2px);
+}
+
+.logout-btn:active {
+  transform: translateY(0);
+}
+
+.auto-logout-note {
+  color: #999;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .blocked-card {
+    padding: 2rem;
+  }
+
+  .blocked-icon {
+    font-size: 3.5rem;
+  }
+
+  .blocked-card h1 {
+    font-size: 1.8rem;
+  }
+
+  .blocked-message {
+    font-size: 1.1rem;
+  }
+
+  .blocked-submessage {
+    font-size: 0.95rem;
+  }
+
+  .contact-info {
+    font-size: 0.9rem;
+    padding: 1rem;
+  }
+
+  .logout-btn {
+    padding: 0.8rem 1.5rem;
+    font-size: 0.9rem;
+  }
+}

@@ -1,0 +1,80 @@
+/* Back to Top Button Styles */
+.back-to-top-button {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #A855F7, #7E22CE);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.3);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  opacity: 0.9;
+}
+
+.back-to-top-button:hover {
+  background: linear-gradient(135deg, #7E22CE, #007399);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(168, 85, 247, 0.4);
+  opacity: 1;
+}
+
+.back-to-top-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 15px rgba(168, 85, 247, 0.3);
+}
+
+.back-to-top-button svg {
+  transition: transform 0.3s ease;
+}
+
+.back-to-top-button:hover svg {
+  transform: translateY(-1px);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .back-to-top-button {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 45px;
+    height: 45px;
+  }
+}
+
+@media (max-width: 480px) {
+  .back-to-top-button {
+    bottom: 1rem;
+    right: 1rem;
+    width: 40px;
+    height: 40px;
+  }
+  
+  .back-to-top-button svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Animation for button appearance */
+.back-to-top-button {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 0.9;
+    transform: translateY(0);
+  }
+}
