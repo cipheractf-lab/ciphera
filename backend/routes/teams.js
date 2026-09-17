@@ -7,11 +7,8 @@ const Team = require('../models/Team');
 const User = require('../models/User');
 const Award = require('../models/Award');
 const { protect, authorize } = require('../middleware/auth');
-
-// Self-service team size limits (platform-wide, applies to both
-// self-service and admin-created teams for consistency)
-const TEAM_MIN_SIZE = 1;
-const TEAM_MAX_SIZE = 4;
+const { TEAM_MIN_SIZE, TEAM_MAX_SIZE } = require('../utils/teamConstants');
+const { setActiveTeamIfNone } = require('../utils/teamHelpers');
 
 // Avatar upload -- own directory and serving route, deliberately not
 // the generic /uploads static mount (that mount has no auth or
@@ -48,18 +45,6 @@ const avatarUpload = multer({
   }
 });
 
-// If the user has no active team yet (the team whose solves/points
-// count toward scoring), make this their active team. Self-service
-// team membership is many-to-many (a user can belong to several
-// teams), but scoring itself is untouched by this feature -- it still
-// keys off the single User.team pointer exactly as before. This just
-// opportunistically sets that pointer on a user's first team.
-const setActiveTeamIfNone = async (userId, teamId) => {
-  await User.updateOne(
-    { _id: userId, team: { $exists: false } },
-    { $set: { team: teamId } }
-  );
-};
 
 // @route   POST /api/teams
 // @desc    Create a new team (Admin only)
@@ -774,59 +759,11 @@ router.post('/:id/avatar', protect, avatarUpload.single('avatar'), async (req, r
   }
 });
 
-// @route   POST /api/teams/:id/members
-// @desc    Self-service: add a member by username (captain or admin).
-//          Distinct from POST /:id/members/:userId below, which is the
-//          older admin-panel, ID-based route.
-// @access  Private (admin, or the team's captain)
-router.post('/:id/members', protect, async (req, res) => {
-  try {
-    const team = await Team.findById(req.params.id);
-    if (!team) {
-      return res.status(404).json({ success: false, message: 'Team not found' });
-    }
-
-    const isAdmin = req.user.role === 'admin';
-    const isCaptain = !!(team.captain && team.captain.toString() === req.user._id.toString());
-    if (!isAdmin && !isCaptain) {
-      return res.status(403).json({ success: false, message: 'Only the team captain or an admin can add members' });
-    }
-
-    const username = String(req.body?.username || '').trim();
-    if (!username) {
-      return res.status(400).json({ success: false, message: 'Username is required' });
-    }
-
-    if (team.members.length >= TEAM_MAX_SIZE) {
-      return res.status(400).json({ success: false, message: `A team can have at most ${TEAM_MAX_SIZE} members` });
-    }
-
-    const user = await User.findOne({ username });
-    if (!user) {
-      return res.status(404).json({ success: false, message: `No user found with username "${username}"` });
-    }
-
-    if (team.members.some((m) => m.toString() === user._id.toString())) {
-      return res.status(400).json({ success: false, message: 'That user is already a member of this team' });
-    }
-
-    team.members.push(user._id);
-    await team.save();
-    await setActiveTeamIfNone(user._id, team._id);
-    await team.populate('members captain createdBy');
-
-    res.json({
-      success: true,
-      data: team
-    });
-  } catch (error) {
-    console.error('Error adding team member by username:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error adding member to team'
-    });
-  }
-});
+// Note: self-service "add member by username" used to live here as a
+// direct add. It's now an invite/accept/reject flow instead -- see
+// routes/teamInvitations.js (POST /api/team-invitations/:teamId to
+// send one, accept/reject to resolve it). The older admin-panel,
+// ID-based POST /:id/members/:userId below is untouched.
 
 // @route   DELETE /api/teams/:id
 // @desc    Delete team (Admin only)

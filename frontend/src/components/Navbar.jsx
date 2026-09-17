@@ -7,6 +7,7 @@ import { useSiteConfig } from '../context/SiteConfigContext';
 import axios from 'axios';
 import { Badge } from './ui';
 import PillNav from './PillNav';
+import TeamInvitationsBell from './TeamInvitationsBell';
 import './Navbar.css';
 
 const navLinks = [
@@ -167,7 +168,7 @@ function Navbar() {
             className={`mobile-menu-link${isActive('/my-team') ? ' is-active' : ''}`}
             onClick={closeMenu}
           >
-            My Team
+            My Teams
           </Link>
           <button
             type="button"
@@ -269,6 +270,8 @@ function Navbar() {
               <span>Notices</span>
             </Link>
           )}
+
+          {isAuthenticated && <TeamInvitationsBell />}
 
           {isAuthenticated ? (
             <div className="cyber-navbar-user" ref={userMenuRef}>

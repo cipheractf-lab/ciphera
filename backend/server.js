@@ -223,6 +223,7 @@ app.use('/api/registration-status', registrationStatusRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/tutorials', tutorialRoutes);
 app.use('/api/teams', teamRoutes);
+app.use('/api/team-invitations', require('./routes/teamInvitations'));
 app.use('/api/admin/teams', adminTeamManagementRoutes);
 app.use('/api/notices', noticeRoutes);
 app.use('/api/analytics', analyticsRoutes);

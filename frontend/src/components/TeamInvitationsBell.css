@@ -1,0 +1,158 @@
+.team-inv-bell-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.team-inv-bell-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+
+.team-inv-bell-btn:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.team-inv-bell-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+}
+
+.team-inv-dropdown {
+  position: fixed;
+  width: 340px;
+  max-height: 420px;
+  overflow-y: auto;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+  padding: 0.5rem 0;
+}
+
+.team-inv-dropdown-header {
+  padding: 0.6rem 1rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted-foreground);
+  border-bottom: 1px solid var(--border);
+}
+
+.team-inv-empty {
+  padding: 1.25rem 1rem;
+  color: var(--muted-foreground);
+  font-size: 0.85rem;
+  text-align: center;
+  margin: 0;
+}
+
+.team-inv-item {
+  display: flex;
+  gap: 0.6rem;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.team-inv-item:last-child {
+  border-bottom: none;
+}
+
+.team-inv-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--muted);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.team-inv-item-icon.team-inv-status-accepted {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ADE80;
+}
+
+.team-inv-item-icon.team-inv-status-rejected {
+  background: rgba(239, 68, 68, 0.15);
+  color: #F87171;
+}
+
+.team-inv-item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.team-inv-item-body p {
+  margin: 0 0 0.4rem;
+  font-size: 0.82rem;
+  color: var(--foreground);
+  line-height: 1.4;
+}
+
+.team-inv-status-text.team-inv-status-accepted {
+  color: #4ADE80;
+  font-weight: 600;
+}
+
+.team-inv-status-text.team-inv-status-rejected {
+  color: #F87171;
+  font-weight: 600;
+}
+
+.team-inv-item-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.team-inv-accept,
+.team-inv-reject {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.team-inv-accept {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ADE80;
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+.team-inv-accept:hover {
+  background: rgba(34, 197, 94, 0.25);
+}
+
+.team-inv-reject {
+  background: rgba(239, 68, 68, 0.15);
+  color: #F87171;
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.team-inv-reject:hover {
+  background: rgba(239, 68, 68, 0.25);
+}
+
+.team-inv-accept:disabled,
+.team-inv-reject:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

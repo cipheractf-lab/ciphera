@@ -112,7 +112,7 @@ function EditTeamModal({ team, onClose, onSaved }) {
   );
 }
 
-function AddMemberModal({ teamId, onClose, onAdded }) {
+function InviteMemberModal({ teamId, onClose, onInvited }) {
   const [username, setUsername] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -126,10 +126,10 @@ function AddMemberModal({ teamId, onClose, onAdded }) {
     setSubmitting(true);
     setError('');
     try {
-      await axios.post(`/api/teams/${teamId}/members`, { username: username.trim() });
-      onAdded();
+      await axios.post(`/api/team-invitations/team/${teamId}`, { username: username.trim() });
+      onInvited();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to add member');
+      setError(err.response?.data?.message || 'Failed to send invitation');
     } finally {
       setSubmitting(false);
     }
@@ -145,7 +145,7 @@ function AddMemberModal({ teamId, onClose, onAdded }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="team-modal-header">
-          <h2><UserPlus size={18} /> Add Team Member</h2>
+          <h2><UserPlus size={18} /> Invite Team Member</h2>
           <button className="team-modal-close" onClick={onClose} type="button"><X size={20} /></button>
         </div>
 
@@ -159,10 +159,14 @@ function AddMemberModal({ teamId, onClose, onAdded }) {
             onChange={(e) => setUsername(e.target.value)}
             placeholder="e.g. 0xobsyn"
           />
+          <p className="team-modal-note">
+            They'll get a notification and can accept or reject the invite --
+            they're only added to the team once they accept.
+          </p>
           {error && <p className="team-modal-error">{error}</p>}
           <div className="team-modal-actions">
             <Button variant="secondary" type="button" onClick={onClose} disabled={submitting}>Cancel</Button>
-            <Button variant="primary" type="submit" loading={submitting}>Add Member</Button>
+            <Button variant="primary" type="submit" loading={submitting}>Send Invite</Button>
           </div>
         </form>
       </motion.div>
@@ -177,10 +181,11 @@ function TeamManage() {
   const { user, isAuthenticated, loading: authLoading } = useContext(AuthContext);
 
   const [team, setTeam] = useState(null);
+  const [invitations, setInvitations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [showAddMemberModal, setShowAddMemberModal] = useState(false);
+  const [showInviteModal, setShowInviteModal] = useState(false);
   const [memberActionError, setMemberActionError] = useState('');
 
   const fetchTeam = useCallback(async () => {
@@ -188,6 +193,17 @@ function TeamManage() {
       const res = await axios.get(`/api/teams/${id}`);
       setTeam(res.data.data);
       setError(null);
+
+      if (res.data.data?.canEdit) {
+        try {
+          const invRes = await axios.get(`/api/team-invitations/team/${id}`);
+          setInvitations((invRes.data.data || []).filter((inv) => inv.status !== 'accepted'));
+        } catch {
+          // Non-critical -- the members list still renders without it
+        }
+      } else {
+        setInvitations([]);
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load team');
     } finally {
@@ -272,7 +288,7 @@ function TeamManage() {
           <div className="team-manage-card-header">
             <h2>Members</h2>
             {team.canEdit && (
-              <Button variant="primary" size="sm" icon={<UserPlus size={14} />} onClick={() => setShowAddMemberModal(true)}>
+              <Button variant="primary" size="sm" icon={<UserPlus size={14} />} onClick={() => setShowInviteModal(true)}>
                 Add Team Member
               </Button>
             )}
@@ -309,6 +325,23 @@ function TeamManage() {
                 </li>
               );
             })}
+
+            {invitations.map((inv) => (
+              <li key={inv._id} className="team-manage-member team-manage-invitation">
+                <div className="team-manage-member-info">
+                  <span className="team-manage-member-avatar"><User size={16} /></span>
+                  <div>
+                    <div className="team-manage-member-name">
+                      {inv.invitedUser?.username || 'Unknown user'}
+                    </div>
+                    <div className="team-manage-member-handle">@{inv.invitedUser?.username}</div>
+                  </div>
+                </div>
+                <span className={`team-manage-invite-status team-manage-invite-status--${inv.status}`}>
+                  {inv.status === 'pending' ? 'Pending' : 'Rejected'}
+                </span>
+              </li>
+            ))}
           </ul>
         </div>
       </div>
@@ -324,12 +357,12 @@ function TeamManage() {
             }}
           />
         )}
-        {showAddMemberModal && (
-          <AddMemberModal
+        {showInviteModal && (
+          <InviteMemberModal
             teamId={id}
-            onClose={() => setShowAddMemberModal(false)}
-            onAdded={() => {
-              setShowAddMemberModal(false);
+            onClose={() => setShowInviteModal(false)}
+            onInvited={() => {
+              setShowInviteModal(false);
               fetchTeam();
             }}
           />
