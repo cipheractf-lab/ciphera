@@ -41,7 +41,6 @@ const AdminLoginLogs = lazy(() => import('./pages/AdminLoginLogs'))
 const PlatformReset = lazy(() => import('./pages/PlatformReset'))
 const UserBlocked = lazy(() => import('./pages/UserBlocked'))
 const ChallengeDetails = lazy(() => import('./pages/ChallengeDetails'))
-const Notice = lazy(() => import('./pages/Notice'))
 const AdminStatistics = lazy(() => import('./pages/AdminStatistics'))
 const AdminSubmissions = lazy(() => import('./pages/AdminSubmissions'))
 const UserProfile = lazy(() => import('./pages/UserProfile'))
@@ -63,7 +62,6 @@ function AppShell() {
   const isTeamDetailsRoute = location.pathname.startsWith('/team/') || location.pathname.startsWith('/teams/')
   const isUserProfileRoute = location.pathname.startsWith('/user/') || location.pathname.startsWith('/users/')
   const isContactRoute = location.pathname === '/contact'
-  const isNoticesRoute = location.pathname === '/notices'
   const isAdminConfigurationRoute = location.pathname === '/admin/configuration'
   const isAdminDashboardRoute = location.pathname === '/admin'
   const isAdminStatisticsRoute = location.pathname === '/admin/statistics'
@@ -80,7 +78,7 @@ function AppShell() {
   return (
     <div className="app-container">
       <Navbar />
-      <main className={`main-content${isHomeRoute ? ' main-content--home' : ''}${isChallengesRoute ? ' main-content--challenges' : ''}${isChallengeDetailRoute ? ' main-content--challenge-detail' : ''}${isScoreboardRoute ? ' main-content--scoreboard' : ''}${isProfileRoute ? ' main-content--profile' : ''}${isTeamDetailsRoute ? ' main-content--team-details' : ''}${isUserProfileRoute ? ' main-content--user-profile' : ''}${isContactRoute ? ' main-content--contact' : ''}${isNoticesRoute ? ' main-content--notices' : ''}${isLoginRoute ? ' main-content--login' : ''}${isAdminConfigurationRoute ? ' main-content--admin-configuration' : ''}${isAdminDashboardRoute ? ' main-content--admin-dashboard' : ''}${isAdminStatisticsRoute ? ' main-content--admin-statistics' : ''}${isAdminSubmissionsRoute ? ' main-content--admin-submissions' : ''}${isAdminCategoriesRoute ? ' main-content--admin-categories' : ''}${isAdminLiveMonitorRoute ? ' main-content--admin-live-monitor' : ''}${isAdminLoginLogsRoute ? ' main-content--admin-login-logs' : ''}${isAdminMessagesRoute ? ' main-content--admin-messages' : ''}${isAdminEventControlRoute ? ' main-content--admin-event-control' : ''}${isAdminCreateUserRoute ? ' main-content--admin-create-user' : ''}${isAdminCreateTeamRoute ? ' main-content--admin-create-team' : ''}`}>
+      <main className={`main-content${isHomeRoute ? ' main-content--home' : ''}${isChallengesRoute ? ' main-content--challenges' : ''}${isChallengeDetailRoute ? ' main-content--challenge-detail' : ''}${isScoreboardRoute ? ' main-content--scoreboard' : ''}${isProfileRoute ? ' main-content--profile' : ''}${isTeamDetailsRoute ? ' main-content--team-details' : ''}${isUserProfileRoute ? ' main-content--user-profile' : ''}${isContactRoute ? ' main-content--contact' : ''}${isLoginRoute ? ' main-content--login' : ''}${isAdminConfigurationRoute ? ' main-content--admin-configuration' : ''}${isAdminDashboardRoute ? ' main-content--admin-dashboard' : ''}${isAdminStatisticsRoute ? ' main-content--admin-statistics' : ''}${isAdminSubmissionsRoute ? ' main-content--admin-submissions' : ''}${isAdminCategoriesRoute ? ' main-content--admin-categories' : ''}${isAdminLiveMonitorRoute ? ' main-content--admin-live-monitor' : ''}${isAdminLoginLogsRoute ? ' main-content--admin-login-logs' : ''}${isAdminMessagesRoute ? ' main-content--admin-messages' : ''}${isAdminEventControlRoute ? ' main-content--admin-event-control' : ''}${isAdminCreateUserRoute ? ' main-content--admin-create-user' : ''}${isAdminCreateTeamRoute ? ' main-content--admin-create-team' : ''}`}>
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<Home />} />
@@ -98,7 +96,6 @@ function AppShell() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/contact" element={<ContactUs />} />
-            <Route path="/notices" element={<Notice />} />
             <Route path="/profile" element={
               <ProtectedRoute>
                 <Profile />
