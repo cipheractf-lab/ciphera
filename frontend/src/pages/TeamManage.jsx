@@ -1,4 +1,5 @@
 import { useEffect, useState, useContext, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
@@ -54,7 +55,7 @@ function EditTeamModal({ team, onClose, onSaved }) {
     }
   };
 
-  return (
+  return createPortal(
     <div className="team-modal-overlay" onClick={onClose}>
       <motion.div
         className="team-modal"
@@ -106,7 +107,8 @@ function EditTeamModal({ team, onClose, onSaved }) {
           </div>
         </form>
       </motion.div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -133,7 +135,7 @@ function AddMemberModal({ teamId, onClose, onAdded }) {
     }
   };
 
-  return (
+  return createPortal(
     <div className="team-modal-overlay" onClick={onClose}>
       <motion.div
         className="team-modal"
@@ -164,7 +166,8 @@ function AddMemberModal({ teamId, onClose, onAdded }) {
           </div>
         </form>
       </motion.div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

@@ -1,4 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Plus, X, Upload, User } from 'lucide-react';
@@ -64,7 +65,7 @@ function CreateTeamModal({ onClose, onCreated }) {
     }
   };
 
-  return (
+  return createPortal(
     <div className="team-modal-overlay" onClick={onClose}>
       <motion.div
         className="team-modal"
@@ -134,7 +135,8 @@ function CreateTeamModal({ onClose, onCreated }) {
           </div>
         </form>
       </motion.div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
