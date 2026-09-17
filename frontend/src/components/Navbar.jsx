@@ -15,7 +15,7 @@ const navLinks = [
   
   { path: '/scoreboard', label: 'Leaderboard', auth: true },
   { path: '/event-status', label: 'Event Status', auth: false },
-  { path: '/my-team', label: 'Team', auth: true },
+  { path: '/my-team', label: 'Teams', auth: true },
   { path: '/contact', label: 'Contact', auth: false },
 ];
 
@@ -303,7 +303,7 @@ function Navbar() {
                     </Link>
                     <Link to="/my-team" className="cyber-navbar-user-menu-item" onClick={() => setIsUserMenuOpen(false)}>
                       <Users size={16} />
-                      <span>My Team</span>
+                      <span>My Teams</span>
                     </Link>
                     <div className="cyber-navbar-user-menu-divider"></div>
                     <button type="button" className="cyber-navbar-user-menu-item cyber-navbar-user-menu-item--danger" onClick={handleLogout}>

@@ -112,7 +112,7 @@ router.put('/:teamId/members/add', protect, authorize('admin'), async (req, res)
       }
 
       // Check max members
-      const MAX_TEAM_MEMBERS = parseInt(process.env.MAX_TEAM_MEMBERS) || 2;
+      const MAX_TEAM_MEMBERS = parseInt(process.env.MAX_TEAM_MEMBERS) || 4;
       if (team.members.length >= MAX_TEAM_MEMBERS) {
         throw new Error(`Team already has maximum ${MAX_TEAM_MEMBERS} members`);
       }

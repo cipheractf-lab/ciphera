@@ -47,6 +47,7 @@ const AdminSubmissions = lazy(() => import('./pages/AdminSubmissions'))
 const UserProfile = lazy(() => import('./pages/UserProfile'))
 const AdminLiveMonitor = lazy(() => import('./pages/AdminLiveMonitor'))
 const MyTeam = lazy(() => import('./pages/MyTeam'))
+const TeamManage = lazy(() => import('./pages/TeamManage'))
 const AdminCategories = lazy(() => import('./pages/AdminCategories'))
 const AdminEventControl = lazy(() => import('./pages/AdminEventControl'))
 const AdminConfiguration = lazy(() => import('./pages/AdminConfiguration'))
@@ -123,6 +124,12 @@ function AppShell() {
             <Route path="/my-team" element={
               <ProtectedRoute>
                 <MyTeam />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/my-team/:id" element={
+              <ProtectedRoute>
+                <TeamManage />
               </ProtectedRoute>
             } />
 
