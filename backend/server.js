@@ -45,6 +45,7 @@ const tutorialRoutes = require('./routes/tutorials');
 const teamRoutes = require('./routes/teams');
 const adminTeamManagementRoutes = require('./routes/adminTeamManagement');
 const noticeRoutes = require('./routes/notice');
+const eventsRoutes = require('./routes/events');
 const analyticsRoutes = require('./routes/analytics');
 const configurationRoutes = require('./routes/configuration');
 const realtimeRoutes = require('./routes/realtime');
@@ -226,6 +227,7 @@ app.use('/api/teams', teamRoutes);
 app.use('/api/team-invitations', require('./routes/teamInvitations'));
 app.use('/api/admin/teams', adminTeamManagementRoutes);
 app.use('/api/notices', noticeRoutes);
+app.use('/api/events', eventsRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/configuration', configurationRoutes);
 app.use('/api/r-submission', realtimeRoutes);
@@ -394,7 +396,11 @@ mongoose.set('bufferCommands', false); // Disable mongoose buffering
 mongoose.set('strictQuery', true); // Enable strict mode for queries
 
 let mongoRetryTimer = null;
-const mongoRetryDelayMs = parseInt(process.env.MONGO_RETRY_DELAY_MS, 5000);
+// parseInt's 2nd argument is a RADIX, not a default -- passing 5000 there
+// silently produced NaN whenever MONGO_RETRY_DELAY_MS was unset, and
+// setTimeout(fn, NaN) fires almost immediately, so reconnect attempts were
+// hammering Atlas in a tight loop with no real backoff.
+const mongoRetryDelayMs = parseInt(process.env.MONGO_RETRY_DELAY_MS, 10) || 5000;
 const allowMemoryMongo =
   process.env.NODE_ENV !== 'production' && process.env.ENABLE_MEMORY_MONGO === 'true';
 let memoryMongoServer = null;

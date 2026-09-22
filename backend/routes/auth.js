@@ -28,6 +28,45 @@ const logActivity = (action, details = {}) => {
   const timestamp = new Date().toISOString();
   console.log(`[${timestamp}] AUTH: ${action}`, details);
 };
+
+/**
+ * server.js sets `mongoose.set('bufferCommands', false)`, so any query made
+ * while the DB connection is down (Atlas unreachable, IP not whitelisted,
+ * mid-reconnect, etc.) throws immediately with an internal Mongoose message
+ * ("Cannot call `users.findOne()` before initial connection is complete...").
+ * That string must never reach a client -- it's an infrastructure detail,
+ * not something a locked-out user can act on, and it was leaking straight
+ * into the login form's error banner (dev-mode error passthrough below).
+ */
+const isDbUnavailableError = (error) => {
+  const name = error?.name || '';
+  const message = error?.message || '';
+  return (
+    name === 'MongoServerSelectionError' ||
+    name === 'MongoNetworkError' ||
+    name === 'MongoNotConnectedError' ||
+    (name === 'MongooseError' && /before initial connection is complete|buffering timed out/i.test(message))
+  );
+};
+
+// Sends a clean response for a caught route error. DB-outage errors always
+// get the same safe, generic 503 regardless of NODE_ENV; anything else keeps
+// the existing dev-mode passthrough for genuine debugging.
+const sendServerError = (res, error, logPrefix, fallbackMessage) => {
+  if (isDbUnavailableError(error)) {
+    console.error(`${logPrefix} (database unavailable):`, error.message);
+    return res.status(503).json({
+      success: false,
+      message: 'Service is temporarily unavailable. Please try again in a moment.'
+    });
+  }
+
+  console.error(logPrefix, error.message, error.stack);
+  return res.status(500).json({
+    success: false,
+    message: process.env.NODE_ENV === 'development' ? error.message : fallbackMessage
+  });
+};
 const crypto = require('crypto');
 const { getRedisClient } = require('../utils/redis');
 // Use centralized Redis client for scoreboard caching
@@ -481,13 +520,7 @@ router.post('/verify-otp', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('OTP verification error:', error);
-    res.status(500).json({
-      success: false,
-      message: process.env.NODE_ENV === 'development' ?
-        `Error verifying OTP: ${error.message}` :
-        'Error verifying OTP. Please try again later.'
-    });
+    sendServerError(res, error, 'OTP verification error', 'Error verifying OTP. Please try again later.');
   }
 });
 
@@ -547,13 +580,7 @@ router.post('/resend-otp', async (req, res) => {
       message: 'If that address needs verifying, a new code is on its way.'
     });
   } catch (error) {
-    console.error('Resend OTP error:', error);
-    res.status(500).json({
-      success: false,
-      message: process.env.NODE_ENV === 'development' ?
-        `Error resending OTP: ${error.message}` :
-        'Error resending OTP. Please try again later.'
-    });
+    sendServerError(res, error, 'Resend OTP error', 'Error resending OTP. Please try again later.');
   }
 });
 
@@ -1045,11 +1072,7 @@ router.post('/login', sanitizeInput, async (req, res) => {
 
     res.json(responseData);
   } catch (error) {
-    console.error('[Login Error]', error.message, error.stack);
-    res.status(500).json({
-      success: false,
-      message: process.env.NODE_ENV === 'development' ? error.message : 'Error logging in'
-    });
+    sendServerError(res, error, '[Login Error]', 'Error logging in');
   }
 });
 

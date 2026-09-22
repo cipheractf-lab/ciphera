@@ -51,6 +51,8 @@ const AdminLiveMonitor = lazy(() => import('./pages/AdminLiveMonitor'))
 const MyTeam = lazy(() => import('./pages/MyTeam'))
 const TeamManage = lazy(() => import('./pages/TeamManage'))
 const AdminCategories = lazy(() => import('./pages/AdminCategories'))
+const Events = lazy(() => import('./pages/Events'))
+const AdminEvents = lazy(() => import('./pages/AdminEvents'))
 const AdminConfiguration = lazy(() => import('./pages/AdminConfiguration'))
 
 function AppShell() {
@@ -132,6 +134,12 @@ function AppShell() {
               </ProtectedRoute>
             } />
 
+            <Route path="/events" element={
+              <ProtectedRoute>
+                <Events />
+              </ProtectedRoute>
+            } />
+
             <Route path="/user/:userId" element={
               <ProtectedRoute>
                 <UserProfile />
@@ -200,6 +208,11 @@ function AppShell() {
             <Route path="/admin/categories" element={
               <ProtectedRoute adminOnly={true}>
                 <AdminCategories />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/events" element={
+              <ProtectedRoute adminOnly={true}>
+                <AdminEvents />
               </ProtectedRoute>
             } />
             <Route path="/admin/live-monitor" element={

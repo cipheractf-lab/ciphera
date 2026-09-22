@@ -14,6 +14,7 @@ const navLinks = [
   
   { path: '/scoreboard', label: 'Leaderboard', auth: true },
   { path: '/my-team', label: 'Teams', auth: true },
+  { path: '/events', label: 'Events', auth: true },
   { path: '/contact', label: 'Contact', auth: false },
 ];
 
@@ -23,6 +24,7 @@ const adminLinks = [
   { path: '/admin/create-user', label: 'Create User' },
   { path: '/admin/create-team', label: 'Create Team' },
   { path: '/admin/categories', label: 'Categories' },
+  { path: '/admin/events', label: 'Events' },
   { path: '/admin/messages', label: 'Messages' },
   { path: '/admin/login-logs', label: 'Login Logs' },
   { path: '/admin/statistics', label: 'Statistics' },
