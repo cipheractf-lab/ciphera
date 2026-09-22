@@ -65,10 +65,9 @@ export default function CyberSidebar() {
       { path: '/scoreboard', label: 'Leaderboard', icon: Trophy, auth: true },
       { path: '/events', label: 'Events', icon: Activity, auth: false },
       { path: '/my-team', label: 'Squad', icon: Users, auth: true },
-      { path: '/notices', label: 'Notices', icon: Bell, auth: true, badge: unreadNoticeCount },
       { path: '/contact', label: 'Contact', icon: Mail, auth: false },
     ],
-    [unreadNoticeCount]
+    []
   );
 
   // Filter accessible links
@@ -258,81 +257,15 @@ export default function CyberSidebar() {
             </ul>
           </nav>
 
-          {/* Bottom: Auth / Profile Section */}
-          <div className="cyber-rail-footer" ref={userMenuRef}>
-            {isAuthenticated && user ? (
-              <div className="cyber-rail-user-container">
-                <button
-                  type="button"
-                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="cyber-rail-user-btn"
-                >
-                  <div className="cyber-rail-avatar">
-                    <span>{user.username?.charAt(0).toUpperCase() || 'U'}</span>
-                    <span className="cyber-rail-avatar-ring" />
-                  </div>
-
-                  <div className="cyber-rail-user-details">
-                    <span className="cyber-rail-user-name">{user.username}</span>
-                    <span className="cyber-rail-user-role">{user.role}</span>
-                  </div>
-                </button>
-
-                {/* User Dropdown Menu */}
-                <AnimatePresence>
-                  {isUserMenuOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      transition={{ duration: 0.16 }}
-                      className="cyber-rail-user-popover"
-                    >
-                      <div className="cyber-rail-user-popover-header">
-                        <div className="cyber-rail-user-popover-name">{user.username}</div>
-                        <div className="cyber-rail-user-popover-email">{user.email}</div>
-                      </div>
-                      <div className="cyber-rail-popover-divider" />
-                      <Link
-                        to="/profile"
-                        className="cyber-rail-popover-link"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        <User size={15} />
-                        <span>Profile & Badges</span>
-                      </Link>
-                      {user.team && (
-                        <Link
-                          to="/my-team"
-                          className="cyber-rail-popover-link"
-                          onClick={() => setIsUserMenuOpen(false)}
-                        >
-                          <Users size={15} />
-                          <span>Squad Details</span>
-                        </Link>
-                      )}
-                      <div className="cyber-rail-popover-divider" />
-                      <button
-                        type="button"
-                        onClick={handleLogout}
-                        className="cyber-rail-popover-link cyber-rail-popover-link--danger"
-                      >
-                        <LogOut size={15} />
-                        <span>Disconnect (Logout)</span>
-                      </button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+          {/* Bottom: Node Status (Profile moved to Top-Right Header) */}
+          <div className="cyber-rail-footer">
+            <div className="cyber-rail-node-status">
+              <span className="cyber-rail-node-pulse" />
+              <div className="cyber-rail-node-text">
+                <span className="cyber-rail-node-title">ARENA GATEWAY</span>
+                <span className="cyber-rail-node-sub">ONLINE // TLS 1.3</span>
               </div>
-            ) : (
-              <Link
-                to="/login"
-                className="cyber-rail-login-btn"
-              >
-                <LogIn size={18} />
-                <span className="cyber-rail-login-text">Login</span>
-              </Link>
-            )}
+            </div>
           </div>
         </div>
       </aside>

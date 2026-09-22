@@ -10,6 +10,7 @@ import { SiteConfigProvider } from './context/SiteConfigContext'
 
 // Components (loaded immediately - they're used on every page)
 import CyberSidebar from './components/CyberSidebar'
+import CyberTopHeader from './components/CyberTopHeader'
 import Footer from './components/Footer'
 import ProtectedRoute from './components/ProtectedRoute'
 import ScrollToTop from './components/ScrollToTop'
@@ -86,6 +87,7 @@ function AppShell() {
     <div className="app-container">
       <CyberSidebar />
       <div className="app-main-layout">
+        <CyberTopHeader />
         <main className={`main-content${isHomeRoute ? ' main-content--home' : ''}${isChallengesRoute ? ' main-content--challenges' : ''}${isChallengeDetailRoute ? ' main-content--challenge-detail' : ''}${isScoreboardRoute ? ' main-content--scoreboard' : ''}${isProfileRoute ? ' main-content--profile' : ''}${isTeamDetailsRoute ? ' main-content--team-details' : ''}${isUserProfileRoute ? ' main-content--user-profile' : ''}${isContactRoute ? ' main-content--contact' : ''}${isNoticesRoute ? ' main-content--notices' : ''}${isEventsRoute ? ' main-content--events' : ''}${isAdminEventsRoute ? ' main-content--admin-events' : ''}${isLoginRoute ? ' main-content--login' : ''}${isAdminConfigurationRoute ? ' main-content--admin-configuration' : ''}${isAdminDashboardRoute ? ' main-content--admin-dashboard' : ''}${isAdminStatisticsRoute ? ' main-content--admin-statistics' : ''}${isAdminSubmissionsRoute ? ' main-content--admin-submissions' : ''}${isAdminCategoriesRoute ? ' main-content--admin-categories' : ''}${isAdminLiveMonitorRoute ? ' main-content--admin-live-monitor' : ''}${isAdminLoginLogsRoute ? ' main-content--admin-login-logs' : ''}${isAdminMessagesRoute ? ' main-content--admin-messages' : ''}${isAdminCreateUserRoute ? ' main-content--admin-create-user' : ''}${isAdminCreateTeamRoute ? ' main-content--admin-create-team' : ''}`}>
           <Suspense fallback={<PageLoader />}>
             <Routes>
