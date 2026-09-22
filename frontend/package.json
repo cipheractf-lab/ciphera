@@ -12,7 +12,6 @@
     "test:ui": "vitest --ui"
   },
   "dependencies": {
-    "@clerk/react": "^6.15.2",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@fontsource-variable/geist": "^5.2.8",
