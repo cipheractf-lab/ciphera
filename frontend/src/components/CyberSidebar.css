@@ -1,0 +1,924 @@
+/* ==========================================================================
+   CyberSidebar.css - Futuristic Cyber Command Rail & Floating Mobile Dock
+   ========================================================================== */
+
+:root {
+  --cyber-rail-w-compact: 72px;
+  --cyber-rail-w-expanded: 240px;
+  --cyber-rail-bg: #07090E;
+  --cyber-rail-surface: #000000;
+  --cyber-rail-border: #1E2535;
+  --cyber-rail-border-glow: rgba(124, 58, 237, 0.25);
+  --cyber-rail-accent: #7C3AED;
+  --cyber-rail-accent-hover: #9333EA;
+  --cyber-rail-accent-glow: rgba(124, 58, 237, 0.2);
+  --cyber-rail-accent-cyan: #7C3AED;
+  --cyber-rail-text: #F5F1EA;
+  --cyber-rail-text-muted: #A8A3AD;
+}
+
+/* ==========================================================================
+   DESKTOP / TABLET: Floating Command Rail (Left Side)
+   ========================================================================== */
+
+.cyber-rail-shell {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 250px;
+  min-width: 250px;
+  max-width: 250px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0.6rem 1rem 1rem;
+  box-sizing: border-box;
+  z-index: 1000;
+  flex-shrink: 0;
+  pointer-events: auto;
+}
+
+.cyber-rail-shell--compact,
+.cyber-rail-shell--expanded {
+  width: 250px;
+}
+
+.cyber-rail-card {
+  pointer-events: auto;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: var(--cyber-rail-bg);
+  border: 1px solid var(--cyber-rail-border);
+  border-radius: 20px;
+  box-shadow: 
+    0 18px 45px rgba(0, 0, 0, 0.65),
+    0 0 20px rgba(124, 58, 237, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  padding: 14px 12px;
+  overflow-y: auto;
+  overflow-x: visible;
+  position: relative;
+  scrollbar-width: none;
+}
+
+.cyber-rail-card::-webkit-scrollbar {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Rail Header: Brand Logo & Status
+   -------------------------------------------------------------------------- */
+
+.cyber-rail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 2px 14px 2px;
+  border-bottom: 1px solid var(--cyber-rail-border);
+  position: relative;
+}
+
+.cyber-rail-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  min-width: 0;
+  flex: 1;
+}
+
+.cyber-rail-logo-wrap {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  padding: 2px;
+  background: linear-gradient(135deg, #7C3AED 0%, #000000 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 0 14px rgba(124, 58, 237, 0.3);
+}
+
+.cyber-rail-logo {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.cyber-rail-pulse-ring {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1px solid rgba(124, 58, 237, 0.4);
+  animation: cyberPulseRing 3s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes cyberPulseRing {
+  0% { transform: scale(1); opacity: 0.8; }
+  60% { transform: scale(1.18); opacity: 0; }
+  100% { transform: scale(1.18); opacity: 0; }
+}
+
+.cyber-rail-brand-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.cyber-rail-title {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-cyber), 'Orbitron', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.cyber-rail-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cyber-rail-accent-cyan);
+  white-space: nowrap;
+}
+
+.cyber-rail-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+  display: inline-block;
+}
+
+.cyber-rail-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(46, 16, 101, 0.6);
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  color: var(--cyber-rail-text-muted);
+  cursor: pointer;
+  transition: all 160ms ease;
+  flex-shrink: 0;
+}
+
+.cyber-rail-shell--compact .cyber-rail-toggle-btn {
+  display: none; /* In compact mode, hover or clicking expand can trigger or keep clean */
+}
+
+.cyber-rail-toggle-btn:hover {
+  background: #a855f7;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
+}
+
+/* --------------------------------------------------------------------------
+   Rail Navigation List
+   -------------------------------------------------------------------------- */
+
+.cyber-rail-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 12px 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.cyber-rail-nav::-webkit-scrollbar {
+  width: 3px;
+}
+.cyber-rail-nav::-webkit-scrollbar-thumb {
+  background: rgba(168, 85, 247, 0.2);
+  border-radius: 4px;
+}
+
+.cyber-rail-nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cyber-rail-nav-item {
+  position: relative;
+  width: 100%;
+}
+
+.cyber-rail-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 14px;
+  text-decoration: none;
+  color: var(--cyber-rail-text-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cyber-rail-link:hover {
+  color: var(--cyber-rail-text);
+  background: rgba(124, 58, 237, 0.08);
+  border-color: rgba(124, 58, 237, 0.22);
+}
+
+.cyber-rail-link.is-active {
+  color: var(--cyber-rail-text);
+  background: rgba(124, 58, 237, 0.16);
+  border-color: var(--cyber-rail-accent);
+  box-shadow: 0 0 16px rgba(124, 58, 237, 0.15);
+}
+
+.cyber-rail-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.cyber-rail-icon {
+  transition: transform 160ms ease, color 160ms ease;
+}
+
+.cyber-rail-link:hover .cyber-rail-icon {
+  transform: scale(1.08);
+  color: var(--cyber-rail-text);
+}
+
+.cyber-rail-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: #EF4444;
+  color: #F5F1EA;
+  font-size: 0.62rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+}
+
+.cyber-rail-link-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+.cyber-rail-link-label-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.cyber-rail-admin-tag {
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(124, 58, 237, 0.18);
+  border: 1px solid rgba(124, 58, 237, 0.35);
+  color: var(--cyber-rail-accent-cyan);
+  letter-spacing: 0.1em;
+}
+
+/* --------------------------------------------------------------------------
+   Admin Popover Menu
+   -------------------------------------------------------------------------- */
+
+.cyber-rail-admin-popover {
+  position: absolute;
+  left: calc(100% + 14px);
+  bottom: 0;
+  width: 260px;
+  background: #000000;
+  border: 1px solid #1E2535;
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.7), 0 0 20px rgba(124, 58, 237, 0.14);
+  backdrop-filter: blur(24px);
+  z-index: 1350;
+}
+
+.cyber-rail-popover-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--cyber-rail-text);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #29202D;
+  margin-bottom: 8px;
+}
+
+.cyber-rail-popover-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.cyber-rail-popover-grid::-webkit-scrollbar {
+  width: 3px;
+}
+.cyber-rail-popover-grid::-webkit-scrollbar-thumb {
+  background: var(--cyber-rail-accent);
+  border-radius: 4px;
+}
+
+.cyber-rail-popover-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--cyber-rail-text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: all 140ms ease;
+}
+
+.cyber-rail-popover-item:hover {
+  color: var(--cyber-rail-text);
+  background: rgba(124, 58, 237, 0.14);
+}
+
+.cyber-rail-popover-item.is-active {
+  color: var(--cyber-rail-accent-cyan);
+  background: rgba(124, 58, 237, 0.2);
+}
+
+.cyber-rail-popover-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--cyber-rail-accent);
+}
+
+/* --------------------------------------------------------------------------
+   Rail Footer: User & Login
+   -------------------------------------------------------------------------- */
+
+.cyber-rail-footer {
+  padding-top: 12px;
+  border-top: 1px solid rgba(168, 85, 247, 0.14);
+  position: relative;
+}
+
+.cyber-rail-user-container {
+  position: relative;
+}
+
+.cyber-rail-user-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 6px;
+  border-radius: 20px;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.cyber-rail-user-btn:hover {
+  background: rgba(59, 7, 100, 0.6);
+  border-color: rgba(168, 85, 247, 0.25);
+}
+
+.cyber-rail-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7e22ce 0%, #3b0764 100%);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+  box-shadow: 0 0 14px rgba(168, 85, 247, 0.25);
+}
+
+.cyber-rail-avatar-ring {
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 1px solid rgba(168, 85, 247, 0.4);
+}
+
+.cyber-rail-user-details {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  text-align: left;
+}
+
+.cyber-rail-user-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--cyber-rail-text);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.cyber-rail-user-role {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cyber-rail-accent-cyan);
+}
+
+/* User Popover */
+.cyber-rail-user-popover {
+  position: absolute;
+  left: calc(100% + 14px);
+  bottom: 0;
+  width: 230px;
+  background: #000000;
+  border: 1px solid #1E2535;
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.7), 0 0 20px rgba(124, 58, 237, 0.14);
+  backdrop-filter: blur(24px);
+  z-index: 1350;
+}
+
+.cyber-rail-user-popover-header {
+  padding: 4px 6px 8px 6px;
+}
+
+.cyber-rail-user-popover-name {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--cyber-rail-text);
+}
+
+.cyber-rail-user-popover-email {
+  font-size: 0.72rem;
+  color: var(--cyber-rail-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cyber-rail-popover-divider {
+  height: 1px;
+  background: #29202D;
+  margin: 6px 0;
+}
+
+.cyber-rail-popover-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--cyber-rail-text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: all 140ms ease;
+}
+
+.cyber-rail-popover-link:hover {
+  color: var(--cyber-rail-text);
+  background: rgba(124, 58, 237, 0.14);
+}
+
+.cyber-rail-popover-link--danger {
+  color: #EF4444;
+}
+
+.cyber-rail-popover-link--danger:hover {
+  color: #fee2e2;
+  background: rgba(239, 68, 68, 0.18);
+}
+
+/* Login Button in rail */
+.cyber-rail-login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px;
+  border-radius: 14px;
+  background: var(--cyber-rail-accent);
+  color: var(--cyber-rail-text);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.85rem;
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.3);
+  transition: all 160ms ease;
+}
+
+.cyber-rail-login-btn:hover {
+  background: var(--cyber-rail-accent-hover);
+  box-shadow: 0 8px 24px rgba(147, 51, 234, 0.4);
+}
+
+/* ==========================================================================
+   MOBILE DOCK (Bottom Navigation on screens < 1024px)
+   ========================================================================== */
+
+.cyber-mobile-dock {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  /* Hide desktop rail on mobile */
+  .cyber-rail-shell {
+    display: none;
+  }
+
+  /* Show floating bottom cyber dock */
+  .cyber-mobile-dock {
+    display: block;
+    position: fixed;
+    bottom: 1rem;
+    left: 1rem;
+    right: 1rem;
+    z-index: 1200;
+    pointer-events: none;
+  }
+
+  .cyber-mobile-dock-inner {
+    pointer-events: auto;
+    max-width: 480px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 8px 12px;
+    border-radius: 20px;
+    background: #0C0B0F;
+    border: 1px solid #29202D;
+    box-shadow: 
+      0 18px 45px rgba(0, 0, 0, 0.7),
+      0 0 20px rgba(124, 58, 237, 0.12);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+
+  .cyber-mobile-dock-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px 10px;
+    border-radius: 12px;
+    color: var(--cyber-rail-text-muted);
+    text-decoration: none;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    transition: all 140ms ease;
+  }
+
+  .cyber-mobile-dock-btn:hover,
+  .cyber-mobile-dock-btn.is-active {
+    color: var(--cyber-rail-text);
+    background: rgba(124, 58, 237, 0.16);
+  }
+
+  .cyber-mobile-dock-btn.is-active::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    width: 14px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--cyber-rail-accent);
+    box-shadow: 0 0 6px var(--cyber-rail-accent);
+  }
+
+  .cyber-mobile-dock-btn--menu {
+    color: var(--cyber-rail-text-muted);
+  }
+
+  .cyber-mobile-dock-dot {
+    position: absolute;
+    top: 4px;
+    right: 12px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #EF4444;
+    box-shadow: 0 0 6px #EF4444;
+  }
+}
+
+/* ==========================================================================
+   MOBILE TACTICAL COMMAND SHEET (Slide-up drawer)
+   ========================================================================== */
+
+.cyber-mobile-drawer-root {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.cyber-mobile-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(10px);
+}
+
+.cyber-mobile-drawer-sheet {
+  position: relative;
+  z-index: 2001;
+  width: 100%;
+  max-height: 85vh;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  background: #000000;
+  border-top: 1px solid #1E2535;
+  box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(168, 85, 247, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.cyber-mobile-drawer-handle {
+  width: 42px;
+  height: 4px;
+  border-radius: 9999px;
+  background: rgba(168, 85, 247, 0.4);
+  margin: 10px auto 4px auto;
+}
+
+.cyber-mobile-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px 16px 20px;
+  border-bottom: 1px solid rgba(168, 85, 247, 0.14);
+}
+
+.cyber-mobile-drawer-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cyber-mobile-drawer-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.cyber-mobile-drawer-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+}
+
+.cyber-mobile-drawer-tag {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #a855f7;
+}
+
+.cyber-mobile-drawer-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(59, 7, 100, 0.5);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.cyber-mobile-drawer-content {
+  padding: 16px 20px 32px 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.cyber-mobile-user-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: rgba(59, 7, 100, 0.35);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.cyber-mobile-user-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.cyber-mobile-user-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.cyber-mobile-user-role {
+  font-size: 0.7rem;
+  color: #c4b5fd;
+  text-transform: capitalize;
+}
+
+.cyber-mobile-profile-link {
+  padding: 6px 14px;
+  border-radius: 12px;
+  background: #a855f7;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.cyber-mobile-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cyber-mobile-section-title {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #c4b5fd;
+  padding-left: 4px;
+}
+
+.cyber-mobile-links-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+
+.cyber-mobile-link-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(30, 10, 52, 0.5);
+  border: 1px solid rgba(168, 85, 247, 0.12);
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.cyber-mobile-admin-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.cyber-mobile-admin-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(30, 10, 52, 0.4);
+  border: 1px solid rgba(168, 85, 247, 0.1);
+  color: var(--cyber-rail-text-muted);
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.cyber-mobile-admin-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #a855f7;
+}
+
+.cyber-mobile-drawer-footer {
+  padding-top: 10px;
+}
+
+.cyber-mobile-logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(220, 38, 38, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #f87171;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cyber-mobile-auth-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cyber-mobile-btn-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border-radius: 16px;
+  background: #a855f7;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.cyber-mobile-btn-register {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(46, 16, 101, 0.5);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  color: #f9f5ff;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.9rem;
+}

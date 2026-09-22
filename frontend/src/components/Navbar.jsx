@@ -93,7 +93,7 @@ function Navbar() {
 
   const isActive = (path) => location.pathname === path;
   const isAdmin = user?.role === 'admin' || user?.role === 'superadmin';
-  const platformLogo = logoUrl || '/logo.jpeg';
+  const platformLogo = logoUrl || '/assests/ciphera.png';
   const brandAccent = useMemo(() => {
     const currentName = eventName || 'Ciphera';
     const lowered = currentName.toLowerCase();
