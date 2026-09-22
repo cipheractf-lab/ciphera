@@ -65,9 +65,6 @@ function Scoreboard() {
   return (
     <div className="scoreboard-page-shell">
       <div className="scoreboard-page-bg" aria-hidden="true" />
-      <div className="scoreboard-orb scoreboard-orb--primary" aria-hidden="true" />
-      <div className="scoreboard-orb scoreboard-orb--secondary" aria-hidden="true" />
-      <div className="scoreboard-orb scoreboard-orb--tertiary" aria-hidden="true" />
 
       <div className="scoreboard-page">
         <div className="cyber-scoreboard-container">

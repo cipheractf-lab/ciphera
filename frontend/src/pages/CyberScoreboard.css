@@ -1,54 +1,16 @@
-/* Professional Cybersecurity Leaderboard */
+/* Professional Cybersecurity Leaderboard - 13-Color Palette Aligned */
 
 .scoreboard-page-shell {
   position: relative;
   min-height: 100vh;
   overflow: hidden;
-  background: linear-gradient(180deg, rgba(8, 4, 24, 0.95) 0%, rgba(0, 0, 0, 1) 100%);
+  background: #050506;
 }
 
 .scoreboard-page-bg {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(180deg, rgba(107, 33, 168, 0.3) 0%, rgba(59, 7, 100, 0.22) 34%, rgba(0, 0, 0, 0.9) 100%),
-    radial-gradient(circle at 15% 18%, rgba(168, 85, 247, 0.24), transparent 24%),
-    radial-gradient(circle at 82% 12%, rgba(88, 28, 135, 0.24), transparent 28%),
-    radial-gradient(circle at 72% 78%, rgba(76, 29, 149, 0.18), transparent 30%);
-  pointer-events: none;
+  display: none;
 }
 
-.scoreboard-orb {
-  position: absolute;
-  border-radius: 9999px;
-  pointer-events: none;
-  filter: blur(110px);
-  opacity: 0.75;
-}
-
-.scoreboard-orb--primary {
-  top: 8%;
-  left: 5%;
-  width: 18rem;
-  height: 18rem;
-  background: rgba(168, 85, 247, 0.24);
-}
-
-.scoreboard-orb--secondary {
-  top: 24%;
-  right: 10%;
-  width: 22rem;
-  height: 22rem;
-  background: rgba(88, 28, 135, 0.2);
-}
-
-.scoreboard-orb--tertiary {
-  bottom: 8%;
-  left: 34%;
-  width: 16rem;
-  height: 16rem;
-  background: rgba(59, 7, 100, 0.24);
-}
 
 .scoreboard-page {
   position: relative;
@@ -60,22 +22,22 @@
 .cyber-scoreboard-container {
   width: min(100%, 1320px);
   margin: 0 auto;
-  padding: 0.55rem 1.5rem 2.5rem;
+  padding: 1.5rem 1.5rem 3rem;
 }
 
 .cyber-scoreboard-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.2rem;
+  margin-bottom: 1.5rem;
   flex-wrap: wrap;
-  gap: 24px;
+  gap: 20px;
 }
 
 .cyber-scoreboard-title-section {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 18px;
   min-width: 0;
 }
 
@@ -83,26 +45,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 80px;
-  height: 80px;
-  background: var(--bg-tertiary);
-  border: 2px solid var(--primary);
-  border-radius: 50%;
-  color: var(--primary);
-  box-shadow: 0 0 30px var(--primary-glow);
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(34, 211, 238, 0.08));
+  border: 1px solid rgba(124, 58, 237, 0.3);
+  border-radius: 12px;
+  color: #A855F7;
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.2);
 }
 
 .cyber-scoreboard-title {
   font-family: var(--font-heading);
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 8px;
-  letter-spacing: 2px;
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+  color: #F5F1EA;
+  letter-spacing: -0.02em;
 }
 
 .cyber-scoreboard-subtitle {
-  color: var(--text-secondary);
-  font-size: 1rem;
+  color: #A8A3AD;
+  font-size: 0.92rem;
 }
 
 .cyber-scoreboard-actions {
@@ -111,43 +74,37 @@
 }
 
 .cyber-button.cyber-scoreboard-refresh-btn {
-  min-height: 44px;
-  padding: 0.72rem 1.2rem;
-  border-radius: 999px;
-  border: 1px solid rgba(192, 132, 252, 0.24);
-  background: linear-gradient(180deg, rgba(11, 16, 32, 0.82) 0%, rgba(8, 13, 28, 0.64) 100%);
-  color: #f5f3ff;
-  box-shadow: 0 16px 36px rgba(2, 6, 23, 0.3);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  min-height: 38px;
+  padding: 0.5rem 1.1rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-primary, #1E2535);
+  background: var(--bg-card, #000000);
+  color: #F5F1EA;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
 }
 
 .cyber-button.cyber-scoreboard-refresh-btn:hover {
-  border-color: rgba(216, 180, 254, 0.52);
-  background: linear-gradient(180deg, rgba(29, 22, 58, 0.9) 0%, rgba(15, 12, 32, 0.78) 100%);
-  box-shadow: 0 20px 42px rgba(2, 6, 23, 0.38);
+  border-color: #7C3AED;
+  background: #141A25;
 }
 
 .cyber-scoreboard-refresh-btn .cyber-button__icon {
-  color: #d8b4fe;
+  color: #7C3AED;
 }
 
 /* Tabs */
 .cyber-scoreboard-tabs {
   display: flex;
-  gap: 12px;
-  margin-bottom: 1.2rem;
-  background:
-    linear-gradient(160deg, rgba(17, 24, 39, 0.58) 0%, rgba(15, 23, 42, 0.34) 100%),
-    radial-gradient(circle at 12% 0%, rgba(196, 181, 253, 0.12), transparent 40%);
-  padding: 8px;
-  border-radius: 1.1rem;
-  border: 1px solid rgba(139, 92, 246, 0.22);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 18px 42px rgba(2, 6, 23, 0.32);
-  backdrop-filter: blur(24px) saturate(130%);
-  -webkit-backdrop-filter: blur(24px) saturate(130%);
+  gap: 8px;
+  margin-bottom: 1.5rem;
+  background: var(--bg-secondary, #0B0E14);
+  padding: 5px;
+  border-radius: 12px;
+  border: 1px solid var(--border-primary, #1E2535);
 }
 
 .cyber-scoreboard-tab {
@@ -156,72 +113,74 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 14px 24px;
+  padding: 10px 20px;
   background: transparent;
-  color: var(--text-secondary);
+  color: #A8A3AD;
   border: 1px solid transparent;
-  border-radius: 0.9rem;
+  border-radius: 8px;
   font-family: var(--font-mono);
-  font-size: 0.938rem;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-normal);
+  transition: all 0.18s ease;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.06em;
 }
 
 .cyber-scoreboard-tab:hover {
-  color: var(--text-primary);
-  background: rgba(139, 92, 246, 0.12);
+  color: #F5F1EA;
+  background: rgba(124, 58, 237, 0.08);
 }
 
 .cyber-scoreboard-tab--active {
-  background: linear-gradient(135deg, rgba(216, 180, 254, 0.82) 0%, rgba(192, 132, 252, 0.84) 100%);
-  color: #1f1144;
-  border-color: rgba(216, 180, 254, 0.6);
-  box-shadow: 0 12px 28px rgba(168, 85, 247, 0.36);
+  background: linear-gradient(135deg, #7C3AED 0%, #9333EA 100%);
+  color: #F5F1EA;
+  border-color: #7C3AED;
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
 }
 
 /* Graph Card */
 .cyber-scoreboard-graph-card {
-  margin-bottom: 1.2rem;
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  background:
-    linear-gradient(165deg, rgba(17, 24, 39, 0.48) 0%, rgba(15, 23, 42, 0.28) 100%),
-    radial-gradient(circle at 12% 0%, rgba(196, 181, 253, 0.14), transparent 42%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 22px 50px rgba(2, 6, 23, 0.34);
-  backdrop-filter: blur(24px) saturate(130%);
-  -webkit-backdrop-filter: blur(24px) saturate(130%);
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border-primary, #1E2535);
+  background: var(--bg-secondary, #0B0E14);
+  border-radius: 16px;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
 }
 
-.cyber-scoreboard-graph-card .cyber-card-header,
+.cyber-scoreboard-graph-card .cyber-card-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border-primary, #1E2535);
+  background: #0E121A;
+}
+
 .cyber-scoreboard-graph-card .cyber-card-body {
+  padding: 12px 16px 16px;
   background: transparent;
 }
 
 .cyber-scoreboard-graph-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--text-primary);
+  gap: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #F5F1EA;
+  letter-spacing: -0.01em;
+}
+
+.cyber-scoreboard-graph-header svg {
+  color: #7C3AED;
 }
 
 /* Table */
 .cyber-scoreboard-table-card {
   overflow: hidden;
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  background:
-    linear-gradient(165deg, rgba(17, 24, 39, 0.46) 0%, rgba(15, 23, 42, 0.26) 100%),
-    radial-gradient(circle at 12% 0%, rgba(196, 181, 253, 0.13), transparent 42%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 22px 50px rgba(2, 6, 23, 0.34);
-  backdrop-filter: blur(24px) saturate(130%);
-  -webkit-backdrop-filter: blur(24px) saturate(130%);
+  border: 1px solid var(--border-primary, #1E2535);
+  background: var(--bg-secondary, #0B0E14);
+  border-radius: 16px;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55);
 }
 
 .cyber-scoreboard-loading {
@@ -238,19 +197,18 @@
 }
 
 .cyber-scoreboard-empty-icon {
-  color: var(--text-tertiary);
-  margin-bottom: 24px;
-  opacity: 0.5;
+  color: #6F6973;
+  margin-bottom: 20px;
 }
 
 .cyber-scoreboard-empty h3 {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   margin-bottom: 8px;
-  color: var(--text-primary);
+  color: #F5F1EA;
 }
 
 .cyber-scoreboard-empty p {
-  color: var(--text-secondary);
+  color: #A8A3AD;
 }
 
 .cyber-scoreboard-table {
@@ -259,16 +217,16 @@
 
 .cyber-scoreboard-table-header {
   display: grid;
-  grid-template-columns: 100px 1fr 150px;
-  padding: 20px 24px;
-  background: rgba(15, 23, 42, 0.44);
-  border-bottom: 1px solid rgba(139, 92, 246, 0.24);
+  grid-template-columns: 90px 1fr 150px;
+  padding: 14px 24px;
+  background: #0E121A;
+  border-bottom: 1px solid var(--border-primary, #1E2535);
   font-family: var(--font-mono);
-  font-size: 0.813rem;
+  font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-tertiary);
+  letter-spacing: 0.08em;
+  color: #6F6973;
 }
 
 .cyber-scoreboard-table-body {
@@ -277,38 +235,53 @@
 
 .cyber-scoreboard-table-row {
   display: grid;
-  grid-template-columns: 100px 1fr 150px;
-  padding: 20px 24px;
-  border-bottom: 1px solid rgba(139, 92, 246, 0.14);
-  transition: all var(--transition-normal);
-  background: rgba(10, 14, 26, 0.24);
+  grid-template-columns: 90px 1fr 150px;
+  padding: 16px 24px;
+  border-bottom: 1px solid #1D1722;
+  transition: all 0.18s ease;
+  background: transparent;
+  border-left: 3px solid transparent;
 }
 
 .cyber-scoreboard-table-row:hover {
-  background: rgba(139, 92, 246, 0.09);
-  transform: translateX(4px);
+  background: rgba(124, 58, 237, 0.06);
 }
 
 .cyber-scoreboard-table-row--current {
-  background: rgba(168, 85, 247, 0.1);
-  border-left: 4px solid var(--primary);
-  padding-left: 20px;
+  background: rgba(124, 58, 237, 0.08);
+  border-left-color: #7C3AED;
+  padding-left: 21px;
 }
 
 .cyber-scoreboard-table-row--current:hover {
-  background: rgba(168, 85, 247, 0.15);
+  background: rgba(124, 58, 237, 0.14);
 }
 
 .cyber-scoreboard-table-row--top1 {
-  background: rgba(255, 215, 0, 0.05);
+  border-left-color: #F59E0B;
+  background: rgba(245, 158, 11, 0.03);
+}
+
+.cyber-scoreboard-table-row--top1:hover {
+  background: rgba(245, 158, 11, 0.06);
 }
 
 .cyber-scoreboard-table-row--top2 {
-  background: rgba(192, 192, 192, 0.05);
+  border-left-color: #94A3B8;
+  background: rgba(148, 163, 184, 0.03);
+}
+
+.cyber-scoreboard-table-row--top2:hover {
+  background: rgba(148, 163, 184, 0.06);
 }
 
 .cyber-scoreboard-table-row--top3 {
-  background: rgba(205, 127, 50, 0.05);
+  border-left-color: #7C3AED;
+  background: rgba(124, 58, 237, 0.03);
+}
+
+.cyber-scoreboard-table-row--top3:hover {
+  background: rgba(124, 58, 237, 0.06);
 }
 
 .cyber-scoreboard-table-cell {
@@ -326,31 +299,31 @@
 
 .cyber-scoreboard-table-cell--score {
   justify-content: flex-end;
-  gap: 8px;
+  gap: 6px;
 }
 
 /* Rank Icons */
 .rank-number {
   font-family: var(--font-mono);
-  font-size: 1.125rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  color: var(--text-secondary);
+  color: #6F6973;
 }
 
 .rank-icon {
-  filter: drop-shadow(0 0 8px currentColor);
+  filter: drop-shadow(0 0 6px currentColor);
 }
 
 .rank-icon--gold {
-  color: #ffd700;
+  color: #F59E0B;
 }
 
 .rank-icon--silver {
-  color: #c0c0c0;
+  color: #CBD5E1;
 }
 
 .rank-icon--bronze {
-  color: #cd7f32;
+  color: #C084FC;
 }
 
 /* Name Link */
@@ -358,51 +331,48 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  color: var(--text-primary);
+  color: #F5F1EA;
   text-decoration: none;
   font-family: var(--font-mono);
   font-weight: 500;
-  transition: color var(--transition-fast);
+  transition: color 0.18s ease;
 }
 
 .cyber-scoreboard-name-link:hover {
-  color: var(--primary);
+  color: #7C3AED;
 }
 
 .cyber-scoreboard-you-badge {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-@keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 0 10px var(--primary-glow);
-  }
-  50% {
-    box-shadow: 0 0 20px var(--primary-glow);
-  }
+  padding: 2px 8px;
+  background: #7C3AED;
+  color: #F5F1EA;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
 }
 
 /* Score Display */
 .cyber-scoreboard-score {
   font-family: var(--font-mono);
-  font-size: 1.5rem;
+  font-size: 1.15rem;
   font-weight: 700;
-  color: var(--primary);
+  color: #F5F1EA;
 }
 
 .cyber-scoreboard-points-label {
   font-family: var(--font-mono);
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text-tertiary);
+  color: #7C3AED;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .cyber-scoreboard-container {
-    padding: 0.6rem 1rem 2rem;
+    padding: 1rem 1rem 2rem;
   }
 
   .cyber-scoreboard-header {
@@ -420,24 +390,24 @@
   }
 
   .cyber-scoreboard-title {
-    font-size: 2rem;
+    font-size: 1.8rem;
     line-height: 1.1;
     word-break: break-word;
   }
 
   .cyber-scoreboard-icon {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
   }
 
   .cyber-scoreboard-table-header,
   .cyber-scoreboard-table-row {
-    grid-template-columns: 80px 1fr 120px;
-    padding: 16px;
+    grid-template-columns: 70px 1fr 110px;
+    padding: 14px;
   }
 
   .cyber-scoreboard-score {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
   }
 
   .cyber-scoreboard-tabs {
@@ -447,25 +417,25 @@
 
 @media (max-width: 480px) {
   .cyber-scoreboard-container {
-    padding: 0.7rem 0.85rem 1.75rem;
+    padding: 0.75rem 0.75rem 1.5rem;
   }
 
   .cyber-scoreboard-title {
-    font-size: 1.65rem;
-    letter-spacing: 1px;
+    font-size: 1.5rem;
+    letter-spacing: 0.5px;
   }
 
   .cyber-scoreboard-table-header,
   .cyber-scoreboard-table-row {
-    grid-template-columns: 60px 1fr 100px;
-    padding: 12px;
+    grid-template-columns: 50px 1fr 90px;
+    padding: 10px;
   }
 
   .cyber-scoreboard-name-link {
-    font-size: 0.875rem;
+    font-size: 0.85rem;
   }
 
   .cyber-scoreboard-score {
-    font-size: 1.125rem;
+    font-size: 1rem;
   }
 }

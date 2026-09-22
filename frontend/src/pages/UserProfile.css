@@ -1,8 +1,9 @@
-/* HTB-Style User Profile */
+/* HTB-Style User Profile - 13-Color Palette Aligned */
+
 .htb-user-container {
   position: relative;
   min-height: 100vh;
-  background: linear-gradient(180deg, rgba(8, 4, 24, 0.95) 0%, rgba(0, 0, 0, 1) 100%);
+  background: #050506;
   overflow: hidden;
 }
 
@@ -16,14 +17,7 @@
 }
 
 .htb-user-grid-bg {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(180deg, rgba(107, 33, 168, 0.22) 0%, rgba(59, 7, 100, 0.16) 34%, rgba(0, 0, 0, 0.92) 100%),
-    radial-gradient(circle at 15% 18%, rgba(168, 85, 247, 0.18), transparent 24%),
-    radial-gradient(circle at 82% 12%, rgba(88, 28, 135, 0.2), transparent 28%),
-    radial-gradient(circle at 72% 78%, rgba(76, 29, 149, 0.14), transparent 30%);
-  z-index: 0;
+  display: none;
 }
 
 /* User Header */
@@ -33,28 +27,27 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 6px 24px 6px;
-  border-bottom: none;
-  background: transparent;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  margin-bottom: 22px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-primary, #1E2535);
+  background: rgba(11, 14, 20, 0.85);
+  backdrop-filter: blur(16px);
+  margin-bottom: 24px;
 }
 
 .htb-user-info {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+  align-items: center;
 }
 
 .htb-user-name {
   font-family: var(--font-heading);
-  font-size: clamp(2rem, 3.6vw, 2.6rem);
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
   font-weight: 700;
-  color: var(--text-primary);
+  color: #F5F1EA;
   margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: -0.02em;
 }
 
 .htb-user-header .htb-back-btn {
@@ -64,53 +57,53 @@
   align-items: center;
   gap: 8px;
   padding: 8px 14px;
-  background: linear-gradient(150deg, rgba(22, 28, 45, 0.62), rgba(15, 23, 42, 0.34));
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 8px;
-  color: #dbe4f2;
+  background: var(--bg-card, #000000);
+  border: 1px solid var(--border-primary, #1E2535);
+  border-radius: 0.5rem;
+  color: #F5F1EA;
   font-weight: 600;
-  font-size: 0.9rem;
-  transition: all 0.25s ease;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .htb-user-header .htb-back-btn:hover {
-  border-color: rgba(168, 85, 247, 0.5);
-  color: #c084fc;
+  border-color: #7C3AED;
+  background: #141A25;
 }
 
 .htb-user-email {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.938rem;
-  color: var(--text-secondary);
+  font-size: 0.9rem;
+  color: #A8A3AD;
   font-family: var(--font-mono);
 }
 
 .htb-user-email svg {
-  color: var(--primary);
+  color: #7C3AED;
 }
 
 .htb-refresh-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 20px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-md);
-  color: var(--text-secondary);
+  padding: 8px 16px;
+  background: var(--bg-card, #000000);
+  border: 1px solid var(--border-primary, #1E2535);
+  border-radius: 0.5rem;
+  color: #F5F1EA;
   font-family: var(--font-body);
-  font-size: 0.938rem;
+  font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .htb-refresh-btn:hover:not(:disabled) {
-  border-color: var(--primary);
-  color: var(--primary);
-  background: rgba(168, 85, 247, 0.05);
+  border-color: #7C3AED;
+  background: #0C0B0F;
 }
 
 .htb-refresh-btn:disabled {
@@ -133,7 +126,7 @@
   z-index: 1;
   width: min(100%, 1320px);
   margin: 0 auto;
-  padding: 6px 24px 48px;
+  padding: 12px 24px 48px;
 }
 
 /* 5-Column Stats Grid */
@@ -141,22 +134,24 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 14px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .htb-user-container .htb-stat-card {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 14px;
-  background:
-    linear-gradient(165deg, rgba(17, 24, 39, 0.52) 0%, rgba(15, 23, 42, 0.3) 100%),
-    radial-gradient(circle at 12% 0%, rgba(196, 181, 253, 0.12), transparent 42%);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 10px;
-  box-shadow: 0 16px 36px rgba(2, 6, 23, 0.24);
-  backdrop-filter: blur(20px) saturate(125%);
-  -webkit-backdrop-filter: blur(20px) saturate(125%);
+  padding: 14px 16px;
+  background: var(--bg-card, #000000);
+  border: 1px solid var(--border-primary, #1E2535);
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 24px rgba(5, 5, 6, 0.4);
+  transition: all 0.2s ease;
+}
+
+.htb-user-container .htb-stat-card:hover {
+  border-color: rgba(34, 211, 238, 0.5);
+  transform: translateY(-2px);
 }
 
 .htb-user-container .htb-stat-icon {
@@ -165,10 +160,12 @@
   justify-content: center;
   padding: 0;
   overflow: hidden;
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(150deg, rgba(30, 41, 59, 0.4), rgba(15, 23, 42, 0.3));
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  width: 42px;
+  height: 42px;
+  background: var(--bg-secondary, #0B0E14);
+  border: 1px solid var(--border-primary, #1E2535);
+  border-radius: 0.5rem;
+  color: #7C3AED;
 }
 
 .htb-user-container .htb-stat-icon svg {
@@ -178,12 +175,19 @@
 }
 
 .htb-user-container .htb-stat-label {
-  font-size: 0.74rem;
-  margin-bottom: 3px;
+  font-size: 0.75rem;
+  margin-bottom: 2px;
+  color: #6F6973;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: var(--font-mono);
 }
 
 .htb-user-container .htb-stat-value {
-  font-size: 1.28rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #F5F1EA;
+  font-family: var(--font-mono);
 }
 
 .htb-user-container .htb-stat-team {
@@ -192,29 +196,27 @@
 
 /* Challenge Cards */
 .htb-challenges-section {
-  margin-bottom: 48px;
+  margin-bottom: 40px;
 }
 
 .htb-challenges-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 12px;
+  gap: 14px;
 }
 
 .htb-challenge-card {
   display: flex;
   flex-direction: column;
-  padding: 14px;
-  background:
-    linear-gradient(165deg, rgba(17, 24, 39, 0.52) 0%, rgba(15, 23, 42, 0.3) 100%),
-    radial-gradient(circle at 12% 0%, rgba(196, 181, 253, 0.08), transparent 42%);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 10px;
-  transition: all 0.3s ease;
+  padding: 16px;
+  background: var(--bg-card, #000000);
+  border: 1px solid var(--border-primary, #1E2535);
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  gap: 8px;
+  gap: 10px;
 }
 
 .htb-challenge-card::before {
@@ -224,10 +226,10 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, var(--primary), var(--success));
+  background: #7C3AED;
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 0.3s ease;
+  transition: transform 0.25s ease;
 }
 
 .htb-challenge-card:hover::before {
@@ -235,21 +237,16 @@
 }
 
 .htb-challenge-card:hover {
-  border-color: var(--primary);
-  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.2);
-  transform: none;
-}
-
-.htb-user-container--profile .htb-stat-card:hover,
-.htb-user-container--profile .htb-hint-card:hover {
-  transform: none;
+  border-color: #7C3AED;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(5, 5, 6, 0.6);
 }
 
 .htb-challenge-title {
   font-family: var(--font-heading);
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #F5F1EA;
   margin: 0;
   line-height: 1.4;
 }
@@ -257,20 +254,20 @@
 .htb-challenge-meta {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
 .htb-category {
   display: inline-flex;
   align-items: center;
-  padding: 4px 10px;
-  background: rgba(49, 18, 87, 0.24);
-  border: 1px solid rgba(139, 92, 246, 0.18);
-  border-radius: var(--radius-sm);
+  padding: 3px 8px;
+  background: #0C0B0F;
+  border: 1px solid #29202D;
+  border-radius: 4px;
   font-size: 0.72rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: #A855F7;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -279,33 +276,35 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
-  background: rgba(168, 85, 247, 0.1);
-  border: 1px solid var(--primary);
-  border-radius: var(--radius-sm);
+  padding: 3px 8px;
+  background: rgba(124, 58, 237, 0.1);
+  border: 1px solid rgba(124, 58, 237, 0.3);
+  border-radius: 4px;
   font-weight: 700;
   font-size: 0.74rem;
-  color: var(--primary);
+  color: #7C3AED;
+  font-family: var(--font-mono);
 }
 
 .htb-user-section {
-  margin-bottom: 28px;
+  margin-bottom: 32px;
 }
 
 .htb-section-title {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #F5F1EA;
   margin-bottom: 16px;
+  letter-spacing: -0.01em;
 }
 
 .htb-radar-card {
-  padding: 12px;
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 10px;
-  background:
-    linear-gradient(165deg, rgba(17, 24, 39, 0.52) 0%, rgba(15, 23, 42, 0.3) 100%),
-    radial-gradient(circle at 12% 0%, rgba(196, 181, 253, 0.08), transparent 42%);
-  box-shadow: 0 16px 36px rgba(2, 6, 23, 0.24);
-  backdrop-filter: blur(20px) saturate(125%);
-  -webkit-backdrop-filter: blur(20px) saturate(125%);
+  padding: 16px;
+  border: 1px solid var(--border-primary, #1E2535);
+  border-radius: 0.75rem;
+  background: var(--bg-card, #000000);
+  box-shadow: 0 16px 40px rgba(5, 5, 6, 0.6);
 }
 
 .htb-radar-legend-custom {
@@ -316,15 +315,15 @@
 }
 
 .htb-radar-legend-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 3px;
-  background: #4f7cff;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: #7C3AED;
 }
 
 .htb-radar-legend-name {
-  color: #ffffff;
-  font-size: 0.9rem;
+  color: #F5F1EA;
+  font-size: 0.85rem;
   font-weight: 500;
 }
 
@@ -337,68 +336,36 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-tertiary);
+  color: #6F6973;
   font-size: 0.95rem;
 }
 
-.htb-challenge-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: start;
-  margin-bottom: 16px;
-}
-
-.htb-challenge-title-group {
-  flex: 1;
-}
-
-.htb-challenge-name {
-  font-family: var(--font-heading);
-  font-size: 1.25rem;
+.htb-difficulty-badge {
+  padding: 4px 10px;
+  border-radius: 4px;
   font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 8px;
-}
-
-.htb-challenge-category {
-  display: inline-block;
-  padding: 4px 12px;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-sm);
-  font-size: 0.813rem;
-  font-weight: 600;
-  color: var(--text-secondary);
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-}
-
-.htb-difficulty-badge {
-  padding: 6px 14px;
-  border-radius: var(--radius-md);
-  font-weight: 700;
-  font-size: 0.813rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
   border: 1px solid;
 }
 
 .htb-difficulty-badge.easy {
-  background: rgba(40, 167, 69, 0.15);
-  border-color: #28a745;
-  color: #28a745;
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.3);
+  color: #22C55E;
 }
 
 .htb-difficulty-badge.medium {
-  background: rgba(255, 193, 7, 0.15);
-  border-color: #ffc107;
-  color: #ffc107;
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #F59E0B;
 }
 
 .htb-difficulty-badge.hard {
-  background: rgba(220, 53, 69, 0.15);
-  border-color: #dc3545;
-  color: #dc3545;
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #EF4444;
 }
 
 .htb-challenge-footer {
@@ -406,63 +373,63 @@
   justify-content: space-between;
   align-items: center;
   margin-top: auto;
-  padding-top: 16px;
-  border-top: 1px solid var(--border-primary);
+  padding-top: 12px;
+  border-top: 1px solid #29202D;
 }
 
 .htb-challenge-points {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   font-weight: 700;
-  font-size: 1.125rem;
-  color: var(--primary);
+  font-size: 1rem;
+  color: #7C3AED;
+  font-family: var(--font-mono);
 }
 
 .htb-challenge-solved {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
-  background: rgba(40, 167, 69, 0.15);
-  border: 1px solid #28a745;
-  border-radius: var(--radius-md);
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 4px;
   font-weight: 600;
-  font-size: 0.875rem;
-  color: #28a745;
+  font-size: 0.8rem;
+  color: #22C55E;
 }
 
 .htb-challenge-time {
-  font-size: 0.875rem;
-  color: var(--text-tertiary);
+  font-size: 0.8rem;
+  color: #6F6973;
   font-family: var(--font-mono);
 }
 
 /* Unlocked Hints */
 .htb-hints-section {
-  margin-bottom: 48px;
+  margin-bottom: 40px;
 }
 
 .htb-hints-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .htb-hint-item {
   display: flex;
-  gap: 20px;
-  padding: 24px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-primary);
-  border-left: 4px solid var(--warning);
-  border-radius: var(--radius-lg);
-  transition: all 0.3s ease;
+  gap: 16px;
+  padding: 18px;
+  background: var(--bg-card, #000000);
+  border: 1px solid var(--border-primary, #1E2535);
+  border-left: 4px solid #F59E0B;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
 }
 
 .htb-hint-item:hover {
-  border-left-color: var(--primary);
-  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.1);
+  border-left-color: #7C3AED;
 }
 
 .htb-hint-icon-wrapper {
@@ -470,12 +437,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-md);
-  color: var(--warning);
+  width: 40px;
+  height: 40px;
+  background: var(--bg-secondary, #0B0E14);
+  border: 1px solid var(--border-primary, #1E2535);
+  border-radius: 0.5rem;
+  color: #F59E0B;
 }
 
 .htb-hint-details {
@@ -484,46 +451,46 @@
 
 .htb-hint-challenge-name {
   font-family: var(--font-heading);
-  font-size: 1.125rem;
+  font-size: 1.05rem;
   font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 12px;
+  color: #F5F1EA;
+  margin-bottom: 10px;
 }
 
 .htb-hint-text {
-  padding: 16px;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-md);
+  padding: 12px;
+  background: #0C0B0F;
+  border: 1px solid #29202D;
+  border-radius: 0.5rem;
   font-family: var(--font-mono);
-  font-size: 0.938rem;
+  font-size: 0.88rem;
   line-height: 1.6;
-  color: var(--text-secondary);
-  margin-bottom: 12px;
+  color: #A8A3AD;
+  margin-bottom: 10px;
 }
 
 .htb-hint-meta {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
 }
 
 .htb-hint-cost-label {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
-  background: rgba(255, 193, 7, 0.15);
-  border: 1px solid var(--warning);
-  border-radius: var(--radius-md);
+  padding: 4px 10px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 4px;
   font-weight: 700;
-  font-size: 0.875rem;
-  color: var(--warning);
+  font-size: 0.8rem;
+  color: #F59E0B;
 }
 
 .htb-hint-timestamp {
-  font-size: 0.875rem;
-  color: var(--text-tertiary);
+  font-size: 0.8rem;
+  color: #6F6973;
   font-family: var(--font-mono);
 }
 
@@ -531,22 +498,14 @@
 .htb-solved-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background: rgba(40, 167, 69, 0.15);
-  border: 1px solid #28a745;
-  border-radius: var(--radius-md);
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 4px;
   font-weight: 700;
-  color: #28a745;
-  margin-left: 16px;
-}
-
-/* Loading/Error States (shared from TeamDetails.css) */
-
-/* Animations */
-@keyframes lineGrow {
-  0%, 100% { height: 24px; opacity: 1; }
-  50% { height: 32px; opacity: 0.7; }
+  color: #22C55E;
+  margin-left: 12px;
 }
 
 /* Responsive */
@@ -556,7 +515,7 @@
   }
 
   .htb-challenges-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   }
 }
 
@@ -571,13 +530,13 @@
 
   .htb-challenge-header {
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
   }
 
   .htb-challenge-footer {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
+    gap: 10px;
   }
 
   .htb-hint-item {
@@ -598,44 +557,43 @@
   }
 
   .htb-section-title {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
   }
 }
 
 /* Hints Grid */
 .htb-hints-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
 }
 
 .htb-hint-card {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 20px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-primary);
-  border-left: 3px solid var(--warning);
-  border-radius: var(--radius-lg);
-  transition: all 0.3s ease;
+  gap: 10px;
+  padding: 16px;
+  background: var(--bg-card, #000000);
+  border: 1px solid var(--border-primary, #1E2535);
+  border-left: 3px solid #F59E0B;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
 }
 
 .htb-hint-card:hover {
-  border-left-color: var(--primary);
+  border-left-color: #7C3AED;
   transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.1);
 }
 
 .htb-hint-header {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  gap: 10px;
 }
 
 .htb-hint-header svg {
   flex-shrink: 0;
-  color: var(--warning);
+  color: #F59E0B;
   margin-top: 2px;
 }
 
@@ -643,20 +601,20 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .htb-hint-info h3 {
   font-family: var(--font-heading);
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #F5F1EA;
   margin: 0;
 }
 
 .htb-hint-index {
-  font-size: 0.813rem;
-  color: var(--text-muted);
+  font-size: 0.75rem;
+  color: #6F6973;
   font-family: var(--font-mono);
 }
 
@@ -664,19 +622,19 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 12px;
-  border-top: 1px solid var(--border-primary);
+  padding-top: 10px;
+  border-top: 1px solid #29202D;
 }
 
 .htb-hint-cost {
   font-family: var(--font-mono);
   font-weight: 700;
-  color: var(--warning);
-  font-size: 0.938rem;
+  color: #F59E0B;
+  font-size: 0.88rem;
 }
 
 .htb-hint-date {
-  font-size: 0.813rem;
-  color: var(--text-tertiary);
+  font-size: 0.75rem;
+  color: #6F6973;
   font-family: var(--font-mono);
 }

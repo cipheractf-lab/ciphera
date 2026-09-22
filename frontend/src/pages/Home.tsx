@@ -2,18 +2,13 @@ import React, { useContext } from 'react';
 import { motion } from 'framer-motion';
 import {
   ArrowRight,
-  Radar,
+  Shield,
+  Terminal,
   Zap,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 import { useSiteConfig } from '../context/SiteConfigContext';
-
-const heroMetrics = [
-  { value: '250+', label: 'attack paths' },
-  { value: '24/7', label: 'live arena' },
-  { value: 'Squads', label: 'team operations' },
-];
 
 export default function Home() {
   const navigate = useNavigate();
@@ -22,7 +17,7 @@ export default function Home() {
   );
   const { eventName } = useSiteConfig();
   const platformName = eventName || 'Ciphera';
-  const heroImage = '/assests/ciphera.jpeg';
+  const heroImage = '/assests/ciphera.png';
 
   const handleStart = () => {
     if (isAuthenticated) {
@@ -33,112 +28,110 @@ export default function Home() {
   };
 
   const handleExplore = () => {
-    if (isAuthenticated) {
-      navigate('/scoreboard');
-    } else {
-      navigate('/event-status');
-    }
+    navigate('/challenges');
   };
 
   return (
-    <div className="relative isolate min-h-screen w-full overflow-hidden bg-[var(--background)] text-[var(--foreground)]">
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(107,33,168,0.36)_0%,rgba(88,28,135,0.2)_38%,rgba(0,0,0,0.9)_100%)]" />
-      <div className="pointer-events-none absolute left-[8%] top-[10%] h-56 w-56 rounded-full bg-[#6B21A8]/40 blur-3xl" />
-      <div className="pointer-events-none absolute left-1/2 top-[-10%] h-[26rem] w-[26rem] -translate-x-1/2 rounded-full bg-[#7E22CE]/18 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-[12%] right-[8%] h-72 w-72 rounded-full bg-[#581C87]/35 blur-3xl" />
+    <div className="relative isolate w-full h-full max-h-screen flex flex-col justify-center overflow-hidden bg-[#050506] text-[#F5F1EA]">
+      {/* Background Graphic Layer - ciphera.png clearly visible in the website background */}
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden select-none">
+        <img
+          src={heroImage}
+          alt="Ciphera Cyber Background"
+          className="h-full w-full object-cover object-center opacity-80 md:opacity-90"
+        />
+        {/* Soft horizontal gradient only behind the left text column for readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#050506] via-[#050506]/70 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#050506]/80 via-transparent to-[#050506]/30" />
+      </div>
+      <div className="pointer-events-none absolute left-[8%] top-[14%] z-[1] h-72 w-72 rounded-full bg-[#7C3AED]/[0.08] blur-3xl" />
+      <div className="pointer-events-none absolute bottom-[10%] right-[10%] z-[1] h-96 w-96 rounded-full bg-[#7C3AED]/[0.04] blur-3xl" />
 
-      <section className="relative z-10 flex min-h-[calc(100vh-5.5rem)] w-full items-start justify-center pt-[3.55rem] sm:pt-[3.95rem]">
-        <div className="mx-auto grid w-full max-w-7xl gap-8 px-6 py-2 sm:px-8 sm:py-4 lg:grid-cols-[1fr_1fr] lg:items-start lg:px-12 lg:py-4">
+      {/* Main hero content - fitting within single viewport */}
+      <section className="relative z-10 flex-1 flex items-center justify-start w-full px-6 sm:px-10 md:px-14 lg:px-20 xl:px-28 py-4 sm:py-6 md:py-8">
+        <div className="w-full max-w-4xl">
           <motion.div
-            initial={{ opacity: 0, y: 28 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col justify-start space-y-5 py-0 lg:pt-1"
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-col justify-center space-y-4 sm:space-y-6"
           >
-            <div className="inline-flex w-fit items-center gap-3 rounded-full border border-[#2E1065] bg-[#3B0764]/60 py-2 pl-2 pr-5 text-xs font-semibold uppercase tracking-[0.28em] text-[#C4B5FD] backdrop-blur-xl">
-              <div className="h-10 w-10 overflow-hidden rounded-full border border-[#A855F7]/30">
+            {/* Arena Tag / Badge with Technical Indicator */}
+            <div className="inline-flex w-fit items-center gap-2.5 rounded-full border border-[#1E2535] bg-[#000000]/90 py-2 pl-2.5 pr-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#A8A3AD] shadow-sm backdrop-blur-md">
+              <div className="h-5 w-5 overflow-hidden rounded-full border border-[#7C3AED]/60">
                 <img
                   src={heroImage}
                   alt="Ciphera logo"
                   className="h-full w-full object-cover"
                 />
               </div>
-              Purple Ops Arena
+              <span className="text-[#F5F1EA]">Purple Ops Arena</span>
+              <span className="h-1.5 w-1.5 rounded-full bg-[#7C3AED] shadow-[0_0_8px_#7C3AED]" />
+              <span className="text-[10px] text-[#7C3AED] tracking-[0.16em]">ONLINE</span>
             </div>
 
-            <h1
-              className="mt-3 font-black leading-[0.9] tracking-[-0.04em]"
-              style={{ fontFamily: 'var(--font-display)' }}
-            >
-              <span className="block bg-[linear-gradient(180deg,#FFFFFF_0%,#FBFBFF_54%,#E8E8F4_100%)] bg-clip-text text-5xl text-transparent sm:text-6xl md:text-7xl lg:text-[5.5rem]">
-                {platformName}
-              </span>
-              <span className="mt-2 block bg-[linear-gradient(180deg,#F9FAFB_0%,#C4B5FD_58%,#A855F7_100%)] bg-clip-text text-3xl text-transparent sm:text-4xl md:text-5xl lg:text-[3.5rem]">
-                Sri Eshwar&apos;s CTF
-              </span>
-            </h1>
+            {/* Brand Title & Official Tagline */}
+            <div className="space-y-3">
+              <h1 className="leading-[1.02]">
+                <span className="ciphera-brand-wordmark text-5xl sm:text-6xl md:text-7xl lg:text-8xl">
+                  {platformName.toUpperCase() === 'CIPHERA' ? (
+                    <>
+                      <span className="ciphera-chrome-silver">CIPHE</span>
+                      <span className="ciphera-chrome-violet">RA</span>
+                    </>
+                  ) : (
+                    <span className="ciphera-chrome-silver">{platformName.toUpperCase()}</span>
+                  )}
+                </span>
+              </h1>
+              
+              <div
+                className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-bold tracking-tight text-[#7C3AED]"
+                style={{ fontFamily: 'var(--font-heading)' }}
+              >
+                Hack. Learn. Compete. Grow.
+              </div>
+            </div>
 
-            <p className="mt-4 max-w-lg text-base leading-7 text-[#C4B5FD] sm:text-lg sm:leading-8">
-              Train. Exploit. Defend. A premium platform for team collaboration and focused practice.
+            {/* Platform Description */}
+            <p className="max-w-2xl text-base sm:text-lg md:text-xl leading-relaxed text-[#A8A3AD]">
+              A production-ready cybersecurity and Capture The Flag arena built for tactical training, team offensive operations, and focused competitive mastery.
             </p>
 
-            <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
+            {/* Secondary Technical Metadata Line */}
+            <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm font-mono text-[#6F6973] pt-1">
+              <Terminal className="h-4 w-4 text-[#7C3AED] shrink-0" />
+              <span className="text-[#7C3AED] font-medium">CYBER ARENA</span>
+              <span>•</span>
+              <span>REV</span>
+              <span>•</span>
+              <span>PWN</span>
+              <span>•</span>
+              <span>CRYPTO</span>
+              <span>•</span>
+              <span>WEB</span>
+              <span>•</span>
+              <span>FORENSICS</span>
+            </div>
+
+            {/* Action Buttons: Start Hacking & Explore Challenges */}
+            <div className="flex flex-col sm:flex-row gap-4 pt-3">
               <button
                 onClick={handleStart}
-                className="inline-flex items-center justify-center gap-3 rounded-2xl bg-[#A855F7] px-7 py-4 text-sm font-semibold text-[#F9FAFB] shadow-[0_18px_40px_rgba(168,85,247,0.28)] transition-transform duration-200 hover:-translate-y-0.5 hover:bg-[#9333EA]"
+                className="inline-flex items-center justify-center gap-2.5 rounded-xl bg-[#7C3AED] px-8 py-4 text-base font-semibold text-[#F5F1EA] shadow-[0_4px_24px_rgba(124,58,237,0.38)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#9333EA] hover:shadow-[0_8px_32px_rgba(147,51,234,0.5)] active:translate-y-0 w-full sm:w-auto"
               >
                 <Zap className="h-5 w-5" />
-                Start Challenges
+                <span>Start Hacking</span>
                 <ArrowRight className="h-5 w-5" />
               </button>
 
               <button
                 onClick={handleExplore}
-                className="inline-flex items-center justify-center gap-3 rounded-2xl border border-[#2E1065] bg-[#000000]/40 px-7 py-4 text-sm font-semibold text-[#F9FAFB] backdrop-blur-xl transition-colors duration-200 hover:bg-[#3B0764]/70"
+                className="inline-flex items-center justify-center gap-2.5 rounded-xl border border-[#1E2535] bg-[#000000]/90 px-8 py-4 text-base font-semibold text-[#F5F1EA] shadow-sm backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0A0D14] hover:border-[#7C3AED]/50 active:translate-y-0 w-full sm:w-auto"
               >
-                <Radar className="h-5 w-5 text-[#C4B5FD]" />
-                Scoreboard
+                <Shield className="h-5 w-5 text-[#7C3AED]" />
+                <span>Explore Challenges</span>
               </button>
-            </div>
-
-            <div className="mt-5 flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-[0.24em] text-[#C4B5FD] sm:text-sm">
-              {['Live scoring', 'Exploit rehearsal'].map((item) => (
-                <span
-                  key={item}
-                  className="rounded-full border border-[#2E1065] bg-[#2E1065]/35 px-4 py-2"
-                >
-                  {item}
-                </span>
-              ))}
-            </div>
-
-            <div className="mt-7 flex flex-wrap gap-3">
-              {heroMetrics.map((metric) => (
-                <div
-                  key={metric.label}
-                  className="w-[112px] rounded-[0.95rem] border border-[#2E1065] bg-[#3B0764]/45 px-3 py-2.5 backdrop-blur-xl sm:w-[120px]"
-                >
-                  <div className="text-[1.55rem] font-bold leading-none text-[#F9FAFB] sm:text-[1.65rem]">{metric.value}</div>
-                  <div className="mt-1 text-[9px] uppercase tracking-[0.14em] text-[#C4B5FD] sm:text-[10px]">{metric.label}</div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 36 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.72, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-            className="relative flex items-start justify-center lg:translate-x-12 lg:max-w-[450px]"
-          >
-            <div className="absolute inset-x-8 top-1/2 h-64 w-full -translate-y-12 rounded-full bg-[#A855F7]/30 blur-3xl" />
-            <div className="relative aspect-[4/5] w-full max-w-[480px] overflow-hidden rounded-[50px] border border-[#2E1065] bg-[linear-gradient(180deg,rgba(17,3,35,0.72)_0%,rgba(8,1,20,0.38)_100%)] p-3 shadow-[0_24px_80px_rgba(46,16,101,0.6)] backdrop-blur-xl lg:h-auto lg:aspect-auto">
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(168,85,247,0.08)_0%,rgba(0,0,0,0)_55%)]" />
-              <img
-                src={heroImage}
-                alt="Ciphera feature"
-                className="h-full w-full rounded-[40px] object-cover"
-              />
             </div>
           </motion.div>
         </div>

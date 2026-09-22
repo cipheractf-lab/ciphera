@@ -67,9 +67,6 @@ function Notice() {
   return (
     <div className="htb-notice-container">
       <div className="htb-notice-grid-bg" />
-      <div className="htb-notice-orb htb-notice-orb--primary" aria-hidden="true" />
-      <div className="htb-notice-orb htb-notice-orb--secondary" aria-hidden="true" />
-      <div className="htb-notice-orb htb-notice-orb--tertiary" aria-hidden="true" />
 
       <AnimatePresence mode="wait">
         {selectedNotice ? (
