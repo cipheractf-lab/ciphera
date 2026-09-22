@@ -1,38 +1,39 @@
-/* Back to Top Button Styles */
+/* Back to Top Button Styles - Neat, Clean, Modern Dark */
 .back-to-top-button {
   position: fixed;
   bottom: 2rem;
   right: 2rem;
-  width: 50px;
-  height: 50px;
-  background: linear-gradient(135deg, #A855F7, #7E22CE);
-  color: white;
-  border: none;
-  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  background: #0B0E14;
+  color: #A8A3AD;
+  border: 1px solid #1E2535;
+  border-radius: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.3);
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  transition: all 0.2s ease;
   z-index: 1000;
-  opacity: 0.9;
 }
 
 .back-to-top-button:hover {
-  background: linear-gradient(135deg, #7E22CE, #007399);
+  background: #141A25;
+  border-color: #7C3AED;
+  color: #F5F1EA;
   transform: translateY(-2px);
-  box-shadow: 0 6px 25px rgba(168, 85, 247, 0.4);
-  opacity: 1;
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.2);
 }
 
 .back-to-top-button:active {
   transform: translateY(0);
-  box-shadow: 0 2px 15px rgba(168, 85, 247, 0.3);
 }
 
 .back-to-top-button svg {
-  transition: transform 0.3s ease;
+  width: 20px;
+  height: 20px;
+  transition: transform 0.2s ease;
 }
 
 .back-to-top-button:hover svg {
@@ -44,8 +45,8 @@
   .back-to-top-button {
     bottom: 1.5rem;
     right: 1.5rem;
-    width: 45px;
-    height: 45px;
+    width: 38px;
+    height: 38px;
   }
 }
 
@@ -53,28 +54,7 @@
   .back-to-top-button {
     bottom: 1rem;
     right: 1rem;
-    width: 40px;
-    height: 40px;
-  }
-  
-  .back-to-top-button svg {
-    width: 20px;
-    height: 20px;
-  }
-}
-
-/* Animation for button appearance */
-.back-to-top-button {
-  animation: fadeInUp 0.3s ease-out;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 0.9;
-    transform: translateY(0);
+    width: 36px;
+    height: 36px;
   }
 }
