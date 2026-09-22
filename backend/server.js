@@ -53,6 +53,8 @@ const adminResetRoutes = require('./routes/adminReset');
 
 // Initialize express app
 const app = express();
+const { clerkMiddleware } = require("@clerk/express");
+app.use(clerkMiddleware());
 const PORT = process.env.PORT || 10000;
 
 app.use(morgan('dev'));
