@@ -46,6 +46,15 @@ const ConfigurationSchema = new mongoose.Schema({
       default: 'private'
     }
   },
+  // Gate login on a verified email address. Ships FALSE so real signups can
+  // be watched end-to-end before anyone is locked out, and is flippable from
+  // the admin UI (better than an env var on a 24/7 platform).
+  // NOTE: do not enable until scripts/migrateAuthIndexes.js has backfilled
+  // isEmailVerified on pre-existing, admin-created accounts.
+  emailVerificationRequired: {
+    type: Boolean,
+    default: false
+  },
   updatedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

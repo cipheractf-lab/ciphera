@@ -8,27 +8,12 @@ const Team = require('../models/Team');
 const Submission = require('../models/Submission');
 const Award = require('../models/Award');
 const Challenge = require('../models/Challenge');
-const EventState = require('../models/EventState');
 
 const redisClient = getRedisClient();
 
 // Cache TTL in seconds
 const CACHE_TTL = 60;
 const GRAPH_CACHE_TTL = 300; // 5 minutes for graph
-
-/**
- * Helper: Get current freeze time if any
- * In a real implementation, this would come from a config/settings model
- */
-const getFreezeTime = async () => {
-  try {
-    const eventState = await EventState.getEventState();
-    return eventState.freezeAt || null;
-  } catch (error) {
-    console.warn('[Scoreboard] Failed to read freeze time:', error.message);
-    return null;
-  }
-};
 
 /**
  * @route   GET /api/v1/scoreboard
@@ -49,14 +34,13 @@ router.get('/', async (req, res) => {
       return res.json(JSON.parse(cached));
     }
 
-    const freezeTime = await getFreezeTime();
 
     // Aggregation Pipeline
     let standings = [];
     if (type === 'teams') {
-      standings = await aggregateTeamStandings(isAdmin, freezeTime);
+      standings = await aggregateTeamStandings(isAdmin);
     } else {
-      standings = await aggregateUserStandings(isAdmin, freezeTime);
+      standings = await aggregateUserStandings(isAdmin);
     }
 
     const response = {
@@ -94,14 +78,13 @@ router.get('/top/:count', async (req, res) => {
       return res.json(JSON.parse(cached));
     }
 
-    const freezeTime = await getFreezeTime();
 
     // 1. Get Top N Standings First
     let topStandings = [];
     if (type === 'teams') {
-      topStandings = await aggregateTeamStandings(isAdmin, freezeTime, count);
+      topStandings = await aggregateTeamStandings(isAdmin, count);
     } else {
-      topStandings = await aggregateUserStandings(isAdmin, freezeTime, count);
+      topStandings = await aggregateUserStandings(isAdmin, count);
     }
 
     // 2. For each top entry, fetch detailed solve history
@@ -113,7 +96,7 @@ router.get('/top/:count', async (req, res) => {
       const rank = i + 1;
 
       // Fetch Solves
-      const history = await getSolveHistory(entry.account_id, type, freezeTime);
+      const history = await getSolveHistory(entry.account_id, type);
 
       responseData[rank] = {
         id: entry.account_id,
@@ -155,14 +138,13 @@ router.get('/graph', async (req, res) => {
       return res.json(JSON.parse(cached));
     }
 
-    const freezeTime = await getFreezeTime();
 
     // 1. Get Top 10 Standings
     let topStandings = [];
     if (type === 'teams') {
-      topStandings = await aggregateTeamStandings(isAdmin, freezeTime, 10);
+      topStandings = await aggregateTeamStandings(isAdmin, 10);
     } else {
-      topStandings = await aggregateUserStandings(isAdmin, freezeTime, 10);
+      topStandings = await aggregateUserStandings(isAdmin, 10);
     }
 
     // 2. Return detail payload so frontend can compute cumulative lines
@@ -172,7 +154,7 @@ router.get('/graph', async (req, res) => {
       const entry = topStandings[i];
       const rank = i + 1;
 
-      const history = await getSolveHistory(entry.account_id, type, freezeTime);
+      const history = await getSolveHistory(entry.account_id, type);
 
       graphData[rank] = {
         id: entry.account_id,
@@ -200,14 +182,10 @@ router.get('/graph', async (req, res) => {
  * Helper: Aggregate User Standings (with dynamic scoring)
  * Returns: [{ account_id, name, score, date, rank }, ...]
  */
-async function aggregateUserStandings(isAdmin, freezeTime, limit = null) {
+async function aggregateUserStandings(isAdmin, limit = null) {
   const matchStage = {
     isCorrect: true
   };
-
-  if (freezeTime) {
-    matchStage.submittedAt = { $lt: new Date(freezeTime) };
-  }
 
   // JOIN Submissions with Challenges to get current values
   // This automatically handles dynamic scoring retroactively
@@ -249,10 +227,6 @@ async function aggregateUserStandings(isAdmin, freezeTime, limit = null) {
     value: { $ne: 0 },
     user: { $exists: true, $ne: null }
   };
-
-  if (freezeTime) {
-    userAwardMatch.date = { $lt: new Date(freezeTime) };
-  }
 
   const userAwardsAgg = await Award.aggregate([
     { $match: userAwardMatch },
@@ -321,14 +295,10 @@ async function aggregateUserStandings(isAdmin, freezeTime, limit = null) {
 /**
  * Helper: Aggregate Team Standings (with dynamic scoring)
  */
-async function aggregateTeamStandings(isAdmin, freezeTime, limit = null) {
+async function aggregateTeamStandings(isAdmin, limit = null) {
   const matchStage = {
     isCorrect: true
   };
-  if (freezeTime) {
-    matchStage.submittedAt = { $lt: new Date(freezeTime) };
-  }
-
   // JOIN Submissions with Challenges to get current values
   const teamSolves = await Submission.aggregate([
     { $match: matchStage },
@@ -372,7 +342,6 @@ async function aggregateTeamStandings(isAdmin, freezeTime, limit = null) {
 
   // Team Specific Awards
   const teamAwardMatch = { value: { $ne: 0 }, team: { $exists: true, $ne: null } };
-  if (freezeTime) teamAwardMatch.date = { $lt: new Date(freezeTime) };
 
   const teamDirectAwards = await Award.aggregate([
     { $match: teamAwardMatch },
@@ -389,7 +358,6 @@ async function aggregateTeamStandings(isAdmin, freezeTime, limit = null) {
   // NOTE: This might double count if logic isn't careful, but Award model enforces either user OR team.
   // So we just need awards where user -> team.
   const userAwardMatch = { value: { $ne: 0 }, user: { $exists: true, $ne: null } };
-  if (freezeTime) userAwardMatch.date = { $lt: new Date(freezeTime) };
 
   const userAwardsInTeams = await Award.aggregate([
     { $match: userAwardMatch },
@@ -467,7 +435,7 @@ async function aggregateTeamStandings(isAdmin, freezeTime, limit = null) {
 /**
  * Helper: Get detailed solve history for graph/top view (with current values)
  */
-async function getSolveHistory(accountId, mode, freezeTime) {
+async function getSolveHistory(accountId, mode) {
   const history = [];
   const isTeam = mode === 'teams';
 
@@ -480,7 +448,6 @@ async function getSolveHistory(accountId, mode, freezeTime) {
       user: { $in: memberIds },
       isCorrect: true
     };
-    if (freezeTime) solveQuery.submittedAt = { $lt: new Date(freezeTime) };
 
     const solves = await Submission.find(solveQuery)
       .populate('challenge', 'points')
@@ -503,7 +470,6 @@ async function getSolveHistory(accountId, mode, freezeTime) {
       user: accountId,
       isCorrect: true
     };
-    if (freezeTime) solveQuery.submittedAt = { $lt: new Date(freezeTime) };
 
     const userDoc = await User.findById(accountId).select('_id team').lean();
 
@@ -538,7 +504,6 @@ async function getSolveHistory(accountId, mode, freezeTime) {
       { user: { $in: memberIds } }
     ];
 
-    if (freezeTime) awardQuery.date = { $lt: new Date(freezeTime) };
 
     const awards = await Award.find(awardQuery).select('value date user team').lean();
     for (const a of awards) {
@@ -556,7 +521,6 @@ async function getSolveHistory(accountId, mode, freezeTime) {
     }
   } else {
     awardQuery.user = accountId;
-    if (freezeTime) awardQuery.date = { $lt: new Date(freezeTime) };
 
     const userDoc = await User.findById(accountId).select('_id team').lean();
     const awards = await Award.find(awardQuery).select('value date user').lean();

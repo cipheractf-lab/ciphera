@@ -15,8 +15,13 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Email is required'],
     unique: true,
+    // Deliberately cheap and linear-time. The old pattern
+    // /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ rejected .info/.tech/.dev
+    // and +tagged addresses, and its nested quantifiers backtrack
+    // catastrophically on a near-miss (measured: 16s for one .test address).
+    // validator.isEmail() in middleware/security.js is the real authority.
     match: [
-      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
       'Please provide a valid email'
     ],
     lowercase: true,
@@ -129,6 +134,17 @@ const UserSchema = new mongoose.Schema({
   isEmailVerified: {
     type: Boolean,
     default: false
+  },
+  // How this account came into existence. Lets a spam wave be purged
+  // without touching curated, admin-created accounts.
+  registrationSource: {
+    type: String,
+    enum: ['self', 'admin'],
+    default: 'admin'
+  },
+  registrationIp: {
+    type: String,
+    default: null
   },
   otp: {
     type: String,
@@ -271,6 +287,16 @@ UserSchema.methods.generateOTP = function () {
 
 // Verify OTP
 UserSchema.methods.verifyOTP = function (enteredOtp) {
+  // crypto.update() throws a TypeError on a non-string, so {"otp": 123456}
+  // or {"otp": {"$ne": null}} would surface as a 500 on a public endpoint.
+  if (typeof enteredOtp !== 'string' || !/^\d{6}$/.test(enteredOtp)) {
+    return false;
+  }
+
+  if (!this.otp || !this.otpExpire) {
+    return false;
+  }
+
   const hashedOtp = crypto
     .createHash('sha256')
     .update(enteredOtp)
@@ -301,7 +327,11 @@ UserSchema.index({ solvedChallenges: 1 }); // For challenge lookup
 UserSchema.index({ role: 1 }); // For role-based queries
 UserSchema.index({ createdAt: 1 }); // For sorting by registration date
 UserSchema.index({ lockUntil: 1 }, { sparse: true }); // For account locking
-UserSchema.index({ resetPasswordExpire: 1 }, { sparse: true, expireAfterSeconds: 0 }); // TTL index for password reset
+// NOTE: there was once a TTL index on resetPasswordExpire here. A TTL index
+// deletes the ENTIRE document, so it would have deleted a user's whole account
+// ~10 minutes after they requested a password reset. It is dropped by
+// scripts/migrateAuthIndexes.js -- never reintroduce it.
+UserSchema.index({ resetPasswordToken: 1 }, { sparse: true }); // Password reset lookup
 
 // Compound indexes for complex queries
 UserSchema.index({ role: 1, points: -1 }); // For admin scoreboard queries

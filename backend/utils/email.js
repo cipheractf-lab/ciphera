@@ -1,8 +1,14 @@
-const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const config = require('../config');
 
-// Free email service configurations
-const getFreeEmailConfig = () => {
+const PLATFORM = process.env.PLATFORM_NAME || 'Ciphera';
+
+/**
+ * Resolve SMTP credentials from whichever provider is configured.
+ * Returns null when nothing is set up, which puts every send into
+ * console-fallback mode instead of failing.
+ */
+const getEmailConfig = () => {
   // Brevo (Sendinblue) - 300 emails/day free
   if (process.env.BREVO_API_KEY) {
     return {
@@ -10,12 +16,12 @@ const getFreeEmailConfig = () => {
       port: 587,
       secure: false,
       auth: {
-        user: process.env.BREVO_EMAIL || 'your-email@example.com',
+        user: process.env.BREVO_EMAIL || process.env.FROM_EMAIL,
         pass: process.env.BREVO_API_KEY
       }
     };
   }
-  
+
   // Mailgun - 5000 emails/month free
   if (process.env.MAILGUN_API_KEY && process.env.MAILGUN_DOMAIN) {
     return {
@@ -28,101 +34,150 @@ const getFreeEmailConfig = () => {
       }
     };
   }
-  
+
   // SendGrid - 100 emails/day free
   if (process.env.SENDGRID_API_KEY) {
     return {
       host: 'smtp.sendgrid.net',
       port: 587,
       secure: false,
-      auth: {
-        user: 'apikey',
-        pass: process.env.SENDGRID_API_KEY
-      }
+      auth: { user: 'apikey', pass: process.env.SENDGRID_API_KEY }
     };
   }
-  
+
   // Custom SMTP fallback
   if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
     return {
       host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT || 587,
+      port: parseInt(process.env.SMTP_PORT, 10) || 587,
       secure: process.env.SMTP_SECURE === 'true',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-      }
+      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
     };
   }
-  
+
   return null;
 };
 
-const sendOTPEmail = async (email, otp) => {
-  try {
-    const emailConfig = getFreeEmailConfig();
-    
-    if (emailConfig) {
-      const transporter = nodemailer.createTransport(emailConfig);
-      
-      const fromEmail = process.env.FROM_EMAIL || 
-                       process.env.BREVO_EMAIL || 
-                       process.env.SMTP_USER || 
-                       'noreply@pwngrid.com';
-      
-      const mailOptions = {
-        from: fromEmail,
-        to: email,
-        subject: 'PWNGrid - Email Verification OTP',
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="text-align: center; margin-bottom: 30px;">
-              <h1 style="color: #2c3e50; margin: 0;">🛡️ PWNGrid</h1>
-              <p style="color: #7f8c8d; margin: 5px 0;">Cybersecurity Training Platform</p>
-            </div>
-            
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 10px; text-align: center; margin: 20px 0;">
-              <h2 style="color: white; margin: 0 0 15px 0;">Email Verification</h2>
-              <p style="color: #ecf0f1; margin: 0;">Your One-Time Password is:</p>
-              <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; margin: 20px 0;">
-                <h1 style="color: #fff; letter-spacing: 5px; margin: 0; font-size: 32px;">${otp}</h1>
-              </div>
-              <p style="color: #bdc3c7; font-size: 14px; margin: 0;">Valid for 10 minutes</p>
-            </div>
-            
-            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid #3498db;">
-              <h3 style="color: #2c3e50; margin: 0 0 10px 0;">🔐 Security Notice</h3>
-              <ul style="color: #5a6c7d; margin: 0; padding-left: 20px;">
-                <li>Never share this OTP with anyone</li>
-                <li>PWNGrid staff will never ask for your OTP</li>
-                <li>If you didn't request this, ignore this email</li>
-              </ul>
-            </div>
-            
-            <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ecf0f1;">
-              <p style="color: #95a5a6; font-size: 12px; margin: 0;">This is an automated message, please do not reply.</p>
-              <p style="color: #95a5a6; font-size: 12px; margin: 5px 0 0 0;">© 2024 PWNGrid - Cybersecurity Training Platform</p>
-            </div>
-          </div>
-        `
-      };
+// Build the transporter ONCE. The previous implementation created a fresh
+// one per send, which opened a new SMTP connection for every single OTP.
+const emailConfig = getEmailConfig();
+const transporter = emailConfig ? nodemailer.createTransport(emailConfig) : null;
 
-      await transporter.sendMail(mailOptions);
-      console.log(`✅ OTP email sent successfully to ${email}`);
-      return true;
-    }
+const fromAddress =
+  config.email.from ||
+  process.env.BREVO_EMAIL ||
+  process.env.SMTP_USER ||
+  `noreply@${PLATFORM.toLowerCase()}.local`;
 
-    // If no email service is configured, log to console
-    console.log(`\n🔔 === OTP EMAIL (Development Mode) ===`);
-    console.log(`📧 To: ${email}`);
-    console.log(`🔑 OTP: ${otp}`);
-    console.log(`⏰ Valid for: 10 minutes`);
-    console.log(`🔔 === END OTP ===\n`);
-    return true;
-  } catch (error) {
-    console.error('❌ Error sending OTP email:', error);
-    throw error;
+if (!transporter) {
+  console.warn('[Email] No provider configured - emails will be printed to the console.');
+}
+
+/**
+ * Single outbound path. Throws on a real send failure so callers can decide
+ * whether that is fatal (an explicit "resend" request) or not (registration,
+ * which must never fail because email failed).
+ */
+const sendMail = async ({ to, subject, html, consoleFallback }) => {
+  if (!transporter) {
+    console.log(`\n=== EMAIL (no provider configured) ===`);
+    console.log(`To:      ${to}`);
+    console.log(`Subject: ${subject}`);
+    if (consoleFallback) console.log(consoleFallback);
+    console.log(`=== END EMAIL ===\n`);
+    return { sent: false, consoleFallback: true };
   }
+
+  await transporter.sendMail({ from: fromAddress, to, subject, html });
+  console.log(`[Email] Sent "${subject}" to ${to}`);
+  return { sent: true, consoleFallback: false };
 };
 
-module.exports = { sendOTPEmail };
+// --- Shared chrome ---------------------------------------------------------
+
+const shell = (title, body) => `
+  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="text-align: center; margin-bottom: 30px;">
+      <h1 style="color: #2c3e50; margin: 0;">${PLATFORM}</h1>
+      <p style="color: #7f8c8d; margin: 5px 0;">Capture The Flag Platform</p>
+    </div>
+    <div style="background: linear-gradient(135deg, #7e22ce 0%, #4c1d95 100%); padding: 30px; border-radius: 10px; text-align: center; margin: 20px 0;">
+      <h2 style="color: white; margin: 0 0 15px 0;">${title}</h2>
+      ${body}
+    </div>
+    <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ecf0f1;">
+      <p style="color: #95a5a6; font-size: 12px; margin: 0;">This is an automated message, please do not reply.</p>
+    </div>
+  </div>
+`;
+
+const button = (url, label) => `
+  <a href="${url}" style="display: inline-block; background: #ffffff; color: #4c1d95; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: bold; margin: 20px 0;">${label}</a>
+  <p style="color: #ddd6fe; font-size: 12px; margin: 10px 0 0 0; word-break: break-all;">${url}</p>
+`;
+
+// --- Public senders --------------------------------------------------------
+
+const sendOTPEmail = async (email, otp) =>
+  sendMail({
+    to: email,
+    subject: `${PLATFORM} - Verify your email`,
+    consoleFallback: `OTP: ${otp} (valid for 10 minutes)`,
+    html: shell('Email Verification', `
+      <p style="color: #ecf0f1; margin: 0;">Your one-time verification code is:</p>
+      <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; margin: 20px 0;">
+        <h1 style="color: #fff; letter-spacing: 8px; margin: 0; font-size: 32px;">${otp}</h1>
+      </div>
+      <p style="color: #ddd6fe; font-size: 14px; margin: 0;">Valid for 10 minutes. Never share this code with anyone.</p>
+    `)
+  });
+
+const sendPasswordResetEmail = async (email, resetUrl) =>
+  sendMail({
+    to: email,
+    subject: `${PLATFORM} - Reset your password`,
+    consoleFallback: `Reset URL: ${resetUrl} (valid for 10 minutes)`,
+    html: shell('Password Reset', `
+      <p style="color: #ecf0f1; margin: 0;">Use the link below to choose a new password.</p>
+      ${button(resetUrl, 'Reset Password')}
+      <p style="color: #ddd6fe; font-size: 14px; margin: 0;">This link expires in 10 minutes. If you did not request a reset, you can safely ignore this email &mdash; your password has not changed.</p>
+    `)
+  });
+
+const sendPasswordChangedEmail = async (email) =>
+  sendMail({
+    to: email,
+    subject: `${PLATFORM} - Your password was changed`,
+    consoleFallback: 'Password-changed notification',
+    html: shell('Password Changed', `
+      <p style="color: #ecf0f1; margin: 0;">The password on your account was just changed, and all existing sessions were signed out.</p>
+      <p style="color: #ddd6fe; font-size: 14px; margin: 20px 0 0 0;">If this wasn't you, reset your password immediately and contact an administrator.</p>
+    `)
+  });
+
+/**
+ * Sent when somebody tries to register with an address that already has an
+ * account. Registration itself returns the same envelope as a fresh signup,
+ * so this email is the only thing that differs -- the endpoint stays
+ * enumeration-resistant.
+ */
+const sendAccountExistsEmail = async (email, loginUrl) =>
+  sendMail({
+    to: email,
+    subject: `${PLATFORM} - You already have an account`,
+    consoleFallback: `Account already exists. Login: ${loginUrl}`,
+    html: shell('Account Already Exists', `
+      <p style="color: #ecf0f1; margin: 0;">Someone just tried to sign up with this email address, but an account already exists.</p>
+      ${button(loginUrl, 'Sign In')}
+      <p style="color: #ddd6fe; font-size: 14px; margin: 0;">If you've forgotten your password, use the "Forgot password?" link on the sign-in page.</p>
+    `)
+  });
+
+module.exports = {
+  sendMail,
+  sendOTPEmail,
+  sendPasswordResetEmail,
+  sendPasswordChangedEmail,
+  sendAccountExistsEmail,
+  isEmailConfigured: () => Boolean(transporter)
+};

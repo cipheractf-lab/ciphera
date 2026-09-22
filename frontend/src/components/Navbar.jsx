@@ -13,7 +13,6 @@ const navLinks = [
   { path: '/challenges', label: 'Challenges', auth: true },
   
   { path: '/scoreboard', label: 'Leaderboard', auth: true },
-  { path: '/event-status', label: 'Event Status', auth: false },
   { path: '/my-team', label: 'Teams', auth: true },
   { path: '/contact', label: 'Contact', auth: false },
 ];
@@ -21,7 +20,6 @@ const navLinks = [
 const adminLinks = [
   { path: '/admin', label: 'Dashboard' },
   { path: '/admin/configuration', label: 'Configuration' },
-  { path: '/admin/event-control', label: 'Event Control' },
   { path: '/admin/create-user', label: 'Create User' },
   { path: '/admin/create-team', label: 'Create Team' },
   { path: '/admin/categories', label: 'Categories' },

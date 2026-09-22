@@ -43,9 +43,7 @@ router.post('/full-platform', protect, authorize('admin'), async (req, res) => {
                             stats.noticesDeleted + stats.blogsDeleted +
                             stats.tutorialsDeleted + stats.contactsDeleted +
                             stats.newslettersDeleted + stats.loginLogsDeleted +
-                            stats.competitionsDeleted + stats.timersDeleted +
-                            stats.eventsDeleted + stats.eventParticipationsDeleted +
-                            stats.eventStatesDeleted + stats.registrationsDeleted
+                            stats.registrationsDeleted
       }
     });
 

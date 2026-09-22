@@ -229,7 +229,6 @@ app.use('/api/notices', noticeRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/configuration', configurationRoutes);
 app.use('/api/r-submission', realtimeRoutes);
-app.use('/api/event-control', require('./routes/eventControl'));
 app.use('/api/v1/scoreboard', scoreboardRoutes);
 app.use('/api/awards', require('./routes/awards'));
 app.use('/api/admin/reset', adminResetRoutes);
@@ -252,8 +251,25 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve static files from uploads directory with proper security headers
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Serve static files from uploads directory with proper security headers.
+//
+// IMPORTANT: this must NOT be a blanket `/uploads` mount. Challenge files live
+// under uploads/challenges/<challengeId>/<filename> and are meant to be gated
+// by GET /api/challenges/:challengeId/download/:filename (routes/challenges.js),
+// which requires login AND checks challenge.state === 'visible'. A blanket
+// static mount bypassed both checks -- anyone who learned a filename (leaked
+// via a writeup, a shared link, admin preview, etc.) could download a
+// draft/hidden challenge's files with no auth at all.
+//
+// Only mount subdirectories that are genuinely meant to be public and have no
+// dedicated serving route of their own:
+//   - blog-images: blog posts are public (GET /api/blog has no auth) and
+//     there is no dedicated image route.
+// config/ and team-avatars/ already have their own scoped, traversal-guarded
+// routes (GET /api/configuration/logo/:filename, GET /api/teams/avatar/:filename)
+// that the frontend actually uses, so they are intentionally left unmounted here.
+// challenges/ is intentionally never mounted here -- see above.
+app.use('/uploads/blog-images', express.static(path.join(__dirname, 'uploads', 'blog-images')));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -391,63 +407,6 @@ const scheduleMongoReconnect = () => {
   }, mongoRetryDelayMs);
 };
 
-const initializeEventState = async () => {
-  try {
-    const EventState = require('./models/EventState');
-    const { refreshEventStateCache } = require('./middleware/eventState');
-
-    const eventState = await EventState.getEventState();
-    const stateObj = {
-      status: eventState.status,
-      startedAt: eventState.startedAt,
-      endedAt: eventState.endedAt,
-      freezeAt: eventState.freezeAt,
-      isPaused: eventState.isPaused,
-      pausedAt: eventState.pausedAt,
-      pausedBy: eventState.pausedBy,
-      resumedAt: eventState.resumedAt,
-      resumedBy: eventState.resumedBy,
-      startedBy: eventState.startedBy,
-      endedBy: eventState.endedBy,
-      customMessage: eventState.customMessage
-    };
-
-    await refreshEventStateCache(stateObj);
-    console.log(`[EventState] Initialized: status=${eventState.status}`);
-  } catch (err) {
-    if (err.code === 11000) {
-      try {
-        const EventState = require('./models/EventState');
-        const { refreshEventStateCache } = require('./middleware/eventState');
-        const FIXED_ID = '000000000000000000000001';
-        const eventState = await EventState.findById(FIXED_ID);
-        if (eventState) {
-          const stateObj = {
-            status: eventState.status,
-            startedAt: eventState.startedAt,
-            endedAt: eventState.endedAt,
-            freezeAt: eventState.freezeAt,
-            isPaused: eventState.isPaused,
-            pausedAt: eventState.pausedAt,
-            pausedBy: eventState.pausedBy,
-            resumedAt: eventState.resumedAt,
-            resumedBy: eventState.resumedBy,
-            startedBy: eventState.startedBy,
-            endedBy: eventState.endedBy,
-            customMessage: eventState.customMessage
-          };
-          await refreshEventStateCache(stateObj);
-          console.log(`[EventState] Initialized (existing): status=${eventState.status}`);
-        }
-      } catch (retryErr) {
-        console.error('[EventState] Error fetching existing event state:', retryErr);
-      }
-    } else {
-      console.error('[EventState] Error initializing event state:', err);
-    }
-  }
-};
-
 const connectToMongo = async () => {
   if (mongoose.connection.readyState === 1 || mongoose.connection.readyState === 2) {
     return;
@@ -457,7 +416,6 @@ const connectToMongo = async () => {
     await mongoose.connect(MONGODB_URI, mongoOptions);
     console.log('MongoDB connected successfully with enhanced connection pooling');
     console.log(`Connection pool: min=${mongoOptions.minPoolSize}, max=${mongoOptions.maxPoolSize}`);
-    await initializeEventState();
   } catch (err) {
     console.error('MongoDB connection error:', err.message);
 
@@ -470,7 +428,6 @@ const connectToMongo = async () => {
 
         await mongoose.connect(memoryUri, mongoOptions);
         console.log('[MongoDB] In-memory MongoDB connected');
-        await initializeEventState();
         return;
       } catch (memoryErr) {
         console.error('[MongoDB] In-memory fallback failed:', memoryErr.message);

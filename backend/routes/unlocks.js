@@ -5,7 +5,6 @@ const User = require('../models/User');
 const Team = require('../models/Team');
 const Challenge = require('../models/Challenge');
 const { protect } = require('../middleware/auth');
-const { checkEventNotEnded } = require('../middleware/eventState');
 
 /**
  * Unlocks API
@@ -16,7 +15,7 @@ const { checkEventNotEnded } = require('../middleware/eventState');
 // @route   POST /api/unlocks
 // @desc    Unlock a hint by spending points
 // @access  Private
-router.post('/', protect, checkEventNotEnded, async (req, res) => {
+router.post('/', protect, async (req, res) => {
   const mongoose = require('mongoose');
   const session = await mongoose.startSession();
   
