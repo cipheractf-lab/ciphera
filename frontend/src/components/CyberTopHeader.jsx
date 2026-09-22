@@ -1,7 +1,19 @@
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Users, ShieldAlert, LogOut, LogIn, ChevronDown, Sparkles } from 'lucide-react';
+import {
+  User,
+  Users,
+  ShieldAlert,
+  LogOut,
+  LogIn,
+  ChevronDown,
+  Sparkles,
+  Maximize,
+  Minimize,
+  Sun,
+  Moon,
+} from 'lucide-react';
 import AuthContext from '../context/AuthContext';
 import NotificationCenter from './NotificationCenter';
 import './CyberTopHeader.css';
@@ -9,11 +21,46 @@ import './CyberTopHeader.css';
 export default function CyberTopHeader() {
   const { isAuthenticated, user, logout } = useContext(AuthContext);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('ciphera_theme') || 'dark';
+  });
   const profileMenuRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
 
   const isAdmin = user?.role === 'admin' || user?.role === 'superadmin';
+
+  // Apply theme to document
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('ciphera_theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
+  // Fullscreen listener
+  useEffect(() => {
+    const onFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', onFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', onFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((err) => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+      });
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -40,14 +87,33 @@ export default function CyberTopHeader() {
   return (
     <header className="cyber-top-header" aria-label="Top Utility Bar">
       <div className="cyber-top-header-inner">
-        {/* Left Side: System Telemetry / Breadcrumb Indicator */}
-        <div className="cyber-top-status-indicator">
-          <span className="cyber-top-pulse-beacon" />
-          <span className="cyber-top-status-text">NODE 01 // READY</span>
-        </div>
+        {/* Spacer on the left to push all utility actions to the top right */}
+        <div className="cyber-top-spacer" />
 
-        {/* Right Side: Notices (NotificationCenter) + Profile Capsule */}
+        {/* Right Side: Fullscreen, Theme Toggle, Notices, and Profile */}
         <div className="cyber-top-actions">
+          {/* Full Screen View Toggle */}
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            className="cyber-top-icon-btn"
+            title={isFullscreen ? 'Exit Full Screen' : 'Full Screen View'}
+            aria-label={isFullscreen ? 'Exit Full Screen' : 'Full Screen View'}
+          >
+            {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
+          </button>
+
+          {/* Theme Toggle */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="cyber-top-icon-btn"
+            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            aria-label="Toggle Theme"
+          >
+            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+
           {isAuthenticated ? (
             <>
               {/* Notices / Notification Bell */}

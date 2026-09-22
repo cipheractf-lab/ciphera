@@ -256,17 +256,6 @@ export default function CyberSidebar() {
               )}
             </ul>
           </nav>
-
-          {/* Bottom: Node Status (Profile moved to Top-Right Header) */}
-          <div className="cyber-rail-footer">
-            <div className="cyber-rail-node-status">
-              <span className="cyber-rail-node-pulse" />
-              <div className="cyber-rail-node-text">
-                <span className="cyber-rail-node-title">ARENA GATEWAY</span>
-                <span className="cyber-rail-node-sub">ONLINE // TLS 1.3</span>
-              </div>
-            </div>
-          </div>
         </div>
       </aside>
 

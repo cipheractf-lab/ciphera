@@ -67,6 +67,33 @@
   --radius-2xl: 24px;
 }
 
+html[data-theme='light'] {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --bg-tertiary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-elevated: #f8fafc;
+  --bg-hover: #e2e8f0;
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-disabled: #94a3b8;
+
+  --border-primary: #e2e8f0;
+  --border-secondary: #cbd5e1;
+
+  --cyber-rail-card-bg: rgba(255, 255, 255, 0.95);
+  --cyber-rail-text: #0f172a;
+  --cyber-rail-text-muted: #64748b;
+}
+
+html[data-theme='light'] body::before {
+  background-image: 
+    linear-gradient(rgba(124, 58, 237, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124, 58, 237, 0.04) 1px, transparent 1px);
+}
+
 * {
   margin: 0;
   padding: 0;

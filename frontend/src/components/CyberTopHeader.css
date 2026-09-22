@@ -26,52 +26,35 @@
   padding: 0 clamp(1rem, 2vw, 2.5rem);
 }
 
+.cyber-top-spacer {
+  flex: 1;
+}
+
 /* --------------------------------------------------------------------------
-   Left: Telemetry / Status Beacon
+   Action Buttons (Fullscreen, Theme Toggle, Notices, Profile)
    -------------------------------------------------------------------------- */
 
-.cyber-top-status-indicator {
-  display: inline-flex;
+.cyber-top-icon-btn {
+  display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 5px 12px;
-  border-radius: 9999px;
-  background: rgba(168, 85, 247, 0.05);
-  border: 1px solid rgba(168, 85, 247, 0.15);
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
-  color: #A8A3AD;
-  user-select: none;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(20, 20, 28, 0.6);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  color: #c4b5fd;
+  cursor: pointer;
+  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.cyber-top-pulse-beacon {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #22c55e;
-  box-shadow: 0 0 10px #22c55e;
-  animation: cyber-top-beacon-pulse 2s infinite ease-in-out;
+.cyber-top-icon-btn:hover {
+  background: rgba(124, 58, 237, 0.18);
+  border-color: rgba(168, 85, 247, 0.5);
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.35);
+  transform: translateY(-1px);
 }
-
-@keyframes cyber-top-beacon-pulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.3);
-    opacity: 0.65;
-  }
-}
-
-.cyber-top-status-text {
-  font-weight: 600;
-}
-
-/* --------------------------------------------------------------------------
-   Right: Actions (Notices + Profile)
-   -------------------------------------------------------------------------- */
 
 .cyber-top-actions {
   display: flex;
@@ -373,10 +356,6 @@
     height: 56px;
   }
 
-  .cyber-top-status-indicator {
-    display: none;
-  }
-
   .cyber-top-user-info {
     display: none;
   }
@@ -385,3 +364,58 @@
     padding: 3px;
   }
 }
+
+/* --------------------------------------------------------------------------
+   Light Theme Adaptations
+   -------------------------------------------------------------------------- */
+
+html[data-theme='light'] .cyber-top-header {
+  background: rgba(255, 255, 255, 0.88);
+  border-bottom: 1px solid rgba(124, 58, 237, 0.15);
+}
+
+html[data-theme='light'] .cyber-top-icon-btn {
+  background: rgba(241, 245, 249, 0.9);
+  border-color: rgba(124, 58, 237, 0.22);
+  color: #7c3aed;
+}
+
+html[data-theme='light'] .cyber-top-icon-btn:hover {
+  background: rgba(124, 58, 237, 0.12);
+  border-color: rgba(124, 58, 237, 0.45);
+  color: #6d28d9;
+}
+
+html[data-theme='light'] .cyber-top-profile-btn {
+  background: rgba(241, 245, 249, 0.9);
+  border-color: rgba(124, 58, 237, 0.25);
+  color: #0f172a;
+}
+
+html[data-theme='light'] .cyber-top-username {
+  color: #0f172a;
+}
+
+html[data-theme='light'] .cyber-top-popover {
+  background: rgba(255, 255, 255, 0.98);
+  border-color: rgba(124, 58, 237, 0.25);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12), 0 0 25px rgba(124, 58, 237, 0.08);
+}
+
+html[data-theme='light'] .cyber-top-popover-name {
+  color: #0f172a;
+}
+
+html[data-theme='light'] .cyber-top-popover-email {
+  color: #64748b;
+}
+
+html[data-theme='light'] .cyber-top-popover-item {
+  color: #334155;
+}
+
+html[data-theme='light'] .cyber-top-popover-item:hover {
+  background: rgba(124, 58, 237, 0.08);
+  color: #6d28d9;
+}
+
