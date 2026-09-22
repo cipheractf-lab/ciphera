@@ -87,9 +87,6 @@ function AdminStatistics() {
     return (
       <div className="stats-page-shell">
         <div className="stats-page-bg" aria-hidden="true" />
-        <div className="stats-orb stats-orb--primary" aria-hidden="true" />
-        <div className="stats-orb stats-orb--secondary" aria-hidden="true" />
-        <div className="stats-orb stats-orb--tertiary" aria-hidden="true" />
         <div className="stats-page"><div className="stats-loading">Loading statistics...</div></div>
       </div>
     );
@@ -99,9 +96,6 @@ function AdminStatistics() {
     return (
       <div className="stats-page-shell">
         <div className="stats-page-bg" aria-hidden="true" />
-        <div className="stats-orb stats-orb--primary" aria-hidden="true" />
-        <div className="stats-orb stats-orb--secondary" aria-hidden="true" />
-        <div className="stats-orb stats-orb--tertiary" aria-hidden="true" />
         <div className="stats-page"><div className="stats-error">{error}</div></div>
       </div>
     );
@@ -110,9 +104,6 @@ function AdminStatistics() {
   return (
     <div className="stats-page-shell">
       <div className="stats-page-bg" aria-hidden="true" />
-      <div className="stats-orb stats-orb--primary" aria-hidden="true" />
-      <div className="stats-orb stats-orb--secondary" aria-hidden="true" />
-      <div className="stats-orb stats-orb--tertiary" aria-hidden="true" />
 
       <div className="stats-page">
       <h1>Statistics</h1>

@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { MapPin, Mail, Phone, MessageSquare, Send, CheckCircle, AlertCircle } from 'lucide-react';
 import axios from 'axios';
 import { Loading } from '../components/ui';
-import { GlowingEffect } from '@/components/ui/glowing-effect';
 import { useSiteConfig } from '../context/SiteConfigContext';
 import './ContactUs.css';
 
@@ -50,15 +49,12 @@ function ContactUs() {
   return (
     <div className="htb-contact-container">
       <div className="htb-contact-grid-bg" />
-      <div className="htb-contact-orb htb-contact-orb--primary" aria-hidden="true" />
-      <div className="htb-contact-orb htb-contact-orb--secondary" aria-hidden="true" />
-      <div className="htb-contact-orb htb-contact-orb--tertiary" aria-hidden="true" />
       
       <motion.div 
         className="htb-contact-header"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.5 }}
       >
         <h1>Contact <span className="htb-highlight">Us</span></h1>
         <p className="htb-contact-subtitle">
@@ -70,27 +66,24 @@ function ContactUs() {
         className="htb-contact-main"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
+        transition={{ duration: 0.5, delay: 0.15 }}
       >
         <div className="htb-contact-grid">
           {/* Contact Info Cards */}
           <div className="htb-info-cards">
             <div className="htb-info-card-shell">
-              <GlowingEffect
-                spread={32}
-                glow={true}
-                disabled={false}
-                proximity={82}
-                inactiveZone={0.18}
-                borderWidth={2}
-              />
               <motion.div 
                 className="htb-info-card"
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.3 }}
+                whileHover={{ scale: 1.01 }}
+                transition={{ duration: 0.2 }}
               >
                 <div className="htb-info-content">
-                  <h3><MapPin size={18} /> Location</h3>
+                  <div className="htb-info-header">
+                    <div className="htb-info-icon-box">
+                      <MapPin size={18} />
+                    </div>
+                    <h3>Location</h3>
+                  </div>
                   <p>Sri Eshwar College of Engineering</p>
                   <p>Kinathukadavu, Coimbatore</p>
                   <p>Tamil Nadu, India</p>
@@ -99,21 +92,18 @@ function ContactUs() {
             </div>
 
             <div className="htb-info-card-shell">
-              <GlowingEffect
-                spread={32}
-                glow={true}
-                disabled={false}
-                proximity={82}
-                inactiveZone={0.18}
-                borderWidth={2}
-              />
               <motion.div 
                 className="htb-info-card"
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.3, delay: 0.05 }}
+                whileHover={{ scale: 1.01 }}
+                transition={{ duration: 0.2, delay: 0.04 }}
               >
                 <div className="htb-info-content">
-                  <h3><Mail size={18} /> Email</h3>
+                  <div className="htb-info-header">
+                    <div className="htb-info-icon-box">
+                      <Mail size={18} />
+                    </div>
+                    <h3>Email</h3>
+                  </div>
                   <p>ciphera@gmail.com</p>
                   <p className="htb-info-note">We'll respond within 24 hours</p>
                 </div>
@@ -121,21 +111,18 @@ function ContactUs() {
             </div>
 
             <div className="htb-info-card-shell">
-              <GlowingEffect
-                spread={32}
-                glow={true}
-                disabled={false}
-                proximity={82}
-                inactiveZone={0.18}
-                borderWidth={2}
-              />
               <motion.div 
                 className="htb-info-card"
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.3, delay: 0.1 }}
+                whileHover={{ scale: 1.01 }}
+                transition={{ duration: 0.2, delay: 0.08 }}
               >
                 <div className="htb-info-content">
-                  <h3><Phone size={18} /> Phone</h3>
+                  <div className="htb-info-header">
+                    <div className="htb-info-icon-box">
+                      <Phone size={18} />
+                    </div>
+                    <h3>Phone</h3>
+                  </div>
                   <p>+91 63819 26572</p>
                   <p className="htb-info-note">Mon-Fri, 9AM - 6PM IST</p>
                 </div>
@@ -143,22 +130,19 @@ function ContactUs() {
             </div>
 
             <div className="htb-info-card-shell">
-              <GlowingEffect
-                spread={32}
-                glow={true}
-                disabled={false}
-                proximity={82}
-                inactiveZone={0.18}
-                borderWidth={2}
-              />
               <motion.div 
                 className="htb-info-card"
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.3, delay: 0.15 }}
+                whileHover={{ scale: 1.01 }}
+                transition={{ duration: 0.2, delay: 0.12 }}
               >
                 <div className="htb-info-content">
-                  <h3><MessageSquare size={18} /> Community</h3>
-                  <p>Discord: {eventName}</p>
+                  <div className="htb-info-header">
+                    <div className="htb-info-icon-box">
+                      <MessageSquare size={18} />
+                    </div>
+                    <h3>Community</h3>
+                  </div>
+                  <p>Discord: {eventName || 'Ciphera'}</p>
                   <p className="htb-info-note">Join our active community</p>
                 </div>
               </motion.div>
@@ -167,20 +151,12 @@ function ContactUs() {
 
           {/* Contact Form */}
           <div className="htb-contact-form-shell">
-            <GlowingEffect
-              spread={38}
-              glow={true}
-              disabled={false}
-              proximity={92}
-              inactiveZone={0.12}
-              borderWidth={2}
-            />
             <motion.form 
               onSubmit={handleSubmit} 
               className="htb-contact-form"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
+              transition={{ duration: 0.5, delay: 0.25 }}
             >
               <div className="htb-form-header">
                 <h2>Send us a Message</h2>
@@ -259,8 +235,8 @@ function ContactUs() {
                 type="submit"
                 className="htb-submit-btn"
                 disabled={isSubmitting}
-                whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
-                whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
+                whileHover={{ scale: isSubmitting ? 1 : 1.01 }}
+                whileTap={{ scale: isSubmitting ? 1 : 0.99 }}
               >
                 {isSubmitting ? (
                   <>
@@ -269,7 +245,7 @@ function ContactUs() {
                   </>
                 ) : (
                   <>
-                    <Send size={20} />
+                    <Send size={18} />
                     <span>Send Message</span>
                   </>
                 )}

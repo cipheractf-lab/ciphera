@@ -23,7 +23,7 @@
 .htb-submissions-container {
   position: relative;
   min-height: 100vh;
-  background: linear-gradient(180deg, rgba(8, 4, 24, 0.95) 0%, rgba(0, 0, 0, 1) 100%);
+  background: #050506;
   color: var(--htb-text-primary);
   width: 100%;
   padding: 0.85rem 1.5rem 3rem;
@@ -33,46 +33,12 @@
 .htb-submissions-grid-bg {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(180deg, rgba(107, 33, 168, 0.22) 0%, rgba(59, 7, 100, 0.16) 34%, rgba(0, 0, 0, 0.92) 100%),
-    radial-gradient(circle at 15% 18%, rgba(168, 85, 247, 0.18), transparent 24%),
-    radial-gradient(circle at 82% 12%, rgba(88, 28, 135, 0.2), transparent 28%),
-    radial-gradient(circle at 72% 78%, rgba(76, 29, 149, 0.14), transparent 30%);
+  background-image: 
+    linear-gradient(to right, rgba(41, 32, 45, 0.22) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(41, 32, 45, 0.22) 1px, transparent 1px);
+  background-size: 40px 40px;
   pointer-events: none;
   z-index: 0;
-}
-
-.htb-submissions-orb {
-  position: absolute;
-  border-radius: 9999px;
-  pointer-events: none;
-  filter: blur(110px);
-  opacity: 0.75;
-  z-index: 0;
-}
-
-.htb-submissions-orb--primary {
-  top: 8%;
-  left: 5%;
-  width: 18rem;
-  height: 18rem;
-  background: rgba(168, 85, 247, 0.24);
-}
-
-.htb-submissions-orb--secondary {
-  top: 24%;
-  right: 10%;
-  width: 22rem;
-  height: 22rem;
-  background: rgba(88, 28, 135, 0.2);
-}
-
-.htb-submissions-orb--tertiary {
-  bottom: 8%;
-  left: 34%;
-  width: 16rem;
-  height: 16rem;
-  background: rgba(59, 7, 100, 0.24);
 }
 
 /* Header */

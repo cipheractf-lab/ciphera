@@ -4,59 +4,67 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Colors */
-  --bg-primary: #05010b;
-  --bg-secondary: #0a0514;
-  --bg-tertiary: #140824;
-  --bg-elevated: #1b0d30;
-  --bg-hover: #24103d;
+  /* Mandatory Ciphera Color Palette */
+  --bg-primary: #050506;      /* Main Deep Obsidian Background */
+  --bg-secondary: #080A0F;    /* Deep Charcoal (Sidebar, navigation, headers) */
+  --bg-tertiary: #000000;     /* Pure Black Card & Panel Surface */
+  --bg-card: #000000;         /* Pure Black Card Surface */
+  --bg-elevated: #0A0D14;     /* Elevated card surface */
+  --bg-hover: #10141D;        /* Card hover surface */
   
-  --primary: #a855f7;
-  --primary-hover: #9333ea;
-  --primary-glow: rgba(168, 85, 247, 0.4);
+  --primary: #7C3AED;         /* Electric Violet Primary Brand */
+  --primary-hover: #9333EA;   /* Bright Violet Primary Hover */
+  --primary-glow: rgba(124, 58, 237, 0.22);
   
-  --success: #00cb70;
-  --success-glow: rgba(0, 203, 112, 0.4);
+  --accent-cyan: #7C3AED;     /* Violet Accent */
+  --accent-cyan-glow: rgba(124, 58, 237, 0.22);
   
-  --warning: #ffa800;
-  --warning-glow: rgba(255, 168, 0, 0.4);
+  --success: #22C55E;         /* Emerald (Easy, correct flag, completed) */
+  --success-glow: rgba(34, 197, 94, 0.25);
   
-  --danger: #ff0000;
-  --danger-glow: rgba(255, 0, 0, 0.4);
+  --warning: #F59E0B;         /* Amber (Medium difficulty, warnings) */
+  --warning-glow: rgba(245, 158, 11, 0.25);
   
-  --info: #c084fc;
+  --danger: #EF4444;          /* Crimson (Hard difficulty, incorrect, errors) */
+  --danger-glow: rgba(239, 68, 68, 0.25);
   
-  --text-primary: #f9f5ff;
-  --text-secondary: #d8c8ff;
-  --text-tertiary: #a78bca;
-  --text-disabled: #6b4fa0;
+  --info: #7C3AED;            /* Info / technical indicator */
   
-  --border-primary: #2e1065;
-  --border-secondary: #1b0d30;
-  --border-focus: #a855f7;
+  --text-primary: #F5F1EA;    /* Warm White (Titles, headings, challenge titles) */
+  --text-secondary: #A8A3AD;  /* Soft Gray (Descriptions, supporting text) */
+  --text-muted: #6F6973;      /* Dark Gray (Placeholders, disabled, metadata) */
+  --text-disabled: #6F6973;
   
-  /* Fonts */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
-  --font-heading: 'Space Grotesk', 'Inter', sans-serif;
-  --font-display: 'Orbitron', 'Space Grotesk', 'Inter', sans-serif;
+  --border-primary: #1E2535;  /* Clean Slate Dark Border */
+  --border-secondary: #141924;
+  --border-focus: #7C3AED;
+  --border-hover: #7C3AED;
+  
+  /* Unified Fonts - Inter */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-cyber: 'Orbitron', 'Inter', sans-serif;
   
   /* Transitions */
-  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 140ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: 360ms cubic-bezier(0.16, 1, 0.3, 1);
   
   /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 20px rgba(168, 85, 247, 0.3);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 24px rgba(124, 58, 237, 0.18);
   
   /* Border Radius */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 12px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl: 24px;
 }
 
 * {
@@ -88,8 +96,8 @@ body::before {
   width: 100%;
   height: 100%;
   background-image: 
-    linear-gradient(rgba(168, 85, 247, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(168, 85, 247, 0.035) 1px, transparent 1px);
+    linear-gradient(rgba(124, 58, 237, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124, 58, 237, 0.025) 1px, transparent 1px);
   background-size: 50px 50px;
   pointer-events: none;
   z-index: 0;
@@ -320,6 +328,44 @@ input, textarea, select {
   animation: fadeIn 0.3s ease-out;
 }
 
+/* Ciphera Futuristic Brand Wordmark - Crisp, Clean, Zero-Glow Matching Reference */
+.ciphera-brand-wordmark {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-cyber), 'Orbitron', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  user-select: none;
+}
+
+/* Chrome Silver for "CIPHE" - Smooth Top-to-Bottom Gradient, No Glow */
+.ciphera-chrome-silver {
+  background: linear-gradient(
+    180deg,
+    #FFFFFF 0%,
+    #F1F5F9 35%,
+    #CBD5E1 70%,
+    #94A3B8 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Vivid Cyber Purple Gradient for "RA" - Pronounced Top Highlight to Deep Cyber Purple */
+.ciphera-chrome-violet {
+  background: linear-gradient(
+    180deg,
+    #E9D5FF 0%,
+    #C084FC 22%,
+    #9333EA 52%,
+    #6B21A8 80%,
+    #3B0764 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 /* Responsive utilities */
 @media (max-width: 768px) {
   h1 { font-size: 2rem; }
@@ -342,3 +388,18 @@ input, textarea, select {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Suppress all cyber grid pattern backgrounds for clean solid dark UI */
+.challenges-page-bg,
+.scoreboard-page-bg,
+.htb-contact-grid-bg,
+.htb-notice-grid-bg,
+.htb-team-grid-bg,
+.htb-user-grid-bg,
+.htb-challenge-grid-bg,
+.htb-auth-login-blur-bg,
+.htb-auth-grid-bg,
+.htb-admin-grid-bg {
+  display: none !important;
+}
+

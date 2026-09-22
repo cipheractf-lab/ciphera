@@ -8,7 +8,6 @@ import {
 import axios from 'axios';
 import AuthContext from '../context/AuthContext';
 import { Loading } from '../components/ui';
-import { GlowingEffect } from '@/components/ui/glowing-effect';
 import './AdminSubmissions.css';
 
 function AdminSubmissions() {
@@ -81,9 +80,6 @@ function AdminSubmissions() {
     return (
       <div className="htb-submissions-container">
         <div className="htb-submissions-grid-bg"></div>
-        <div className="htb-submissions-orb htb-submissions-orb--primary" aria-hidden="true" />
-        <div className="htb-submissions-orb htb-submissions-orb--secondary" aria-hidden="true" />
-        <div className="htb-submissions-orb htb-submissions-orb--tertiary" aria-hidden="true" />
         <Loading text="LOADING SUBMISSIONS..." />
       </div>
     );
@@ -92,9 +88,6 @@ function AdminSubmissions() {
   return (
     <div className="htb-submissions-container">
       <div className="htb-submissions-grid-bg"></div>
-      <div className="htb-submissions-orb htb-submissions-orb--primary" aria-hidden="true" />
-      <div className="htb-submissions-orb htb-submissions-orb--secondary" aria-hidden="true" />
-      <div className="htb-submissions-orb htb-submissions-orb--tertiary" aria-hidden="true" />
 
       {!selectedChallenge && (
         <motion.div 
@@ -158,15 +151,6 @@ function AdminSubmissions() {
           >
             {filteredChallenges.map((challenge, idx) => (
               <div key={challenge._id} className="htb-challenge-card-shell">
-                <GlowingEffect
-                  spread={34}
-                  glow={true}
-                  disabled={false}
-                  proximity={86}
-                  inactiveZone={0.16}
-                  borderWidth={2}
-                />
-
                 <motion.div
                   className="htb-challenge-card"
                   initial={{ opacity: 0, y: 20 }}

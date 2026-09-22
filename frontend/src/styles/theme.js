@@ -128,7 +128,7 @@ export const theme = {
   fonts: {
     mono: '"JetBrains Mono", "Fira Code", "Consolas", "Monaco", monospace',
     sans: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", sans-serif',
-    heading: '"Space Grotesk", "Inter", sans-serif',
+    heading: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif',
   },
   
   transitions: {

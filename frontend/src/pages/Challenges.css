@@ -2,50 +2,11 @@
   position: relative;
   min-height: 100vh;
   overflow: hidden;
-  background: linear-gradient(180deg, rgba(8, 4, 24, 0.95) 0%, rgba(0, 0, 0, 1) 100%);
+  background: #050506;
 }
 
 .challenges-page-bg {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(180deg, rgba(107, 33, 168, 0.22) 0%, rgba(59, 7, 100, 0.16) 34%, rgba(0, 0, 0, 0.92) 100%),
-    radial-gradient(circle at 15% 18%, rgba(168, 85, 247, 0.18), transparent 24%),
-    radial-gradient(circle at 82% 12%, rgba(88, 28, 135, 0.2), transparent 28%),
-    radial-gradient(circle at 72% 78%, rgba(76, 29, 149, 0.14), transparent 30%);
-  pointer-events: none;
-}
-
-.challenges-orb {
-  position: absolute;
-  border-radius: 9999px;
-  pointer-events: none;
-  filter: blur(110px);
-  opacity: 0.75;
-}
-
-.challenges-orb--primary {
-  top: 8%;
-  left: 5%;
-  width: 18rem;
-  height: 18rem;
-  background: rgba(168, 85, 247, 0.24);
-}
-
-.challenges-orb--secondary {
-  top: 24%;
-  right: 10%;
-  width: 22rem;
-  height: 22rem;
-  background: rgba(88, 28, 135, 0.2);
-}
-
-.challenges-orb--tertiary {
-  bottom: 8%;
-  left: 34%;
-  width: 16rem;
-  height: 16rem;
-  background: rgba(59, 7, 100, 0.24);
+  display: none;
 }
 
 .challenges-page {
@@ -84,14 +45,14 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.55rem 0.95rem;
-  border: 1px solid rgba(139, 92, 246, 0.28);
+  padding: 0.5rem 0.95rem;
+  border: 1px solid var(--border-primary, #1E2535);
   border-radius: 9999px;
-  background: rgba(46, 16, 101, 0.42);
-  color: #c4b5fd;
+  background: #000000;
+  color: #7C3AED;
   font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   backdrop-filter: blur(20px);
 }
@@ -101,20 +62,21 @@
   align-items: center;
   gap: 0.8rem;
   margin: 1rem 0 0.6rem;
-  color: #f8fafc;
+  font-family: var(--font-sans);
+  color: #F5F1EA;
   font-size: clamp(2rem, 4vw, 3.25rem);
   font-weight: 800;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.03em;
 }
 
 .title-icon {
-  color: #a855f7;
+  color: #7C3AED;
 }
 
 .page-description {
   max-width: 42rem;
   margin: 0;
-  color: rgba(196, 181, 253, 0.92);
+  color: #A8A3AD;
   font-size: 1rem;
   line-height: 1.75;
 }
@@ -131,10 +93,10 @@
   gap: 0.85rem;
   min-width: 152px;
   padding: 0.9rem 1.05rem;
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 1.15rem;
-  background: linear-gradient(180deg, rgba(17, 24, 39, 0.42) 0%, rgba(15, 23, 42, 0.2) 100%);
-  box-shadow: 0 18px 40px rgba(2, 6, 23, 0.28);
+  border: 1px solid var(--border-primary, #1E2535);
+  border-radius: 14px;
+  background: #000000;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(22px);
 }
 
@@ -142,14 +104,14 @@
   width: 2.25rem;
   height: 2.25rem;
   padding: 0.5rem;
-  border-radius: 0.85rem;
-  background: rgba(168, 85, 247, 0.16);
-  color: #c084fc;
+  border-radius: 10px;
+  background: rgba(124, 58, 237, 0.14);
+  color: #7C3AED;
 }
 
 .stat-number {
   display: block;
-  color: #f8fafc;
+  color: #F5F1EA;
   font-size: 1.2rem;
   font-weight: 700;
   line-height: 1;
@@ -158,7 +120,7 @@
 .stat-label {
   display: block;
   margin-top: 0.2rem;
-  color: rgba(196, 181, 253, 0.8);
+  color: #A8A3AD;
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.18em;
@@ -170,9 +132,10 @@
 }
 
 .filters-card {
-  border: 1px solid rgba(139, 92, 246, 0.18);
-  background: linear-gradient(180deg, rgba(17, 24, 39, 0.58) 0%, rgba(15, 23, 42, 0.38) 100%);
-  box-shadow: 0 20px 48px rgba(2, 6, 23, 0.3);
+  border: 1px solid var(--border-primary, #1E2535);
+  border-radius: 16px;
+  background: #000000;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(24px);
 }
 
@@ -189,7 +152,7 @@
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 0.7rem;
-  color: rgba(226, 232, 240, 0.86);
+  color: #A8A3AD;
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -197,8 +160,14 @@
 }
 
 .search-input {
-  background: rgba(10, 14, 26, 0.62) !important;
-  border-color: rgba(139, 92, 246, 0.2) !important;
+  background: #000000 !important;
+  border-color: var(--border-primary, #1E2535) !important;
+  color: #F5F1EA !important;
+}
+
+.search-input:focus {
+  border-color: #7C3AED !important;
+  box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.25) !important;
 }
 
 .filter-buttons {
@@ -209,36 +178,36 @@
 
 .filter-btn {
   padding: 0.72rem 1rem;
-  border: 1px solid rgba(139, 92, 246, 0.18);
-  border-radius: 1.8rem;
-  background: rgba(49, 18, 87, 0.24);
-  color: rgba(226, 232, 240, 0.82);
+  border: 1px solid var(--border-primary, #1E2535);
+  border-radius: 12px;
+  background: #000000;
+  color: #A8A3AD;
   font-size: 0.86rem;
   font-weight: 500;
   cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  transition: all 180ms ease;
 }
 
 .filter-btn:hover,
 .filter-btn:focus-visible {
-  border-color: rgba(192, 132, 252, 0.55);
-  background: rgba(88, 28, 135, 0.42);
-  color: #f8fafc;
+  border-color: rgba(124, 58, 237, 0.4);
+  background: var(--bg-elevated, #151A26);
+  color: #F5F1EA;
   transform: translateY(-1px);
   outline: none;
 }
 
 .filter-btn.active {
-  border-color: rgba(192, 132, 252, 0.78);
-  background: rgba(107, 33, 168, 0.4);
-  color: #f5f3ff;
-  box-shadow: inset 0 0 0 1px rgba(216, 180, 254, 0.12);
+  border-color: #7C3AED;
+  background: rgba(124, 58, 237, 0.18);
+  color: #F5F1EA;
+  box-shadow: inset 0 0 0 1px rgba(124, 58, 237, 0.2);
 }
 
 .filter-row {
   display: grid;
-  grid-template-columns: minmax(180px, 240px);
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
 }
 
 .filter-group {
@@ -249,18 +218,24 @@
 .filter-select {
   width: 100%;
   padding: 0.82rem 0.95rem;
-  border: 1px solid rgba(139, 92, 246, 0.18);
-  border-radius: 0.9rem;
-  background: rgba(10, 14, 26, 0.62);
-  color: #f8fafc;
+  border: 1px solid var(--border-primary, #1E2535);
+  border-radius: 10px;
+  background: #000000;
+  color: #F5F1EA;
   font-size: 0.92rem;
   cursor: pointer;
 }
 
+.filter-select option {
+  background: #000000;
+  color: #F5F1EA;
+  padding: 8px 12px;
+}
+
 .filter-select:focus {
   outline: none;
-  border-color: rgba(192, 132, 252, 0.65);
-  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.12);
+  border-color: #7C3AED;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
 }
 
 .results-info {
@@ -269,7 +244,7 @@
 }
 
 .results-count {
-  color: rgba(196, 181, 253, 0.82);
+  color: #6F6973;
   font-size: 0.82rem;
   font-weight: 600;
   letter-spacing: 0.1em;
@@ -278,15 +253,39 @@
 
 .challenges-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.1rem;
   align-items: stretch;
+}
+
+@media (min-width: 1400px) {
+  .challenges-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1399px) {
+  .challenges-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .challenges-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 639px) {
+  .challenges-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .challenge-card-shell {
   position: relative;
   height: 100%;
-  border-radius: 1.4rem;
+  border-radius: 16px;
 }
 
 .challenge-card {
@@ -296,41 +295,29 @@
   flex-direction: column;
   height: 100%;
   min-height: 238px;
-  border: 1px solid rgba(167, 139, 250, 0.26);
-  border-radius: 1.4rem;
-  background:
-    linear-gradient(155deg, rgba(76, 29, 149, 0.2) 0%, rgba(17, 24, 39, 0.46) 38%, rgba(11, 16, 32, 0.6) 100%),
-    radial-gradient(circle at 12% 10%, rgba(196, 181, 253, 0.14), transparent 42%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 18px 50px rgba(2, 6, 23, 0.34);
-  backdrop-filter: blur(26px) saturate(130%);
-}
-
-.challenge-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  background: linear-gradient(180deg, rgba(196, 181, 253, 0.05) 0%, rgba(196, 181, 253, 0) 28%);
+  border: 1px solid var(--border-primary, #1E2535);
+  border-radius: 16px;
+  background: #000000;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(20px);
+  transition: border-color 180ms ease, transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
 }
 
 .challenge-card:hover,
 .challenge-card:focus-visible {
-  border-color: rgba(216, 180, 254, 0.5);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 24px 56px rgba(2, 6, 23, 0.42);
+  border-color: #7C3AED;
+  background: #080A0E;
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.6), 0 0 24px rgba(124, 58, 237, 0.25);
 }
 
 .challenge-card:focus-visible {
-  outline: 2px solid rgba(216, 180, 254, 0.45);
-  outline-offset: 2px;
+  outline: none;
+  border-color: #7C3AED;
 }
 
 .challenge-card.solved {
-  border-color: rgba(52, 211, 153, 0.34);
+  border-color: rgba(34, 197, 94, 0.35);
 }
 
 .challenge-card.solved::before {
@@ -338,7 +325,7 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(180deg, rgba(34, 197, 94, 0.05) 0%, transparent 100%);
   pointer-events: none;
 }
 
@@ -377,7 +364,7 @@
   gap: 0.4rem;
   min-height: 2rem;
   padding: 0.38rem 0.72rem;
-  border-radius: 0.75rem;
+  border-radius: 8px;
   font-size: 0.74rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -385,20 +372,21 @@
 }
 
 .challenge-category {
-  border: 1px solid rgba(139, 92, 246, 0.18);
-  background: rgba(76, 29, 149, 0.28);
-  color: #ddd6fe;
+  border: 1px solid rgba(124, 58, 237, 0.28);
+  background: rgba(124, 58, 237, 0.12);
+  color: #A855F7;
 }
 
 .challenge-status {
-  border: 1px solid rgba(52, 211, 153, 0.28);
-  background: rgba(6, 95, 70, 0.22);
-  color: #86efac;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  background: rgba(34, 197, 94, 0.12);
+  color: #22C55E;
 }
 
 .challenge-title {
   margin: 0;
-  color: #f8fafc;
+  font-family: var(--font-sans);
+  color: #F5F1EA;
   font-size: 1.1rem;
   font-weight: 700;
   line-height: 1.25;
@@ -410,7 +398,7 @@
 
 .challenge-description {
   margin: 0;
-  color: rgba(196, 181, 253, 0.84);
+  color: #A8A3AD;
   font-size: 0.93rem;
   line-height: 1.65;
   display: -webkit-box;
@@ -425,7 +413,7 @@
   justify-content: space-between;
   gap: 0.9rem;
   padding-top: 0.9rem;
-  border-top: 1px solid rgba(139, 92, 246, 0.12);
+  border-top: 1px solid var(--border-primary, #1E2535);
 }
 
 .challenge-stats {
@@ -438,14 +426,14 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  color: rgba(226, 232, 240, 0.8);
+  color: #A8A3AD;
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.04em;
 }
 
 .challenge-stats .stat svg {
-  color: #c084fc;
+  color: #7C3AED;
 }
 
 .challenge-open-indicator {
@@ -454,20 +442,21 @@
   justify-content: center;
   width: 2rem;
   height: 2rem;
-  border: 1px solid rgba(139, 92, 246, 0.16);
+  border: 1px solid var(--border-primary, #1E2535);
   border-radius: 9999px;
-  background: rgba(168, 85, 247, 0.08);
+  background: rgba(124, 58, 237, 0.12);
+  color: #7C3AED;
 }
 
 .arrow-icon {
-  color: rgba(226, 232, 240, 0.72);
+  color: #A8A3AD;
   transition: transform 0.2s ease, color 0.2s ease;
 }
 
 .challenge-card:hover .arrow-icon,
 .challenge-card:focus-visible .arrow-icon {
   transform: translateX(3px);
-  color: #e9d5ff;
+  color: #F5F1EA;
 }
 
 .no-results {
@@ -477,22 +466,21 @@
   align-items: center;
   justify-content: center;
   padding: 3.5rem 1.5rem;
-  border: 1px solid rgba(139, 92, 246, 0.16);
-  border-radius: 1.4rem;
-  background: rgba(15, 23, 42, 0.42);
-  color: rgba(196, 181, 253, 0.78);
+  border: 1px solid var(--border-primary, #1E2535);
+  border-radius: 16px;
+  background: #000000;
+  color: #A8A3AD;
   text-align: center;
-  backdrop-filter: blur(18px);
 }
 
 .no-results svg {
   margin-bottom: 1rem;
-  color: rgba(168, 85, 247, 0.82);
+  color: #7C3AED;
 }
 
 .no-results h3 {
   margin: 0 0 0.45rem;
-  color: #f8fafc;
+  color: #F5F1EA;
   font-size: 1.3rem;
 }
 

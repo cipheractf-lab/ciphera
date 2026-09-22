@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -14,7 +14,6 @@ import {
 import axios from 'axios';
 import AuthContext from '../context/AuthContext';
 import { Input, Card, CardHeader, CardBody, Loading } from '../components/ui';
-import { GlowingEffect } from '@/components/ui/glowing-effect';
 import './Challenges.css';
 
 const getChallengePreview = (description) => {
@@ -39,15 +38,6 @@ function ChallengeTile({ challenge, solved, onOpen }) {
 
   return (
     <div className="challenge-card-shell">
-      <GlowingEffect
-        spread={34}
-        glow={true}
-        disabled={false}
-        proximity={86}
-        inactiveZone={0.16}
-        borderWidth={2}
-      />
-
       <Card
         className={`challenge-card ${solved ? 'solved' : ''}`}
         hover
@@ -157,6 +147,45 @@ function Challenges() {
     }
   };
 
+  // Dynamically derive all categories from both API categories and any unique categories present in challenges
+  const allCategories = useMemo(() => {
+    const map = new Map();
+    // Always provide 'All Categories'
+    map.set('all', { id: 'all', name: 'All Categories' });
+
+    // 1. Add categories fetched from /api/categories
+    if (Array.isArray(categories)) {
+      categories.forEach(cat => {
+        if (cat && cat.id && cat.id !== 'all') {
+          const id = String(cat.id).trim().toLowerCase();
+          const name = cat.name || cat.id;
+          map.set(id, { id, name });
+        }
+      });
+    }
+
+    // 2. Scan all challenges and automatically add any category present in challenges
+    if (Array.isArray(challenges)) {
+      challenges.forEach(ch => {
+        if (ch && ch.category) {
+          const rawCat = String(ch.category).trim();
+          const id = rawCat.toLowerCase();
+          if (id && !map.has(id)) {
+            // Capitalize category name nicely
+            const upper = rawCat.toUpperCase();
+            const isCommonAcronym = ['OSINT', 'PWN', 'WEB', 'RE', 'AI', 'IOT', 'MISC'].includes(upper);
+            const formattedName = isCommonAcronym
+              ? upper
+              : rawCat.charAt(0).toUpperCase() + rawCat.slice(1);
+            map.set(id, { id, name: formattedName });
+          }
+        }
+      });
+    }
+
+    return Array.from(map.values());
+  }, [categories, challenges]);
+
   const filterChallenges = () => {
     let filtered = [...challenges];
 
@@ -171,7 +200,7 @@ function Challenges() {
     // Category filter
     if (selectedCategory !== 'all') {
       filtered = filtered.filter(c =>
-        c.category?.toLowerCase() === selectedCategory.toLowerCase()
+        c.category?.trim().toLowerCase() === selectedCategory.toLowerCase()
       );
     }
 
@@ -223,9 +252,6 @@ function Challenges() {
     return (
       <div className="challenges-page-shell">
         <div className="challenges-page-bg" aria-hidden="true" />
-        <div className="challenges-orb challenges-orb--primary" aria-hidden="true" />
-        <div className="challenges-orb challenges-orb--secondary" aria-hidden="true" />
-        <div className="challenges-orb challenges-orb--tertiary" aria-hidden="true" />
         <div className="challenges-page">
           <div className="challenges-page-content">
             <Loading text="LOADING CHALLENGES..." />
@@ -238,9 +264,6 @@ function Challenges() {
   return (
     <div className="challenges-page-shell">
       <div className="challenges-page-bg" aria-hidden="true" />
-      <div className="challenges-orb challenges-orb--primary" aria-hidden="true" />
-      <div className="challenges-orb challenges-orb--secondary" aria-hidden="true" />
-      <div className="challenges-orb challenges-orb--tertiary" aria-hidden="true" />
 
       <div className="challenges-page">
         <div className="challenges-page-content">
@@ -298,25 +321,25 @@ function Challenges() {
                 />
               </div>
 
-              <div className="filter-section">
-                <label className="filter-label">
-                  <Filter size={16} />
-                  Category
-                </label>
-                <div className="filter-buttons">
-                  {categories.map((cat) => (
-                    <button
-                      key={cat.id}
-                      className={`filter-btn ${selectedCategory === cat.id ? 'active' : ''}`}
-                      onClick={() => setSelectedCategory(cat.id)}
-                    >
-                      {cat.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               <div className="filter-row">
+                <div className="filter-group">
+                  <label className="filter-label">
+                    <Filter size={16} />
+                    Category
+                  </label>
+                  <select
+                    className="filter-select"
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                  >
+                    {allCategories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
                 <div className="filter-group">
                   <label className="filter-label">Sort By</label>
                   <select
