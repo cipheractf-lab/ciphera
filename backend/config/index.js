@@ -107,6 +107,14 @@ module.exports = {
     heartbeatIntervalMs: parseDuration(process.env.SSE_HEARTBEAT_INTERVAL || '30s', 30000)
   },
 
+  // Application URLs
+  app: {
+    // Used to build password-reset / verification links in outbound email.
+    // NEVER derive this from the request's Host or Origin header: on an
+    // unauthenticated endpoint that is a reset-link poisoning vector.
+    frontendUrl: (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/+$/, '')
+  },
+
   // CORS Configuration
   cors: {
     origin: process.env.CORS_ORIGIN || '*',
@@ -122,7 +130,10 @@ module.exports = {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS
     },
-    from: process.env.FROM_EMAIL || process.env.SMTP_USER
+    from: process.env.FROM_EMAIL || process.env.SMTP_USER,
+    // When false, registration auto-verifies and skips OTP entirely.
+    // An escape hatch so a broken SMTP setup can never lock anyone out.
+    required: parseBoolean(process.env.EMAIL_REQUIRED, true)
   },
 
   // Analytics Timeframes (configurable)

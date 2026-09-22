@@ -126,13 +126,6 @@
   padding-left: 0;
 }
 
-.main-content.main-content--notices {
-  padding-top: 0;
-  padding-right: 0;
-  padding-bottom: 0;
-  padding-left: 0;
-}
-
 .main-content.main-content--admin-configuration {
   padding-top: 0;
   padding-right: 0;
@@ -189,7 +182,9 @@
   padding-left: 0;
 }
 
-.main-content.main-content--admin-event-control {
+.main-content.main-content--admin-event-control,
+.main-content.main-content--admin-events,
+.main-content.main-content--events {
   padding-top: 0;
   padding-right: 0;
   padding-bottom: 0;

@@ -9,9 +9,17 @@ const TeamSchema = new mongoose.Schema({
     maxlength: [100, 'Team name must be less than 100 characters']
   },
   description: {
+    // Markdown source, rendered client-side (e.g. via react-markdown)
     type: String,
     trim: true,
-    maxlength: [500, 'Description must be less than 500 characters']
+    maxlength: [2000, 'Description must be less than 2000 characters']
+  },
+  avatarUrl: {
+    // Filename only (not a full path/URL) -- served through
+    // GET /api/teams/avatar/:filename, never through the generic
+    // /uploads static mount.
+    type: String,
+    default: ''
   },
   members: [{
     type: mongoose.Schema.Types.ObjectId,

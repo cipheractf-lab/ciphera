@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
@@ -21,6 +21,8 @@ function Login() {
   const { login, clearErrors } = useContext(AuthContext);
   const { eventName } = useSiteConfig();
   const navigate = useNavigate();
+  const location = useLocation();
+  const justRegistered = location.state?.justRegistered === true;
 
   const { email, password } = formData;
 
@@ -58,7 +60,16 @@ function Login() {
       navigate('/');
     } catch (err) {
       Logger.error('LOGIN_FAILED', { email, error: err.message });
-      
+
+      // The account exists and the password was right -- it just isn't
+      // verified yet. Send them somewhere they can actually finish.
+      if (err.code === 'EMAIL_NOT_VERIFIED') {
+        navigate('/verify-email', {
+          state: { email: err.email || email, emailSent: true }
+        });
+        return;
+      }
+
       // Set appropriate error message
       let errorMessage = 'Login failed. Please try again.';
       
@@ -112,6 +123,12 @@ function Login() {
             <p>Enter your credentials to continue</p>
           </div>
 
+          {justRegistered && !formError && (
+            <div style={{ marginBottom: '24px' }}>
+              <Alert type="info">Account created. Sign in to get started.</Alert>
+            </div>
+          )}
+
           {formError && (
             <div style={{ marginBottom: '24px' }}>
               <Alert type={isBlocked ? "danger" : "warning"}>
@@ -158,7 +175,10 @@ function Login() {
 
           <div className="htb-auth-footer">
             <p className="htb-auth-footer-text">
-              Don't have an account? <Link to="/register" className="htb-auth-link">Contact Admin</Link>
+              <Link to="/forgot-password" className="htb-auth-link">Forgot password?</Link>
+            </p>
+            <p className="htb-auth-footer-text">
+              Don't have an account? <Link to="/register" className="htb-auth-link">Sign up</Link>
             </p>
           </div>
         </motion.div>

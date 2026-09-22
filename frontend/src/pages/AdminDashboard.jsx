@@ -334,7 +334,6 @@ function AdminDashboard() {
   ];
 
   const navItems = [
-    { label: 'Event Status', path: '/admin/event-status', icon: Settings },
     { label: 'Statistics', path: '/admin/statistics', icon: Activity },
     { label: 'Submissions', path: '/admin/submissions', icon: Trophy },
     { label: 'Categories', path: '/admin/categories', icon: Tag },

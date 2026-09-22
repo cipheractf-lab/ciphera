@@ -13,7 +13,12 @@ const {
   enhancedValidation
 } = require('../middleware/security');
 
-const { sendOTPEmail } = require('../utils/email');
+const {
+  sendOTPEmail,
+  sendPasswordResetEmail,
+  sendPasswordChangedEmail,
+  sendAccountExistsEmail
+} = require('../utils/email');
 const requestIp = require('request-ip');
 const UAParser = require('ua-parser-js');
 const moment = require('moment-timezone');
@@ -22,6 +27,45 @@ const moment = require('moment-timezone');
 const logActivity = (action, details = {}) => {
   const timestamp = new Date().toISOString();
   console.log(`[${timestamp}] AUTH: ${action}`, details);
+};
+
+/**
+ * server.js sets `mongoose.set('bufferCommands', false)`, so any query made
+ * while the DB connection is down (Atlas unreachable, IP not whitelisted,
+ * mid-reconnect, etc.) throws immediately with an internal Mongoose message
+ * ("Cannot call `users.findOne()` before initial connection is complete...").
+ * That string must never reach a client -- it's an infrastructure detail,
+ * not something a locked-out user can act on, and it was leaking straight
+ * into the login form's error banner (dev-mode error passthrough below).
+ */
+const isDbUnavailableError = (error) => {
+  const name = error?.name || '';
+  const message = error?.message || '';
+  return (
+    name === 'MongoServerSelectionError' ||
+    name === 'MongoNetworkError' ||
+    name === 'MongoNotConnectedError' ||
+    (name === 'MongooseError' && /before initial connection is complete|buffering timed out/i.test(message))
+  );
+};
+
+// Sends a clean response for a caught route error. DB-outage errors always
+// get the same safe, generic 503 regardless of NODE_ENV; anything else keeps
+// the existing dev-mode passthrough for genuine debugging.
+const sendServerError = (res, error, logPrefix, fallbackMessage) => {
+  if (isDbUnavailableError(error)) {
+    console.error(`${logPrefix} (database unavailable):`, error.message);
+    return res.status(503).json({
+      success: false,
+      message: 'Service is temporarily unavailable. Please try again in a moment.'
+    });
+  }
+
+  console.error(logPrefix, error.message, error.stack);
+  return res.status(500).json({
+    success: false,
+    message: process.env.NODE_ENV === 'development' ? error.message : fallbackMessage
+  });
 };
 const crypto = require('crypto');
 const { getRedisClient } = require('../utils/redis');
@@ -143,15 +187,93 @@ const clearTokenCookie = (res) => {
   });
 };
 
-// @route   POST /api/auth/register
-// @desc    Public registration based on configuration visibility
-// @access  Public
-router.post('/register', async (req, res) => {
-  try {
-    const cfg = await Configuration.findOne({ key: 'global' }).select('visibility').lean();
-    const registrationVisibility = cfg?.visibility?.registration || 'private';
+// Helper: turn an expiry string like '15m' / '2h' / '7d' into milliseconds.
+const expiryToMs = (value, fallbackMs) => {
+  if (typeof value !== 'string') return fallbackMs;
+  const amount = parseInt(value, 10);
+  if (!Number.isFinite(amount)) return fallbackMs;
+  if (value.endsWith('m')) return amount * 60 * 1000;
+  if (value.endsWith('h')) return amount * 60 * 60 * 1000;
+  if (value.endsWith('d')) return amount * 24 * 60 * 60 * 1000;
+  return fallbackMs;
+};
 
-    if (registrationVisibility !== 'public') {
+/**
+ * Helper: mint a real access+refresh token pair and set all three cookies.
+ *
+ * Every path that logs somebody in MUST go through this. The older
+ * generateToken() + setTokenCookie() pair produces a session with no
+ * RefreshToken row, which is invisible to GET /sessions, cannot be revoked by
+ * logout-all, and cannot be refreshed -- it dies silently at expiry.
+ */
+const issueSession = async (res, user, req) => {
+  const refreshTokenUtils = require('../utils/refreshToken');
+  const clientIp = getRealIP(req);
+  const userAgentParsed = parseUserAgent(req.get('User-Agent'));
+
+  const tokens = await refreshTokenUtils.createTokenPair(user, clientIp, userAgentParsed);
+
+  const isProduction = process.env.NODE_ENV === 'production';
+  const accessMaxAge = expiryToMs(config.jwt.accessTokenExpiresIn, 15 * 60 * 1000);
+  const refreshMaxAge = expiryToMs(config.jwt.refreshTokenExpiresIn, 7 * 24 * 60 * 60 * 1000);
+
+  const base = { httpOnly: true, secure: isProduction, sameSite: 'lax', path: '/' };
+
+  res.cookie('access_token', tokens.accessToken, { ...base, maxAge: accessMaxAge });
+  res.cookie('refresh_token', tokens.refreshToken, { ...base, maxAge: refreshMaxAge });
+  // Legacy cookie, kept for backward compatibility with older clients.
+  res.cookie('token', tokens.accessToken, { ...base, maxAge: accessMaxAge });
+
+  return { tokens, clientIp, userAgentParsed };
+};
+
+// Only this institution's mail addresses may self-register. Admin-created
+// accounts (POST /register-admin) are unaffected -- this only gates the
+// public signup form.
+const ALLOWED_REGISTRATION_DOMAIN = 'sece.ac.in';
+
+const isAllowedRegistrationEmail = (email) => {
+  const domain = String(email || '').toLowerCase().split('@')[1] || '';
+  return domain === ALLOWED_REGISTRATION_DOMAIN;
+};
+
+// Helper: is public registration currently open?
+const isRegistrationOpen = async () => {
+  const cfg = await Configuration.findOne({ key: 'global' }).select('visibility').lean();
+  return (cfg?.visibility?.registration || 'private') === 'public';
+};
+
+// @route   GET /api/auth/registration-status
+// @desc    Whether public signup is open, so the form can render its closed
+//          state without having to probe POST /register
+// @access  Public
+router.get('/registration-status', async (req, res) => {
+  try {
+    return res.json({
+      success: true,
+      registrationOpen: await isRegistrationOpen(),
+      emailRequired: config.email.required,
+      allowedEmailDomain: ALLOWED_REGISTRATION_DOMAIN
+    });
+  } catch (error) {
+    console.error('[Auth] Registration status check failed:', error.message);
+    // Fail closed: if we cannot tell, do not advertise an open door.
+    return res.json({
+      success: true,
+      registrationOpen: false,
+      emailRequired: config.email.required,
+      allowedEmailDomain: ALLOWED_REGISTRATION_DOMAIN
+    });
+  }
+});
+
+// @route   POST /api/auth/register
+// @desc    Public self-service registration
+// @access  Public
+router.post('/register', sanitizeInput, async (req, res) => {
+  try {
+    if (!(await isRegistrationOpen())) {
+      // Shape kept identical to the previous stub -- the frontend keys off it.
       return res.status(403).json({
         success: false,
         message: 'Public registration is currently disabled.',
@@ -159,14 +281,166 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    return res.status(501).json({
-      success: false,
-      message: 'Public registration is enabled in configuration but this endpoint is not fully implemented yet. Use admin user creation for now.'
+    const { username, email, password } = req.body || {};
+
+    if (!username || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a username, email and password'
+      });
+    }
+
+    let validatedUsername;
+    let validatedEmail;
+    let validatedPassword;
+    try {
+      validatedUsername = enhancedValidation.username(username);
+      validatedEmail = enhancedValidation.email(email);
+      validatedPassword = enhancedValidation.password(password);
+    } catch (validationError) {
+      return res.status(400).json({
+        success: false,
+        message: validationError.message
+      });
+    }
+
+    if (!isAllowedRegistrationEmail(validatedEmail)) {
+      return res.status(403).json({
+        success: false,
+        field: 'email',
+        message: `Registration is restricted to @${ALLOWED_REGISTRATION_DOMAIN} email addresses.`
+      });
+    }
+
+    // The schema enforces this too, but a schema failure here would surface as
+    // a 500 -- validateInput.username does not check the character set.
+    if (!/^[a-zA-Z0-9_-]+$/.test(validatedUsername)) {
+      return res.status(400).json({
+        success: false,
+        field: 'username',
+        message: 'Username can only contain letters, numbers, underscores and hyphens'
+      });
+    }
+
+    const clientIp = getRealIP(req);
+
+    // Username collisions are reported honestly: usernames are already public
+    // on the scoreboard, nothing is leaked, and the form has to be able to say
+    // "that one is taken".
+    const usernameTaken = await User.findOne({ username: validatedUsername }).select('_id').lean();
+    if (usernameTaken) {
+      return res.status(409).json({
+        success: false,
+        field: 'username',
+        message: 'That username is already taken'
+      });
+    }
+
+    // The 202 envelope every caller sees, whether or not the address was new.
+    const acceptedResponse = (emailSent) => ({
+      success: true,
+      requiresVerification: true,
+      emailSent,
+      email: validatedEmail,
+      message: 'Check your email for a 6-digit verification code.'
     });
+
+    // Email collisions get the SAME envelope as a fresh signup -- otherwise
+    // this endpoint is a free account-existence oracle. The existing owner is
+    // emailed instead. If their account is still unverified, re-issue its OTP
+    // so "I never got the email" self-heals.
+    const existing = await User.findOne({ email: validatedEmail });
+    if (existing) {
+      let emailSent = false;
+      try {
+        if (!existing.isEmailVerified) {
+          const otp = existing.generateOTP();
+          await existing.save({ validateBeforeSave: false });
+          const result = await sendOTPEmail(existing.email, otp);
+          emailSent = result?.sent !== false;
+        } else {
+          const result = await sendAccountExistsEmail(
+            existing.email,
+            `${config.app.frontendUrl}/login`
+          );
+          emailSent = result?.sent !== false;
+        }
+      } catch (emailError) {
+        console.error('[Auth] Duplicate-email notice failed:', emailError.message);
+      }
+
+      logActivity('REGISTER_DUPLICATE_EMAIL', { email: validatedEmail, ip: clientIp });
+      return res.status(202).json(acceptedResponse(emailSent));
+    }
+
+    // Field-by-field construction. NEVER spread req.body -- mass assignment on
+    // role / points / isBlocked / canSubmitFlags is how self-service signup
+    // turns into privilege escalation.
+    const autoVerify = config.email.required === false;
+
+    let user;
+    try {
+      user = await User.create({
+        username: validatedUsername,
+        email: validatedEmail,
+        password: validatedPassword,
+        role: 'user',
+        isEmailVerified: autoVerify,
+        verified: autoVerify,
+        registrationSource: 'self',
+        registrationIp: clientIp
+      });
+    } catch (createError) {
+      // Lost a race against a concurrent signup on the same username/email.
+      if (createError.code === 11000) {
+        const field = Object.keys(createError.keyPattern || {})[0];
+        if (field === 'username') {
+          return res.status(409).json({
+            success: false,
+            field: 'username',
+            message: 'That username is already taken'
+          });
+        }
+        return res.status(202).json(acceptedResponse(false));
+      }
+      throw createError;
+    }
+
+    logActivity('REGISTER_SUCCESS', {
+      userId: user._id,
+      username: user.username,
+      ip: clientIp,
+      autoVerify
+    });
+
+    if (autoVerify) {
+      return res.status(201).json({
+        success: true,
+        requiresVerification: false,
+        emailSent: false,
+        email: user.email,
+        message: 'Account created. You can sign in now.'
+      });
+    }
+
+    // Registration must NEVER fail because email failed -- the account exists
+    // either way and the user can use "Resend code".
+    let emailSent = false;
+    try {
+      const otp = user.generateOTP();
+      await user.save({ validateBeforeSave: false });
+      const result = await sendOTPEmail(user.email, otp);
+      emailSent = result?.sent !== false;
+    } catch (emailError) {
+      console.error('[Auth] Failed to send verification email:', emailError.message);
+    }
+
+    return res.status(202).json(acceptedResponse(emailSent));
   } catch (error) {
+    console.error('[Auth] Registration error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to check registration visibility setting'
+      message: 'Registration failed. Please try again.'
     });
   }
 });
@@ -176,13 +450,22 @@ router.post('/register', async (req, res) => {
 // @access  Public
 router.post('/verify-otp', async (req, res) => {
   try {
-    const { email, otp } = req.body;
+    const { email, otp } = req.body || {};
 
     // Validate input
     if (!email || !otp) {
       return res.status(400).json({
         success: false,
         message: 'Please provide email and OTP'
+      });
+    }
+
+    // Shape-check before anything hashes it. Without this, {"otp": 123456} or
+    // {"otp": {"$ne": null}} is a 500 on a public endpoint.
+    if (typeof otp !== 'string' || !/^\d{6}$/.test(otp)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired verification code'
       });
     }
 
@@ -199,37 +482,29 @@ router.post('/verify-otp', async (req, res) => {
     // Find user
     const user = await User.findOne({ email: validatedEmail }).select('+otp');
 
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
-    }
-
-    // Check if already verified
-    if (user.isEmailVerified) {
+    // "User not found" and "already verified" are both account-existence
+    // oracles on a public endpoint, so they collapse into the same answer as
+    // a genuinely wrong code.
+    if (!user || user.isEmailVerified || !user.verifyOTP(otp)) {
       return res.status(400).json({
         success: false,
-        message: 'Email already verified'
+        message: 'Invalid or expired verification code'
       });
     }
 
-    // Verify OTP
-    if (!user.verifyOTP(otp)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid or expired OTP'
-      });
-    }
-
-    // Mark email as verified and clear OTP
+    // Mark email as verified and clear OTP. `verified` is kept in lockstep
+    // with `isEmailVerified` -- PATCH /users/:id does the same, and admin list
+    // views filter on `verified`.
     user.isEmailVerified = true;
+    user.verified = true;
     user.clearOTP();
-    await user.save();
+    await user.save({ validateBeforeSave: false });
 
-    // Generate token and set in httpOnly cookie
-    const token = generateToken(user._id);
-    setTokenCookie(res, token);
+    // Issue a REAL session (access + refresh + RefreshToken row), not the
+    // legacy standalone token this used to mint.
+    await issueSession(res, user, req);
+    await createLoginLog(user, req, 'success');
+    logActivity('EMAIL_VERIFIED', { userId: user._id, username: user.username });
 
     res.json({
       success: true,
@@ -245,13 +520,7 @@ router.post('/verify-otp', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('OTP verification error:', error);
-    res.status(500).json({
-      success: false,
-      message: process.env.NODE_ENV === 'development' ?
-        `Error verifying OTP: ${error.message}` :
-        'Error verifying OTP. Please try again later.'
-    });
+    sendServerError(res, error, 'OTP verification error', 'Error verifying OTP. Please try again later.');
   }
 });
 
@@ -281,25 +550,21 @@ router.post('/resend-otp', async (req, res) => {
 
     const user = await User.findOne({ email: validatedEmail });
 
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
-    }
-
-    if (user.isEmailVerified) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email already verified'
+    // Same uniform answer whether the account is missing or already verified,
+    // for the same enumeration reason as /verify-otp.
+    if (!user || user.isEmailVerified) {
+      return res.json({
+        success: true,
+        message: 'If that address needs verifying, a new code is on its way.'
       });
     }
 
     // Generate new OTP
     const otp = user.generateOTP();
-    await user.save();
+    await user.save({ validateBeforeSave: false });
 
-    // Send OTP email
+    // The user explicitly asked us to send, so a send failure IS reportable
+    // here -- unlike registration, where it must never be fatal.
     try {
       await sendOTPEmail(user.email, otp);
     } catch (emailError) {
@@ -312,15 +577,241 @@ router.post('/resend-otp', async (req, res) => {
 
     res.json({
       success: true,
-      message: 'OTP resent successfully'
+      message: 'If that address needs verifying, a new code is on its way.'
     });
   } catch (error) {
-    console.error('Resend OTP error:', error);
-    res.status(500).json({
+    sendServerError(res, error, 'Resend OTP error', 'Error resending OTP. Please try again later.');
+  }
+});
+
+// --- Password reset -------------------------------------------------------
+
+// A reset token is 32 random bytes rendered as hex.
+const RESET_TOKEN_SHAPE = /^[a-f0-9]{64}$/;
+
+/**
+ * FAILSAFE: refuse to issue reset tokens while the legacy TTL index on
+ * `resetPasswordExpire` still exists.
+ *
+ * A MongoDB TTL index deletes the ENTIRE document, not the field. With that
+ * index live, setting resetPasswordExpire = now + 10min means the reaper
+ * DELETES THE USER'S WHOLE ACCOUNT about ten minutes later -- points, solves,
+ * team membership, everything.
+ *
+ * scripts/migrateAuthIndexes.js drops it. This check exists so that forgetting
+ * to run the migration degrades into "password reset is unavailable" instead
+ * of silently destroying accounts. Checked once and cached; a failed check
+ * fails closed.
+ */
+let ttlGuardState = null;
+const resetIsSafe = async () => {
+  if (ttlGuardState !== null) return ttlGuardState;
+
+  try {
+    const indexes = await User.collection.indexes();
+    const dangerous = indexes.find(
+      (i) => i.name === 'resetPasswordExpire_1' || i.key?.resetPasswordExpire !== undefined
+    );
+
+    ttlGuardState = !(dangerous && dangerous.expireAfterSeconds !== undefined);
+
+    if (!ttlGuardState) {
+      console.error(
+        '[Auth] PASSWORD RESET DISABLED: the account-deleting TTL index ' +
+        '`resetPasswordExpire_1` is still present on the users collection. ' +
+        'Run: node scripts/migrateAuthIndexes.js'
+      );
+    }
+  } catch (error) {
+    console.error('[Auth] Could not verify reset-index safety:', error.message);
+    ttlGuardState = false; // fail closed
+  }
+
+  return ttlGuardState;
+};
+
+const hashResetToken = (token) =>
+  crypto.createHash('sha256').update(token).digest('hex');
+
+// @route   POST /api/auth/forgot-password
+// @desc    Email a password reset link
+// @access  Public
+router.post('/forgot-password', sanitizeInput, async (req, res) => {
+  // ALWAYS the same answer, whatever happens below. Anything else turns this
+  // into an account-existence oracle.
+  const uniformResponse = () => res.json({
+    success: true,
+    message: 'If an account exists for that address, a reset link is on its way.'
+  });
+
+  try {
+    const { email } = req.body || {};
+    if (!email || typeof email !== 'string') {
+      return uniformResponse();
+    }
+
+    let validatedEmail;
+    try {
+      validatedEmail = enhancedValidation.email(email);
+    } catch {
+      return uniformResponse();
+    }
+
+    if (!(await resetIsSafe())) {
+      return res.status(503).json({
+        success: false,
+        message: 'Password reset is temporarily unavailable. Please contact an administrator.'
+      });
+    }
+
+    const user = await User.findOne({ email: validatedEmail });
+
+    // Deliberately NOT gated on isLocked(): locking somebody out of their own
+    // recovery flow is exactly what an attacker would want.
+    if (!user || user.isBlocked) {
+      logActivity('PASSWORD_RESET_REQUESTED_UNKNOWN', { email: validatedEmail, ip: getRealIP(req) });
+      return uniformResponse();
+    }
+
+    const resetToken = user.createPasswordResetToken();
+    // Older accounts may fail validation on unrelated fields; that must not
+    // block a password reset.
+    await user.save({ validateBeforeSave: false });
+
+    const resetUrl = `${config.app.frontendUrl}/reset-password/${resetToken}`;
+
+    try {
+      await sendPasswordResetEmail(user.email, resetUrl);
+      logActivity('PASSWORD_RESET_REQUESTED', { userId: user._id, ip: getRealIP(req) });
+    } catch (emailError) {
+      console.error('[Auth] Failed to send password reset email:', emailError.message);
+      // Clear the token rather than leaving an unusable one live.
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpire = undefined;
+      await user.save({ validateBeforeSave: false });
+    }
+
+    return uniformResponse();
+  } catch (error) {
+    console.error('[Auth] Forgot-password error:', error);
+    return uniformResponse();
+  }
+});
+
+// @route   GET /api/auth/reset-password/:token/validate
+// @desc    Check a reset link before asking for a new password twice
+// @access  Public
+router.get('/reset-password/:token/validate', async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    if (typeof token !== 'string' || !RESET_TOKEN_SHAPE.test(token)) {
+      return res.json({ success: true, valid: false });
+    }
+
+    const user = await User.findOne({
+      resetPasswordToken: hashResetToken(token),
+      resetPasswordExpire: { $gt: Date.now() }
+    }).select('_id').lean();
+
+    return res.json({ success: true, valid: Boolean(user) });
+  } catch (error) {
+    console.error('[Auth] Reset token validation error:', error.message);
+    return res.json({ success: true, valid: false });
+  }
+});
+
+// @route   POST /api/auth/reset-password/:token
+// @desc    Consume a reset token and set a new password
+// @access  Public
+router.post('/reset-password/:token', sanitizeInput, async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body || {};
+
+    // Shape-check BEFORE hashing: guards both $ne operator injection and the
+    // TypeError crypto.update() throws on a non-string.
+    if (typeof token !== 'string' || !RESET_TOKEN_SHAPE.test(token)) {
+      return res.status(400).json({
+        success: false,
+        message: 'This reset link is invalid or has expired.'
+      });
+    }
+
+    if (!password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a new password'
+      });
+    }
+
+    let validatedPassword;
+    try {
+      validatedPassword = enhancedValidation.password(password);
+    } catch (validationError) {
+      return res.status(400).json({
+        success: false,
+        message: validationError.message
+      });
+    }
+
+    const user = await User.findOne({
+      resetPasswordToken: hashResetToken(token),
+      resetPasswordExpire: { $gt: Date.now() }
+    }).select('+password');
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'This reset link is invalid or has expired.'
+      });
+    }
+
+    // The pre-save hook re-bcrypts and bumps passwordChangedAt.
+    user.password = validatedPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    // Possession of the emailed token IS proof of email control, so this also
+    // doubles as the self-rescue path for a user stuck behind the
+    // verification gate.
+    user.isEmailVerified = true;
+    user.verified = true;
+    await user.save({ validateBeforeSave: false });
+
+    await user.resetLoginAttempts();
+
+    // Reset is the recovery-after-compromise flow. Leaving the attacker's
+    // token family alive would defeat the entire point.
+    const refreshTokenUtils = require('../utils/refreshToken');
+    const revokedCount = await refreshTokenUtils.revokeAllUserTokens(user._id, 'password_changed');
+    try {
+      await redisClient.del(`user:${user._id}`);
+    } catch (cacheError) {
+      console.error('[Auth] Redis cache clear failed after reset:', cacheError.message);
+    }
+
+    logActivity('PASSWORD_RESET_COMPLETED', {
+      userId: user._id,
+      username: user.username,
+      sessionsRevoked: revokedCount,
+      ip: getRealIP(req)
+    });
+
+    // Best effort -- the reset already succeeded.
+    sendPasswordChangedEmail(user.email).catch((err) =>
+      console.error('[Auth] Password-changed notice failed:', err.message)
+    );
+
+    // No auto-login: send them through the front door with the new password.
+    return res.json({
+      success: true,
+      message: 'Your password has been reset. Please sign in with your new password.'
+    });
+  } catch (error) {
+    console.error('[Auth] Reset-password error:', error);
+    return res.status(500).json({
       success: false,
-      message: process.env.NODE_ENV === 'development' ?
-        `Error resending OTP: ${error.message}` :
-        'Error resending OTP. Please try again later.'
+      message: 'Failed to reset password. Please try again.'
     });
   }
 });
@@ -488,6 +979,32 @@ router.post('/login', sanitizeInput, async (req, res) => {
       });
     }
 
+    // Email verification gate.
+    //
+    // Deliberately placed AFTER the password check: in front of it, this
+    // would be an unauthenticated oracle for whether any given address has a
+    // verified account.
+    //
+    // Behind a Configuration flag that ships FALSE. Admins are exempt as a
+    // second seatbelt so a broken SMTP setup can never lock out the platform.
+    if (!user.isEmailVerified && user.role !== 'admin') {
+      const authCfg = await Configuration.findOne({ key: 'global' })
+        .select('emailVerificationRequired')
+        .lean();
+
+      if (authCfg?.emailVerificationRequired === true) {
+        await createLoginLog(user, req, 'failed', 'Email not verified');
+        logActivity('LOGIN_BLOCKED_UNVERIFIED', { email: validatedEmail, ip: req.ip });
+
+        return res.status(403).json({
+          success: false,
+          code: 'EMAIL_NOT_VERIFIED',
+          email: user.email,
+          message: 'Please verify your email address before signing in.'
+        });
+      }
+    }
+
     // Update last login time
     user.lastLoginAt = new Date();
     await user.save();
@@ -509,68 +1026,9 @@ router.post('/login', sanitizeInput, async (req, res) => {
       console.error('[Debug] Populate error:', popErr);
     }
 
-    // NEW: Generate token pair (access + refresh)
+    // Generate token pair (access + refresh) and set cookies
     console.log('[Debug] Generating token pair...');
-    const refreshTokenUtils = require('../utils/refreshToken');
-    const clientIp = getRealIP(req);
-    const userAgentParsed = parseUserAgent(req.get('User-Agent'));
-    
-    const tokens = await refreshTokenUtils.createTokenPair(
-      user,
-      clientIp,
-      userAgentParsed
-    );
-
-    // Set access token cookie (short-lived, configurable via .env)
-    const isProduction = process.env.NODE_ENV === 'production';
-    
-    // Calculate maxAge from JWT_ACCESS_EXPIRE
-    const accessExpire = config.jwt.accessTokenExpiresIn || '15m';
-    let accessMaxAge = 15 * 60 * 1000; // Default 15 minutes
-    if (accessExpire.endsWith('m')) {
-      accessMaxAge = parseInt(accessExpire) * 60 * 1000;
-    } else if (accessExpire.endsWith('h')) {
-      accessMaxAge = parseInt(accessExpire) * 60 * 60 * 1000;
-    } else if (accessExpire.endsWith('d')) {
-      accessMaxAge = parseInt(accessExpire) * 24 * 60 * 60 * 1000;
-    }
-    
-    res.cookie('access_token', tokens.accessToken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: 'lax',
-      maxAge: accessMaxAge,
-      path: '/'
-    });
-
-    // Set refresh token cookie (long-lived, configurable via .env)
-    const refreshExpire = config.jwt.refreshTokenExpiresIn || '7d';
-    let refreshMaxAge = 7 * 24 * 60 * 60 * 1000; // Default 7 days
-    if (refreshExpire.endsWith('d')) {
-      refreshMaxAge = parseInt(refreshExpire) * 24 * 60 * 60 * 1000;
-    } else if (refreshExpire.endsWith('h')) {
-      refreshMaxAge = parseInt(refreshExpire) * 60 * 60 * 1000;
-    } else if (refreshExpire.endsWith('m')) {
-      refreshMaxAge = parseInt(refreshExpire) * 60 * 1000;
-    }
-    
-    res.cookie('refresh_token', tokens.refreshToken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: 'lax',
-      maxAge: refreshMaxAge,
-      path: '/'
-    });
-
-    // Legacy: Also set old 'token' cookie for backward compatibility
-    res.cookie('token', tokens.accessToken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: 'lax',
-      maxAge: accessMaxAge,  // Match access token expiry from config
-      path: '/'
-    });
-
+    const { tokens, clientIp, userAgentParsed } = await issueSession(res, user, req);
     console.log('[Debug] Token pair set in httpOnly cookies.');
 
     logActivity('LOGIN_SUCCESS', { 
@@ -614,11 +1072,7 @@ router.post('/login', sanitizeInput, async (req, res) => {
 
     res.json(responseData);
   } catch (error) {
-    console.error('[Login Error]', error.message, error.stack);
-    res.status(500).json({
-      success: false,
-      message: process.env.NODE_ENV === 'development' ? error.message : 'Error logging in'
-    });
+    sendServerError(res, error, '[Login Error]', 'Error logging in');
   }
 });
 

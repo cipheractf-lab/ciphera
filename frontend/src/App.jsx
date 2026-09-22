@@ -24,6 +24,9 @@ const Home = lazy(() => import('./pages/Home.tsx'))
 const Challenges = lazy(() => import('./pages/Challenges'))
 const Login = lazy(() => import('./pages/Login'))
 const Register = lazy(() => import('./pages/Register'))
+const VerifyEmail = lazy(() => import('./pages/VerifyEmail'))
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
+const ResetPassword = lazy(() => import('./pages/ResetPassword'))
 const Profile = lazy(() => import('./pages/Profile'))
 const Scoreboard = lazy(() => import('./pages/CyberScoreboard'))
 const CreateChallenge = lazy(() => import('./pages/CreateChallenge'))
@@ -41,16 +44,18 @@ const AdminLoginLogs = lazy(() => import('./pages/AdminLoginLogs'))
 const PlatformReset = lazy(() => import('./pages/PlatformReset'))
 const UserBlocked = lazy(() => import('./pages/UserBlocked'))
 const ChallengeDetails = lazy(() => import('./pages/ChallengeDetails'))
-const Notice = lazy(() => import('./pages/Notice'))
 const AdminStatistics = lazy(() => import('./pages/AdminStatistics'))
 const AdminSubmissions = lazy(() => import('./pages/AdminSubmissions'))
 const UserProfile = lazy(() => import('./pages/UserProfile'))
 const AdminLiveMonitor = lazy(() => import('./pages/AdminLiveMonitor'))
 const MyTeam = lazy(() => import('./pages/MyTeam'))
+const TeamManage = lazy(() => import('./pages/TeamManage'))
 const AdminCategories = lazy(() => import('./pages/AdminCategories'))
-const AdminEventControl = lazy(() => import('./pages/AdminEventControl'))
+const Events = lazy(() => import('./pages/Events'))
+const AdminEvents = lazy(() => import('./pages/AdminEvents'))
 const AdminConfiguration = lazy(() => import('./pages/AdminConfiguration'))
-const EventStatus = lazy(() => import('./pages/EventStatus'))
+
+const Notice = lazy(() => import('./pages/Notice'))
 
 function AppShell() {
   const location = useLocation()
@@ -63,6 +68,8 @@ function AppShell() {
   const isUserProfileRoute = location.pathname.startsWith('/user/') || location.pathname.startsWith('/users/')
   const isContactRoute = location.pathname === '/contact'
   const isNoticesRoute = location.pathname === '/notices'
+  const isEventsRoute = location.pathname === '/events'
+  const isAdminEventsRoute = location.pathname === '/admin/events'
   const isAdminConfigurationRoute = location.pathname === '/admin/configuration'
   const isAdminDashboardRoute = location.pathname === '/admin'
   const isAdminStatisticsRoute = location.pathname === '/admin/statistics'
@@ -71,16 +78,15 @@ function AppShell() {
   const isAdminLiveMonitorRoute = location.pathname === '/admin/live-monitor'
   const isAdminLoginLogsRoute = location.pathname === '/admin/login-logs'
   const isAdminMessagesRoute = location.pathname === '/admin/messages'
-  const isAdminEventControlRoute = location.pathname === '/admin/event-control'
   const isAdminCreateUserRoute = location.pathname === '/admin/create-user'
   const isAdminCreateTeamRoute = location.pathname === '/admin/create-team'
-  const isLoginRoute = location.pathname === '/login'
+  const isLoginRoute = ['/login', '/register', '/verify-email', '/forgot-password'].includes(location.pathname) || location.pathname.startsWith('/reset-password/')
 
   return (
     <div className="app-container">
       <CyberSidebar />
       <div className="app-main-layout">
-        <main className={`main-content${isHomeRoute ? ' main-content--home' : ''}${isChallengesRoute ? ' main-content--challenges' : ''}${isChallengeDetailRoute ? ' main-content--challenge-detail' : ''}${isScoreboardRoute ? ' main-content--scoreboard' : ''}${isProfileRoute ? ' main-content--profile' : ''}${isTeamDetailsRoute ? ' main-content--team-details' : ''}${isUserProfileRoute ? ' main-content--user-profile' : ''}${isContactRoute ? ' main-content--contact' : ''}${isNoticesRoute ? ' main-content--notices' : ''}${isLoginRoute ? ' main-content--login' : ''}${isAdminConfigurationRoute ? ' main-content--admin-configuration' : ''}${isAdminDashboardRoute ? ' main-content--admin-dashboard' : ''}${isAdminStatisticsRoute ? ' main-content--admin-statistics' : ''}${isAdminSubmissionsRoute ? ' main-content--admin-submissions' : ''}${isAdminCategoriesRoute ? ' main-content--admin-categories' : ''}${isAdminLiveMonitorRoute ? ' main-content--admin-live-monitor' : ''}${isAdminLoginLogsRoute ? ' main-content--admin-login-logs' : ''}${isAdminMessagesRoute ? ' main-content--admin-messages' : ''}${isAdminEventControlRoute ? ' main-content--admin-event-control' : ''}${isAdminCreateUserRoute ? ' main-content--admin-create-user' : ''}${isAdminCreateTeamRoute ? ' main-content--admin-create-team' : ''}`}>
+        <main className={`main-content${isHomeRoute ? ' main-content--home' : ''}${isChallengesRoute ? ' main-content--challenges' : ''}${isChallengeDetailRoute ? ' main-content--challenge-detail' : ''}${isScoreboardRoute ? ' main-content--scoreboard' : ''}${isProfileRoute ? ' main-content--profile' : ''}${isTeamDetailsRoute ? ' main-content--team-details' : ''}${isUserProfileRoute ? ' main-content--user-profile' : ''}${isContactRoute ? ' main-content--contact' : ''}${isNoticesRoute ? ' main-content--notices' : ''}${isEventsRoute ? ' main-content--events' : ''}${isAdminEventsRoute ? ' main-content--admin-events' : ''}${isLoginRoute ? ' main-content--login' : ''}${isAdminConfigurationRoute ? ' main-content--admin-configuration' : ''}${isAdminDashboardRoute ? ' main-content--admin-dashboard' : ''}${isAdminStatisticsRoute ? ' main-content--admin-statistics' : ''}${isAdminSubmissionsRoute ? ' main-content--admin-submissions' : ''}${isAdminCategoriesRoute ? ' main-content--admin-categories' : ''}${isAdminLiveMonitorRoute ? ' main-content--admin-live-monitor' : ''}${isAdminLoginLogsRoute ? ' main-content--admin-login-logs' : ''}${isAdminMessagesRoute ? ' main-content--admin-messages' : ''}${isAdminCreateUserRoute ? ' main-content--admin-create-user' : ''}${isAdminCreateTeamRoute ? ' main-content--admin-create-team' : ''}`}>
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<Home />} />
@@ -97,6 +103,9 @@ function AppShell() {
 
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password/:token" element={<ResetPassword />} />
               <Route path="/contact" element={<ContactUs />} />
               <Route path="/notices" element={<Notice />} />
               <Route path="/profile" element={
@@ -109,7 +118,6 @@ function AppShell() {
                   <Scoreboard />
                 </ProtectedRoute>
               } />
-              <Route path="/event-status" element={<EventStatus />} />
               <Route path="/team/:id" element={
                 <ProtectedRoute>
                   <TeamDetails />
@@ -120,13 +128,21 @@ function AppShell() {
                   <TeamDetails />
                 </ProtectedRoute>
               } />
-
               <Route path="/my-team" element={
                 <ProtectedRoute>
                   <MyTeam />
                 </ProtectedRoute>
               } />
-
+              <Route path="/my-team/:id" element={
+                <ProtectedRoute>
+                  <TeamManage />
+                </ProtectedRoute>
+              } />
+              <Route path="/events" element={
+                <ProtectedRoute>
+                  <Events />
+                </ProtectedRoute>
+              } />
               <Route path="/user/:userId" element={
                 <ProtectedRoute>
                   <UserProfile />
@@ -162,12 +178,27 @@ function AppShell() {
                   <AdminCreateTeam />
                 </ProtectedRoute>
               } />
+              <Route path="/admin/messages" element={
+                <ProtectedRoute adminOnly={true}>
+                  <AdminContactMessages />
+                </ProtectedRoute>
+              } />
               <Route path="/admin/login-logs" element={
                 <ProtectedRoute adminOnly={true}>
                   <AdminLoginLogs />
                 </ProtectedRoute>
               } />
+              <Route path="/admin/users/:id" element={
+                <ProtectedRoute adminOnly={true}>
+                  <AdminUserProfile />
+                </ProtectedRoute>
+              } />
               <Route path="/admin/reset" element={
+                <ProtectedRoute adminOnly={true}>
+                  <PlatformReset />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/platform-reset" element={
                 <ProtectedRoute adminOnly={true}>
                   <PlatformReset />
                 </ProtectedRoute>
@@ -187,9 +218,9 @@ function AppShell() {
                   <AdminCategories />
                 </ProtectedRoute>
               } />
-              <Route path="/admin/messages" element={
+              <Route path="/admin/events" element={
                 <ProtectedRoute adminOnly={true}>
-                  <AdminContactMessages />
+                  <AdminEvents />
                 </ProtectedRoute>
               } />
               <Route path="/admin/live-monitor" element={
@@ -197,19 +228,9 @@ function AppShell() {
                   <AdminLiveMonitor />
                 </ProtectedRoute>
               } />
-              <Route path="/admin/event-control" element={
-                <ProtectedRoute adminOnly={true}>
-                  <AdminEventControl />
-                </ProtectedRoute>
-              } />
               <Route path="/admin/configuration" element={
                 <ProtectedRoute adminOnly={true}>
                   <AdminConfiguration />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/event-status" element={
-                <ProtectedRoute adminOnly={true}>
-                  <AdminEventControl />
                 </ProtectedRoute>
               } />
               <Route path="/blocked" element={<UserBlocked />} />

@@ -6,7 +6,6 @@ const Challenge = require('../models/Challenge');
 const User = require('../models/User');
 const Submission = require('../models/Submission');
 const { protect, authorize } = require('../middleware/auth');
-const { checkEventNotEnded, getEventState } = require('../middleware/eventState');
 const { sanitizeInput, validateInput } = require('../middleware/security');
 
 
@@ -389,7 +388,7 @@ router.post('/', protect, authorize('admin'), async (req, res) => {
 // @route   POST /api/challenges/:id/submit
 // @desc    Submit a flag for a challenge
 // @access  Private
-router.post('/:id/submit', protect, sanitizeInput, checkEventNotEnded, async (req, res) => {
+router.post('/:id/submit', protect, sanitizeInput, async (req, res) => {
   try {
     const { flag } = req.body;
 
@@ -546,39 +545,10 @@ router.post('/:id/submit', protect, sanitizeInput, checkEventNotEnded, async (re
       });
     }
 
-    // Check event state again before processing scoring (double-check for race conditions)
-    const eventStateNow = await getEventState();
-    if (!eventStateNow.isSubmissionAllowed) {
-      const message = eventStateNow.status === 'ended'
-        ? 'CTF event has ended.'
-        : eventStateNow.status === 'not_started'
-          ? 'CTF event has not started yet.'
-          : 'CTF is paused by admin. Submissions are temporarily disabled.';
-
-      return res.status(403).json({
-        success: false,
-        message
-      });
-    }
-
-
-
     // Use transaction for atomic operations to prevent race conditions
     const session = await mongoose.startSession();
     try {
       await session.withTransaction(async () => {
-        // Final check inside transaction to prevent any scoring writes if submissions are disabled
-        const eventStateInTransaction = await getEventState();
-        if (!eventStateInTransaction.isSubmissionAllowed) {
-          if (eventStateInTransaction.status === 'ended') {
-            throw new Error('CTF event has ended.');
-          }
-          if (eventStateInTransaction.status === 'not_started') {
-            throw new Error('CTF event has not started yet.');
-          }
-          throw new Error('CTF is paused by admin.');
-        }
-        
         // Update solvedBy arrays + user.points for display
         // Scoreboard calculations use dynamic JOIN queries for accurate ranking
         
@@ -600,8 +570,16 @@ router.post('/:id/submit', protect, sanitizeInput, checkEventNotEnded, async (re
         );
 
         // Calculate user's total points from all solved challenges (solve component)
+        //
+        // req.user._id is a plain STRING (middleware/auth.js casts it that way
+        // for API-response consistency). Mongoose auto-casts string ids for
+        // query-builder methods like findByIdAndUpdate(), but a raw $match in
+        // an aggregation pipeline does no such casting -- it would never match
+        // the ObjectId-typed `user` field on Submission, so this always
+        // returned 0 and every solve silently zeroed the user's points.
+        const userIdObj = new mongoose.Types.ObjectId(req.user._id);
         const userSubmissions = await Submission.aggregate([
-          { $match: { user: req.user._id, isCorrect: true } },
+          { $match: { user: userIdObj, isCorrect: true } },
           {
             $lookup: {
               from: 'challenges',
@@ -624,7 +602,7 @@ router.post('/:id/submit', protect, sanitizeInput, checkEventNotEnded, async (re
         // Add user awards (award component)
         const Award = require('../models/Award');
         const userAwards = await Award.aggregate([
-          { $match: { user: req.user._id, value: { $ne: 0 } } },
+          { $match: { user: userIdObj, value: { $ne: 0 } } }, // see userIdObj cast above
           {
             $group: {
               _id: null,
@@ -695,15 +673,6 @@ router.post('/:id/submit', protect, sanitizeInput, checkEventNotEnded, async (re
         const { invalidateTeamPoints } = require('../utils/teamPointsCache');
         await invalidateTeamPoints(user.team._id);
       }
-    } catch (transactionError) {
-      // If transaction failed due to event ending, return appropriate error
-      if (transactionError.message && transactionError.message.includes('CTF event has ended')) {
-        return res.status(403).json({
-          success: false,
-          message: 'CTF event has ended.'
-        });
-      }
-      throw transactionError; // Re-throw other transaction errors
     } finally {
       await session.endSession();
     }

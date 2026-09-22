@@ -5,22 +5,15 @@ import axios from 'axios';
 import AuthContext from '../context/AuthContext';
 import ScoreGraph from '../components/ScoreGraph';
 import { Card, CardHeader, CardBody, Badge, Loading, Button } from '../components/ui';
-import CustomMessageDisplay from '../components/CustomMessageDisplay';
-import { useEventState } from '../hooks/useEventState';
 import './CyberScoreboard.css';
 
 function Scoreboard() {
-  const { eventState: ctfEventState, customMessage } = useEventState();
   const { isAuthenticated, user } = useContext(AuthContext);
   const [viewType, setViewType] = useState('teams');
   const [standings, setStandings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [graphKey, setGraphKey] = useState(0);
-
-  if (customMessage) {
-    return <CustomMessageDisplay message={customMessage} />;
-  }
 
   useEffect(() => {
     fetchScoreboard();

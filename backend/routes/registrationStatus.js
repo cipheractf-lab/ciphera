@@ -1,49 +1,45 @@
 const express = require('express');
 const router = express.Router();
-const RegistrationStatus = require('../models/RegistrationStatus');
+const Configuration = require('../models/Configuration');
 const { protect, authorize } = require('../middleware/auth');
 
-// Get registration status
+/**
+ * Compatibility shim.
+ *
+ * There used to be a second, independent registration toggle here backed by
+ * the RegistrationStatus model -- with zero frontend callers and enforced
+ * nowhere. Two toggles that can disagree is worse than either alone: an admin
+ * who closed registration via this one had closed nothing.
+ *
+ * Configuration.visibility.registration is now the single source of truth.
+ * This route reads through to it; writes are refused.
+ * The model, this route and its mount should be deleted in follow-up cleanup.
+ */
+
+// Get registration status (derived, read-only)
 router.get('/', async (req, res) => {
-  console.log('GET /api/registration-status - Request received');
   try {
-    let status = await RegistrationStatus.findOne();
-    if (!status) {
-      console.log('No status found, creating new one');
-      status = new RegistrationStatus();
-      await status.save();
-    }
-    console.log('Sending status:', status);
-    res.json(status);
+    const cfg = await Configuration.findOne({ key: 'global' }).select('visibility updatedAt').lean();
+    const isEnabled = (cfg?.visibility?.registration || 'private') === 'public';
+
+    return res.json({
+      isEnabled,
+      updatedAt: cfg?.updatedAt || null,
+      source: 'configuration.visibility.registration'
+    });
   } catch (error) {
-    console.error('Error getting registration status:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('[RegistrationStatus] Read failed:', error.message);
+    // Fail closed.
+    return res.json({ isEnabled: false, updatedAt: null, source: 'configuration.visibility.registration' });
   }
 });
 
-// Update registration status (admin only)
-router.put('/', protect, authorize('admin'), async (req, res) => {
-  console.log('PUT /api/registration-status - Request received');
-  console.log('Request body:', req.body);
-  console.log('User:', req.user);
-  
-  try {
-    let status = await RegistrationStatus.findOne();
-    if (!status) {
-      console.log('No status found, creating new one');
-      status = new RegistrationStatus();
-    }
-    
-    status.isEnabled = req.body.isEnabled;
-    status.updatedAt = new Date();
-    await status.save();
-    
-    console.log('Updated status:', status);
-    res.json(status);
-  } catch (error) {
-    console.error('Error updating registration status:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
+// Writes go through PUT /api/configuration/visibility instead.
+router.put('/', protect, authorize('admin'), (req, res) => {
+  return res.status(410).json({
+    success: false,
+    message: 'This endpoint is retired. Use PUT /api/configuration/visibility to change registration visibility.'
+  });
 });
 
-module.exports = router; 
+module.exports = router;

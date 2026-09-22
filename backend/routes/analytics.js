@@ -553,24 +553,29 @@ router.get('/progression/matrix', protect, authorize('admin'), async (req, res) 
     let scoreboard = [];
 
     if (mode === 'teams') {
-      const topTeams = await Team.find({
+      // Team.points is never written anywhere in this codebase -- every team
+      // shows score 0 here and "top 100 by points" was really "first 100 by
+      // createdAt". Every other score in this app is computed dynamically
+      // from Submissions+Challenges (see routes/scoreboard.js); this endpoint
+      // is fixed to match instead of relying on that dead field.
+      const allTeams = await Team.find({
         hidden: { $ne: true },
         banned: { $ne: true }
       })
-        .select('_id name points')
-        .sort({ points: -1, createdAt: 1, _id: 1 })
-        .limit(100)
+        .select('_id name')
         .lean();
 
-      const teamIds = topTeams.map((team) => team._id);
+      const teamIds = allTeams.map((team) => team._id);
+      const scoreByTeam = new Map();
       const matrixByTeam = new Map();
 
-      topTeams.forEach((team) => {
-        matrixByTeam.set(String(team._id), {
-          solves: new Set(),
-          attempts: new Set()
-        });
+      allTeams.forEach((team) => {
+        const tid = String(team._id);
+        scoreByTeam.set(tid, 0);
+        matrixByTeam.set(tid, { solves: new Set(), attempts: new Set() });
       });
+
+      let userToTeam = new Map();
 
       if (teamIds.length > 0) {
         const teamObjectIds = teamIds.map((id) => new mongoose.Types.ObjectId(id));
@@ -585,13 +590,15 @@ router.get('/progression/matrix', protect, authorize('admin'), async (req, res) 
           .lean();
 
         const memberIds = teamMembers.map((member) => member._id);
-        const userToTeam = new Map(teamMembers.map((member) => [String(member._id), String(member.team)]));
+        userToTeam = new Map(teamMembers.map((member) => [String(member._id), String(member.team)]));
 
         if (memberIds.length > 0) {
+          const memberObjectIds = memberIds.map((id) => new mongoose.Types.ObjectId(id));
+
           const matrixRows = await Submission.aggregate([
             {
               $match: {
-                user: { $in: memberIds.map((id) => new mongoose.Types.ObjectId(id)) }
+                user: { $in: memberObjectIds }
               }
             },
             {
@@ -628,15 +635,73 @@ router.get('/progression/matrix', protect, authorize('admin'), async (req, res) 
             (row.solves || []).forEach((challengeId) => teamMatrix.solves.add(String(challengeId)));
             (row.attempts || []).forEach((challengeId) => teamMatrix.attempts.add(String(challengeId)));
           }
+
+          // Real score: sum of current challenge points for each member's
+          // correct submissions, JOINed the same way routes/scoreboard.js does.
+          const solvePointRows = await Submission.aggregate([
+            { $match: { user: { $in: memberObjectIds }, isCorrect: true } },
+            {
+              $lookup: {
+                from: 'challenges',
+                localField: 'challenge',
+                foreignField: '_id',
+                as: 'challengeData'
+              }
+            },
+            { $unwind: '$challengeData' },
+            {
+              $group: {
+                _id: '$user',
+                points: { $sum: '$challengeData.points' }
+              }
+            }
+          ]);
+
+          for (const row of solvePointRows) {
+            const teamId = userToTeam.get(String(row._id));
+            if (!teamId || !scoreByTeam.has(teamId)) continue;
+            scoreByTeam.set(teamId, scoreByTeam.get(teamId) + (row.points || 0));
+          }
+        }
+
+        // Awards: both team-direct awards and user awards for a team member.
+        const Award = require('../models/Award');
+
+        const teamAwardRows = await Award.aggregate([
+          { $match: { value: { $ne: 0 }, team: { $in: teamObjectIds } } },
+          { $group: { _id: '$team', points: { $sum: '$value' } } }
+        ]);
+        for (const row of teamAwardRows) {
+          const tid = String(row._id);
+          if (!scoreByTeam.has(tid)) continue;
+          scoreByTeam.set(tid, scoreByTeam.get(tid) + (row.points || 0));
+        }
+
+        if (memberIds.length > 0) {
+          const memberObjectIds = memberIds.map((id) => new mongoose.Types.ObjectId(id));
+          const userAwardRows = await Award.aggregate([
+            { $match: { value: { $ne: 0 }, user: { $in: memberObjectIds } } },
+            { $group: { _id: '$user', points: { $sum: '$value' } } }
+          ]);
+          for (const row of userAwardRows) {
+            const teamId = userToTeam.get(String(row._id));
+            if (!teamId || !scoreByTeam.has(teamId)) continue;
+            scoreByTeam.set(teamId, scoreByTeam.get(teamId) + (row.points || 0));
+          }
         }
       }
+
+      const topTeams = allTeams
+        .map((team) => ({ ...team, score: scoreByTeam.get(String(team._id)) || 0 }))
+        .sort((a, b) => b.score - a.score || String(a._id).localeCompare(String(b._id)))
+        .slice(0, 100);
 
       scoreboard = topTeams.map((team, index) => {
         const matrix = matrixByTeam.get(String(team._id)) || { solves: new Set(), attempts: new Set() };
         return {
           id: String(team._id),
           name: team.name,
-          score: team.points || 0,
+          score: team.score,
           place: index + 1,
           solves: Array.from(matrix.solves),
           attempts: Array.from(matrix.attempts)

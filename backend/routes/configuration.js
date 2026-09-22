@@ -11,10 +11,67 @@ const Challenge = require('../models/Challenge');
 const Submission = require('../models/Submission');
 const Award = require('../models/Award');
 const Notice = require('../models/Notice');
-const EventState = require('../models/EventState');
 const { protect, authorize } = require('../middleware/auth');
 
 const CONFIG_KEY = 'global';
+
+/**
+ * Team.points is never written anywhere in this codebase (see the identical
+ * note in routes/analytics.js) -- every team's stored `points` field is
+ * always 0. This computes the real score for every team the same way
+ * routes/scoreboard.js does, for the CSV backup export.
+ */
+const computeTeamScores = async () => {
+  const solveTotals = await Submission.aggregate([
+    { $match: { isCorrect: true } },
+    {
+      $lookup: {
+        from: 'challenges',
+        localField: 'challenge',
+        foreignField: '_id',
+        as: 'challengeData'
+      }
+    },
+    { $unwind: '$challengeData' },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'user',
+        foreignField: '_id',
+        as: 'userInfo'
+      }
+    },
+    { $unwind: '$userInfo' },
+    { $match: { 'userInfo.team': { $exists: true, $ne: null } } },
+    { $group: { _id: '$userInfo.team', score: { $sum: '$challengeData.points' } } }
+  ]);
+
+  const teamAwards = await Award.aggregate([
+    { $match: { value: { $ne: 0 }, team: { $exists: true, $ne: null } } },
+    { $group: { _id: '$team', score: { $sum: '$value' } } }
+  ]);
+
+  const userAwardsInTeams = await Award.aggregate([
+    { $match: { value: { $ne: 0 }, user: { $exists: true, $ne: null } } },
+    {
+      $lookup: { from: 'users', localField: 'user', foreignField: '_id', as: 'userInfo' }
+    },
+    { $unwind: '$userInfo' },
+    { $match: { 'userInfo.team': { $exists: true, $ne: null } } },
+    { $group: { _id: '$userInfo.team', score: { $sum: '$value' } } }
+  ]);
+
+  const scores = new Map();
+  const add = (id, score) => {
+    const key = String(id);
+    scores.set(key, (scores.get(key) || 0) + score);
+  };
+  solveTotals.forEach((row) => add(row._id, row.score));
+  teamAwards.forEach((row) => add(row._id, row.score));
+  userAwardsInTeams.forEach((row) => add(row._id, row.score));
+
+  return scores;
+};
 
 const sanitizeEventName = (value) => {
   const cleaned = String(value || '').trim().replace(/\s+/g, ' ');
@@ -87,8 +144,7 @@ const BACKUP_COLLECTIONS = [
   { key: 'challenges', model: Challenge },
   { key: 'submissions', model: Submission },
   { key: 'awards', model: Award },
-  { key: 'notices', model: Notice },
-  { key: 'eventState', model: EventState }
+  { key: 'notices', model: Notice }
 ];
 
 const toCsv = (rows = []) => {
@@ -424,6 +480,49 @@ router.put('/visibility', protect, authorize('admin'), async (req, res) => {
   }
 });
 
+// Flip the email-verification login gate. Kept separate from /visibility so
+// an admin can turn it off at 3am without touching anything else.
+router.put('/auth-settings', protect, authorize('admin'), async (req, res) => {
+  try {
+    const raw = req.body?.emailVerificationRequired;
+    if (typeof raw !== 'boolean') {
+      return res.status(400).json({
+        success: false,
+        message: 'emailVerificationRequired must be a boolean'
+      });
+    }
+
+    const updated = await Configuration.findOneAndUpdate(
+      { key: CONFIG_KEY },
+      {
+        $set: { emailVerificationRequired: raw, updatedBy: req.user._id },
+        $setOnInsert: {
+          key: CONFIG_KEY,
+          eventName: process.env.EVENT_NAME || 'Ciphera',
+          eventDescription: 'Capture The Flag platform',
+          logoUrl: ''
+        }
+      },
+      { new: true, upsert: true }
+    );
+
+    return res.json({
+      success: true,
+      message: `Email verification is now ${raw ? 'required' : 'optional'}`,
+      data: {
+        emailVerificationRequired: updated.emailVerificationRequired,
+        updatedAt: updated.updatedAt
+      }
+    });
+  } catch (error) {
+    console.error('[Configuration] Auth settings update failed:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update auth settings'
+    });
+  }
+});
+
 router.get('/backup/export', protect, authorize('admin'), async (req, res) => {
   try {
     const data = {};
@@ -543,12 +642,13 @@ router.get('/backup/csv/:type', protect, authorize('admin'), async (req, res) =>
         isBlocked: !!u.isBlocked
       }));
     } else if (type === 'teams') {
-      const teams = await Team.find({}).select('_id name description points hidden banned verified').lean();
+      const teams = await Team.find({}).select('_id name description hidden banned verified').lean();
+      const teamScores = await computeTeamScores();
       rows = teams.map((t) => ({
         _id: t._id,
         name: t.name,
         description: t.description || '',
-        points: t.points || 0,
+        points: teamScores.get(String(t._id)) || 0,
         hidden: !!t.hidden,
         banned: !!t.banned,
         verified: !!t.verified

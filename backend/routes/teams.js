@@ -1,9 +1,50 @@
 const express = require('express');
 const router = express.Router();
+const path = require('path');
+const fs = require('fs');
+const multer = require('multer');
 const Team = require('../models/Team');
 const User = require('../models/User');
 const Award = require('../models/Award');
 const { protect, authorize } = require('../middleware/auth');
+const { TEAM_MIN_SIZE, TEAM_MAX_SIZE } = require('../utils/teamConstants');
+const { setActiveTeamIfNone } = require('../utils/teamHelpers');
+
+// Avatar upload -- own directory and serving route, deliberately not
+// the generic /uploads static mount (that mount has no auth or
+// visibility checks at all; see the CSP/access-control writeup from
+// the security pass). Mirrors configuration.js's logo upload pattern.
+const teamAvatarUploadsDir = path.join(__dirname, '../uploads/team-avatars');
+if (!fs.existsSync(teamAvatarUploadsDir)) {
+  fs.mkdirSync(teamAvatarUploadsDir, { recursive: true });
+}
+
+const allowedAvatarExtensions = ['.png', '.jpg', '.jpeg', '.webp', '.gif'];
+const allowedAvatarMimeTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif'];
+
+const avatarUpload = multer({
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, teamAvatarUploadsDir),
+    filename: (req, file, cb) => {
+      const ext = path.extname(file.originalname || '').toLowerCase() || '.png';
+      cb(null, `team-${req.params.id}-${Date.now()}${ext}`);
+    }
+  }),
+  fileFilter: (_req, file, cb) => {
+    const ext = path.extname(file.originalname || '').toLowerCase();
+    const mime = String(file.mimetype || '').toLowerCase();
+
+    if (!allowedAvatarMimeTypes.includes(mime) && !allowedAvatarExtensions.includes(ext)) {
+      return cb(new Error('Only image files are allowed for team avatars'));
+    }
+    return cb(null, true);
+  },
+  limits: {
+    fileSize: 2 * 1024 * 1024, // 2MB
+    files: 1
+  }
+});
+
 
 // @route   POST /api/teams
 // @desc    Create a new team (Admin only)
@@ -14,7 +55,7 @@ router.post('/', protect, authorize('admin'), async (req, res) => {
   
   try {
     const { name, description, members, captain, maxMembers, hidden, banned, verified } = req.body;
-    const MAX_TEAM_MEMBERS = maxMembers || parseInt(process.env.MAX_TEAM_MEMBERS) || 2;
+    const MAX_TEAM_MEMBERS = maxMembers || parseInt(process.env.MAX_TEAM_MEMBERS) || TEAM_MAX_SIZE;
 
     if (!name) {
       return res.status(400).json({
@@ -127,6 +168,134 @@ router.get('/my/team', protect, async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error fetching team'
+    });
+  }
+});
+
+// @route   GET /api/teams/mine
+// @desc    List every team the current user is a member of (self-service,
+//          many-to-many -- a user can belong to several teams at once)
+// @access  Private
+router.get('/mine', protect, async (req, res) => {
+  try {
+    const teams = await Team.find({ members: req.user._id })
+      .select('name description avatarUrl members captain createdAt')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const data = teams.map((team) => ({
+      _id: team._id,
+      name: team.name,
+      description: team.description,
+      avatarUrl: team.avatarUrl ? `/api/teams/avatar/${team.avatarUrl}` : '',
+      memberCount: team.members.length,
+      createdAt: team.createdAt,
+      isCaptain: !!(team.captain && team.captain.toString() === req.user._id.toString())
+    }));
+
+    res.json({
+      success: true,
+      data
+    });
+  } catch (error) {
+    console.error('Error fetching my teams:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching your teams'
+    });
+  }
+});
+
+// @route   POST /api/teams/self
+// @desc    Self-service team creation. Caller becomes captain and sole
+//          member. Avatar is uploaded separately via POST /:id/avatar.
+// @access  Private
+router.post('/self', protect, async (req, res) => {
+  try {
+    const name = (req.body?.name || '').trim();
+    const description = (req.body?.description || '').trim();
+
+    if (!name) {
+      return res.status(400).json({
+        success: false,
+        message: 'Team name is required'
+      });
+    }
+
+    if (name.length > 100) {
+      return res.status(400).json({
+        success: false,
+        message: 'Team name must be 100 characters or fewer'
+      });
+    }
+
+    if (description.length > 2000) {
+      return res.status(400).json({
+        success: false,
+        message: 'Description must be 2000 characters or fewer'
+      });
+    }
+
+    const team = await Team.create({
+      name,
+      description,
+      members: [req.user._id],
+      captain: req.user._id,
+      createdBy: req.user._id
+    });
+
+    await setActiveTeamIfNone(req.user._id, team._id);
+
+    res.status(201).json({
+      success: true,
+      data: {
+        _id: team._id,
+        name: team.name,
+        description: team.description,
+        avatarUrl: ''
+      }
+    });
+  } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: 'A team with that name already exists'
+      });
+    }
+    console.error('Error creating team:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error creating team'
+    });
+  }
+});
+
+// @route   GET /api/teams/avatar/:filename
+// @desc    Serve a team avatar file
+// @access  Public (avatars are shown in team lists other players see)
+router.get('/avatar/:filename', async (req, res) => {
+  try {
+    const filename = path.basename(String(req.params.filename || ''));
+    if (!filename || filename.includes('..')) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid avatar filename'
+      });
+    }
+
+    const fullPath = path.join(teamAvatarUploadsDir, filename);
+    if (!fs.existsSync(fullPath)) {
+      return res.status(404).json({
+        success: false,
+        message: 'Avatar not found'
+      });
+    }
+
+    return res.sendFile(fullPath);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to serve avatar file'
     });
   }
 });
@@ -384,16 +553,21 @@ router.get('/:id', protect, async (req, res) => {
     });
 
     // Build response with calculated values
+    const isCaptainOfTeam = !!(team.captain && team.captain._id.toString() === req.user._id.toString());
+
     const teamData = {
       _id: team._id,
       name: team.name,
       description: team.description,
+      avatarUrl: team.avatarUrl ? `/api/teams/avatar/${team.avatarUrl}` : '',
       captain: team.captain,
       members: updatedMembers,
       totalPoints: calculatedPoints,
       points: calculatedPoints,
       rank: rank,
-      solvedChallenges: allSolvedChallenges.size
+      solvedChallenges: allSolvedChallenges.size,
+      isCaptain: isCaptainOfTeam,
+      canEdit: isAdmin || isCaptainOfTeam
     };
 
     // Debug: Log member stats
@@ -417,20 +591,13 @@ router.get('/:id', protect, async (req, res) => {
 });
 
 // @route   PUT /api/teams/:id
-// @desc    Update team (Admin only)
-// @access  Private/Admin
-router.put('/:id', protect, authorize('admin'), async (req, res) => {
+// @desc    Update team. Admins can change anything (membership,
+//          moderation flags, captain). A team's own captain can only
+//          change name/description -- membership changes go through
+//          the dedicated add/remove-member routes below instead.
+// @access  Private (admin, or the team's captain)
+router.put('/:id', protect, async (req, res) => {
   try {
-    const { name, description, members, hidden, banned, verified, captain } = req.body;
-
-    const MAX_TEAM_MEMBERS = parseInt(process.env.MAX_TEAM_MEMBERS) || 2;
-    if (members && members.length > MAX_TEAM_MEMBERS) {
-      return res.status(400).json({
-        success: false,
-        message: `A team can have maximum ${MAX_TEAM_MEMBERS} members`
-      });
-    }
-
     let team = await Team.findById(req.params.id);
 
     if (!team) {
@@ -440,47 +607,87 @@ router.put('/:id', protect, authorize('admin'), async (req, res) => {
       });
     }
 
-    const oldMembers = team.members || [];
+    const isAdmin = req.user.role === 'admin';
+    const isCaptain = !!(team.captain && team.captain.toString() === req.user._id.toString());
 
-    if (name) team.name = name;
-    if (description) team.description = description;
-    if (hidden !== undefined) team.hidden = !!hidden;
-    if (verified !== undefined) team.verified = !!verified;
-    if (banned !== undefined) {
-      team.banned = !!banned;
-      team.isBlocked = !!banned;
-      team.blockedReason = banned ? 'Banned by admin' : null;
-      team.blockedAt = banned ? new Date() : null;
+    if (!isAdmin && !isCaptain) {
+      return res.status(403).json({
+        success: false,
+        message: 'Only the team captain or an admin can edit this team'
+      });
     }
 
-    if (captain !== undefined) {
-      if (captain === null) {
-        team.captain = null;
-      } else {
-        const captainId = captain.toString();
-        const captainInMembers = (members || team.members).some(m => m.toString() === captainId);
-        if (!captainInMembers) {
-          return res.status(400).json({
-            success: false,
-            message: 'Captain must be in team members'
-          });
-        }
-        team.captain = captain;
+    const { name, description, members, hidden, banned, verified, captain } = req.body;
+
+    if (name !== undefined) {
+      const trimmed = String(name).trim();
+      if (!trimmed) {
+        return res.status(400).json({ success: false, message: 'Team name cannot be empty' });
       }
+      if (trimmed.length > 100) {
+        return res.status(400).json({ success: false, message: 'Team name must be 100 characters or fewer' });
+      }
+      team.name = trimmed;
     }
 
-    if (members) {
-      team.members = members;
+    if (description !== undefined) {
+      const trimmed = String(description).trim();
+      if (trimmed.length > 2000) {
+        return res.status(400).json({ success: false, message: 'Description must be 2000 characters or fewer' });
+      }
+      team.description = trimmed;
+    }
 
-      await User.updateMany(
-        { _id: { $in: oldMembers } },
-        { $unset: { team: 1 } }
-      );
+    // Everything below is admin-only -- a captain editing their own
+    // team never touches moderation flags or bulk membership.
+    if (isAdmin) {
+      const MAX_TEAM_MEMBERS = parseInt(process.env.MAX_TEAM_MEMBERS) || TEAM_MAX_SIZE;
+      if (members && members.length > MAX_TEAM_MEMBERS) {
+        return res.status(400).json({
+          success: false,
+          message: `A team can have maximum ${MAX_TEAM_MEMBERS} members`
+        });
+      }
 
-      await User.updateMany(
-        { _id: { $in: members } },
-        { team: team._id }
-      );
+      if (hidden !== undefined) team.hidden = !!hidden;
+      if (verified !== undefined) team.verified = !!verified;
+      if (banned !== undefined) {
+        team.banned = !!banned;
+        team.isBlocked = !!banned;
+        team.blockedReason = banned ? 'Banned by admin' : null;
+        team.blockedAt = banned ? new Date() : null;
+      }
+
+      if (captain !== undefined) {
+        if (captain === null) {
+          team.captain = null;
+        } else {
+          const captainId = captain.toString();
+          const captainInMembers = (members || team.members).some(m => m.toString() === captainId);
+          if (!captainInMembers) {
+            return res.status(400).json({
+              success: false,
+              message: 'Captain must be in team members'
+            });
+          }
+          team.captain = captain;
+        }
+      }
+
+      if (members) {
+        const oldMembers = team.members || [];
+        team.members = members;
+
+        await User.updateMany(
+          { _id: { $in: oldMembers } },
+          { $unset: { team: 1 } }
+        );
+
+        await User.updateMany(
+          { _id: { $in: members } },
+          { team: team._id }
+        );
+      }
     }
 
     team = await team.save();
@@ -491,12 +698,72 @@ router.put('/:id', protect, authorize('admin'), async (req, res) => {
       data: team
     });
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: 'A team with that name already exists'
+      });
+    }
+    console.error('Error updating team:', error);
     res.status(500).json({
       success: false,
       message: 'Error updating team'
     });
   }
 });
+
+// @route   POST /api/teams/:id/avatar
+// @desc    Upload/replace a team's avatar image
+// @access  Private (admin, or the team's captain)
+router.post('/:id/avatar', protect, avatarUpload.single('avatar'), async (req, res) => {
+  try {
+    const team = await Team.findById(req.params.id);
+    if (!team) {
+      if (req.file) fs.unlink(req.file.path, () => {});
+      return res.status(404).json({ success: false, message: 'Team not found' });
+    }
+
+    const isAdmin = req.user.role === 'admin';
+    const isCaptain = !!(team.captain && team.captain.toString() === req.user._id.toString());
+    if (!isAdmin && !isCaptain) {
+      if (req.file) fs.unlink(req.file.path, () => {});
+      return res.status(403).json({ success: false, message: 'Only the team captain or an admin can change this avatar' });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No avatar file uploaded' });
+    }
+
+    // Remove the previous avatar file when replacing one
+    if (team.avatarUrl) {
+      const previousPath = path.join(teamAvatarUploadsDir, team.avatarUrl);
+      if (fs.existsSync(previousPath)) {
+        fs.unlink(previousPath, () => {});
+      }
+    }
+
+    team.avatarUrl = req.file.filename;
+    await team.save();
+
+    res.json({
+      success: true,
+      data: { avatarUrl: `/api/teams/avatar/${team.avatarUrl}` }
+    });
+  } catch (error) {
+    if (req.file) fs.unlink(req.file.path, () => {});
+    console.error('Error uploading team avatar:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Error uploading avatar'
+    });
+  }
+});
+
+// Note: self-service "add member by username" used to live here as a
+// direct add. It's now an invite/accept/reject flow instead -- see
+// routes/teamInvitations.js (POST /api/team-invitations/:teamId to
+// send one, accept/reject to resolve it). The older admin-panel,
+// ID-based POST /:id/members/:userId below is untouched.
 
 // @route   DELETE /api/teams/:id
 // @desc    Delete team (Admin only)
@@ -545,10 +812,10 @@ router.post('/:id/members/:userId', protect, authorize('admin'), async (req, res
       });
     }
 
-    if (team.members.length >= 2) {
+    if (team.members.length >= TEAM_MAX_SIZE) {
       return res.status(400).json({
         success: false,
-        message: 'Team already has 2 members'
+        message: `Team already has the maximum of ${TEAM_MAX_SIZE} members`
       });
     }
 
@@ -589,9 +856,12 @@ router.post('/:id/members/:userId', protect, authorize('admin'), async (req, res
 });
 
 // @route   DELETE /api/teams/:id/members/:userId
-// @desc    Remove member from team (Admin only)
-// @access  Private/Admin
-router.delete('/:id/members/:userId', protect, authorize('admin'), async (req, res) => {
+// @desc    Remove a member from a team. Also how a player leaves a team
+//          themselves (userId === their own id). If the removed member
+//          was captain and teammates remain, the next-longest member is
+//          promoted; if the team becomes empty, it's deleted.
+// @access  Private (admin, the team's captain, or the member themselves)
+router.delete('/:id/members/:userId', protect, async (req, res) => {
   try {
     const team = await Team.findById(req.params.id);
 
@@ -602,18 +872,57 @@ router.delete('/:id/members/:userId', protect, authorize('admin'), async (req, r
       });
     }
 
-    team.members = team.members.filter(id => id.toString() !== req.params.userId);
-    await team.save();
+    const isAdmin = req.user.role === 'admin';
+    const isCaptain = !!(team.captain && team.captain.toString() === req.user._id.toString());
+    const isSelf = req.user._id.toString() === req.params.userId;
 
-    await User.findByIdAndUpdate(req.params.userId, { $unset: { team: 1 } });
+    if (!isAdmin && !isCaptain && !isSelf) {
+      return res.status(403).json({
+        success: false,
+        message: 'Only the team captain, an admin, or the member themselves can do this'
+      });
+    }
 
-    await team.populate('members createdBy');
+    const wasMember = team.members.some((id) => id.toString() === req.params.userId);
+    if (!wasMember) {
+      return res.status(400).json({
+        success: false,
+        message: 'That user is not a member of this team'
+      });
+    }
+
+    team.members = team.members.filter((id) => id.toString() !== req.params.userId);
+
+    const wasCaptain = team.captain && team.captain.toString() === req.params.userId;
+
+    if (team.members.length === 0) {
+      // Last member left/removed -- nothing left to manage, delete the team
+      await Team.findByIdAndDelete(team._id);
+    } else {
+      if (wasCaptain) {
+        team.captain = team.members[0];
+      }
+      await team.save();
+    }
+
+    // Only clear the removed user's *active* team pointer if it was
+    // pointing at this team -- they may be active on a different team.
+    await User.updateOne(
+      { _id: req.params.userId, team: team._id },
+      { $unset: { team: 1 } }
+    );
+
+    const finalTeam = team.members.length > 0
+      ? await Team.findById(team._id).populate('members captain createdBy')
+      : null;
 
     res.json({
       success: true,
-      data: team
+      data: finalTeam,
+      deleted: team.members.length === 0
     });
   } catch (error) {
+    console.error('Error removing team member:', error);
     res.status(500).json({
       success: false,
       message: 'Error removing member from team'

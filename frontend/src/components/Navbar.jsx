@@ -1,12 +1,11 @@
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, ChevronDown, LogOut, Settings, User, Users } from 'lucide-react';
+import { ChevronDown, LogOut, Settings, User, Users } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
 import { useSiteConfig } from '../context/SiteConfigContext';
-import axios from 'axios';
-import { Badge } from './ui';
 import PillNav from './PillNav';
+import NotificationCenter from './NotificationCenter';
 import './Navbar.css';
 
 const navLinks = [
@@ -14,18 +13,18 @@ const navLinks = [
   { path: '/challenges', label: 'Challenges', auth: true },
   
   { path: '/scoreboard', label: 'Leaderboard', auth: true },
-  { path: '/event-status', label: 'Event Status', auth: false },
-  { path: '/my-team', label: 'Team', auth: true },
+  { path: '/my-team', label: 'Teams', auth: true },
+  { path: '/events', label: 'Events', auth: true },
   { path: '/contact', label: 'Contact', auth: false },
 ];
 
 const adminLinks = [
   { path: '/admin', label: 'Dashboard' },
   { path: '/admin/configuration', label: 'Configuration' },
-  { path: '/admin/event-control', label: 'Event Control' },
   { path: '/admin/create-user', label: 'Create User' },
   { path: '/admin/create-team', label: 'Create Team' },
   { path: '/admin/categories', label: 'Categories' },
+  { path: '/admin/events', label: 'Events' },
   { path: '/admin/messages', label: 'Messages' },
   { path: '/admin/login-logs', label: 'Login Logs' },
   { path: '/admin/statistics', label: 'Statistics' },
@@ -38,7 +37,6 @@ function Navbar() {
   const { eventName, logoUrl } = useSiteConfig();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
-  const [unreadNoticeCount, setUnreadNoticeCount] = useState(0);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const userMenuRef = useRef(null);
@@ -49,14 +47,6 @@ function Navbar() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      fetchUnreadCount();
-      const interval = setInterval(fetchUnreadCount, 30000);
-      return () => clearInterval(interval);
-    }
-  }, [isAuthenticated, user]);
 
   useEffect(() => {
     setIsUserMenuOpen(false);
@@ -75,15 +65,6 @@ function Navbar() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  const fetchUnreadCount = async () => {
-    try {
-      const response = await axios.get('/api/notices/unread-count');
-      setUnreadNoticeCount(response.data.count);
-    } catch (err) {
-      console.error('Error fetching unread notice count:', err);
-    }
-  };
 
   const handleLogout = () => {
     logout();
@@ -116,22 +97,6 @@ function Navbar() {
 
   const renderMobileMenuExtras = ({ closeMenu }) => (
     <>
-      {isAuthenticated ? (
-        <div className="pill-mobile-section">
-          <div className="pill-mobile-divider">Arena</div>
-          <Link
-            to="/notices"
-            className={`mobile-menu-link${isActive('/notices') ? ' is-active' : ''}`}
-            onClick={closeMenu}
-          >
-            <span>Notices</span>
-            {unreadNoticeCount > 0 ? (
-              <span className="pill-mobile-badge">{unreadNoticeCount}</span>
-            ) : null}
-          </Link>
-        </div>
-      ) : null}
-
       {isAdmin ? (
         <div className="pill-mobile-section">
           <div className="pill-mobile-divider">Admin</div>
@@ -167,7 +132,7 @@ function Navbar() {
             className={`mobile-menu-link${isActive('/my-team') ? ' is-active' : ''}`}
             onClick={closeMenu}
           >
-            My Team
+            My Teams
           </Link>
           <button
             type="button"
@@ -216,6 +181,8 @@ function Navbar() {
           mobileExtraContent={renderMobileMenuExtras}
         />
 
+        {isAuthenticated && <NotificationCenter />}
+
         <div className="cyber-navbar-actions cyber-navbar-actions--desktop">
           {isAdmin && (
             <div className="cyber-navbar-dropdown" ref={adminMenuRef}>
@@ -253,22 +220,6 @@ function Navbar() {
             </div>
           )}
 
-          {isAuthenticated && (
-            <Link
-              to="/notices"
-              className={`cyber-navbar-link ${isActive('/notices') ? 'cyber-navbar-link--active' : ''}`}
-            >
-              <div className="cyber-navbar-notice-icon">
-                <Bell size={18} />
-                {unreadNoticeCount > 0 && (
-                  <Badge variant="danger" size="sm" className="cyber-navbar-badge">
-                    {unreadNoticeCount}
-                  </Badge>
-                )}
-              </div>
-              <span>Notices</span>
-            </Link>
-          )}
 
           {isAuthenticated ? (
             <div className="cyber-navbar-user" ref={userMenuRef}>
@@ -303,7 +254,7 @@ function Navbar() {
                     </Link>
                     <Link to="/my-team" className="cyber-navbar-user-menu-item" onClick={() => setIsUserMenuOpen(false)}>
                       <Users size={16} />
-                      <span>My Team</span>
+                      <span>My Teams</span>
                     </Link>
                     <div className="cyber-navbar-user-menu-divider"></div>
                     <button type="button" className="cyber-navbar-user-menu-item cyber-navbar-user-menu-item--danger" onClick={handleLogout}>

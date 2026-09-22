@@ -27,7 +27,7 @@ import './CyberSidebar.css';
 const adminLinks = [
   { path: '/admin', label: 'Dashboard' },
   { path: '/admin/configuration', label: 'Configuration' },
-  { path: '/admin/event-control', label: 'Event Control' },
+  { path: '/admin/events', label: 'Events' },
   { path: '/admin/create-user', label: 'Create User' },
   { path: '/admin/create-team', label: 'Create Team' },
   { path: '/admin/categories', label: 'Categories' },
@@ -36,6 +36,7 @@ const adminLinks = [
   { path: '/admin/statistics', label: 'Statistics' },
   { path: '/admin/live-monitor', label: 'Live Monitor' },
   { path: '/admin/submissions', label: 'Submissions' },
+  { path: '/admin/platform-reset', label: 'Platform Reset' },
 ];
 
 export default function CyberSidebar() {
@@ -62,7 +63,7 @@ export default function CyberSidebar() {
       { path: '/', label: 'Home', icon: Home, auth: false },
       { path: '/challenges', label: 'Challenges', icon: Flag, auth: true },
       { path: '/scoreboard', label: 'Leaderboard', icon: Trophy, auth: true },
-      { path: '/event-status', label: 'Event Status', icon: Activity, auth: false },
+      { path: '/events', label: 'Events', icon: Activity, auth: false },
       { path: '/my-team', label: 'Squad', icon: Users, auth: true },
       { path: '/notices', label: 'Notices', icon: Bell, auth: true, badge: unreadNoticeCount },
       { path: '/contact', label: 'Contact', icon: Mail, auth: false },

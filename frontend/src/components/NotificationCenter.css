@@ -1,0 +1,244 @@
+.notif-center-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin: 0 0.5rem;
+  flex-shrink: 0;
+}
+
+.notif-center-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+
+.notif-center-btn:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.notif-center-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #EF4444;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.notif-center-panel {
+  position: fixed;
+  width: 360px;
+  max-height: 460px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #14141c;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+  z-index: 2000;
+}
+
+.notif-center-header {
+  padding: 0.9rem 1.1rem;
+  background: #F97316;
+  color: #1a1005;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+  flex-shrink: 0;
+}
+
+.notif-center-body {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.notif-center-empty {
+  padding: 1.5rem 1.1rem;
+  color: var(--muted-foreground);
+  font-size: 0.9rem;
+  text-align: center;
+  margin: 0;
+}
+
+.notif-item {
+  display: flex;
+  gap: 0.65rem;
+  padding: 0.75rem 1.1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.notif-item:last-child {
+  border-bottom: none;
+}
+
+.notif-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--muted);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.notif-item-icon--notice {
+  background: rgba(249, 115, 22, 0.15);
+  color: #FB923C;
+}
+
+.notif-item-icon.notif-status-accepted {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ADE80;
+}
+
+.notif-item-icon.notif-status-rejected {
+  background: rgba(239, 68, 68, 0.15);
+  color: #F87171;
+}
+
+.notif-item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.notif-item-body p {
+  margin: 0 0 0.4rem;
+  font-size: 0.83rem;
+  color: var(--foreground);
+  line-height: 1.4;
+}
+
+.notif-status-text.notif-status-accepted {
+  color: #4ADE80;
+  font-weight: 600;
+}
+
+.notif-status-text.notif-status-rejected {
+  color: #F87171;
+  font-weight: 600;
+}
+
+.notif-item-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.notif-accept,
+.notif-reject {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.notif-accept {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ADE80;
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+.notif-accept:hover {
+  background: rgba(34, 197, 94, 0.25);
+}
+
+.notif-reject {
+  background: rgba(239, 68, 68, 0.15);
+  color: #F87171;
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.notif-reject:hover {
+  background: rgba(239, 68, 68, 0.25);
+}
+
+.notif-accept:disabled,
+.notif-reject:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.notif-notice-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0 0 0.3rem;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+
+.notif-notice-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.notif-notice-title--unread {
+  color: #FB923C;
+}
+
+.notif-unread-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #F97316;
+  flex-shrink: 0;
+}
+
+.notif-notice-meta {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.72rem;
+  color: var(--muted-foreground);
+  margin-bottom: 0.3rem;
+}
+
+.notif-notice-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.notif-notice-description {
+  margin: 0.4rem 0 0;
+  font-size: 0.82rem;
+  color: var(--muted-foreground);
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 480px) {
+  .notif-center-panel {
+    width: calc(100vw - 24px);
+  }
+}

@@ -60,8 +60,18 @@ axios.interceptors.response.use(
 
     // Handle 401 errors with refresh token logic
     // Skip refresh logic for login/register endpoints (they should fail immediately)
-    const isLoginEndpoint = originalRequest?.url?.includes('/api/auth/login') || 
-                           originalRequest?.url?.includes('/api/auth/register');
+    // These are unauthenticated endpoints. A 401/403 from them is the answer,
+    // not an expired session -- never try to refresh or log the user out.
+    const publicAuthPaths = [
+      '/api/auth/login',
+      '/api/auth/register',
+      '/api/auth/registration-status',
+      '/api/auth/verify-otp',
+      '/api/auth/resend-otp',
+      '/api/auth/forgot-password',
+      '/api/auth/reset-password'
+    ];
+    const isLoginEndpoint = publicAuthPaths.some((path) => originalRequest?.url?.includes(path));
     
     if (error.response?.status === 401 && !originalRequest._retry && !isLoginEndpoint) {
       if (isRefreshing) {
@@ -123,14 +133,20 @@ axios.interceptors.response.use(
       });
     }
 
-    // Handle server errors
+    // Handle server errors.
+    // A 503 from an endpoint that deliberately took itself offline carries an
+    // actionable message, so keep the body and the response object -- pages
+    // read err.response.data.message. Only genuinely opaque 5xx get the
+    // generic text.
     if (error.response?.status >= 500) {
       console.error('Server error:', error.response.data);
-      return Promise.reject({
-        message: 'Server error. Please try again later.',
-        status: error.response.status,
-        type: 'server_error'
-      });
+      return Promise.reject(
+        Object.assign(new Error(error.response.data?.message || 'Server error. Please try again later.'), {
+          status: error.response.status,
+          type: 'server_error',
+          response: error.response
+        })
+      );
     }
 
     return Promise.reject(error);
@@ -253,33 +269,67 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // Register user
+  // Register user.
+  //
+  // Registration does NOT log anybody in -- it returns 202 with no user and no
+  // session, because the account still has to be verified. Setting
+  // isAuthenticated here (as this used to) put the app into a fake
+  // authenticated state with user === undefined.
   const register = async (userData) => {
     try {
       setLoading(true);
       setError(null);
 
       const res = await axios.post('/api/auth/register', userData);
-
-      // Cookie is set automatically by backend
-      setUser(res.data.user);
-      setIsAuthenticated(true);
       setLoading(false);
 
       return res.data;
     } catch (err) {
       console.error('Registration error:', err);
       setLoading(false);
-
-      // Handle rate limit errors specifically
-      if (err.status === 429) {
-        setError(`Registration rate limit exceeded. Please try again in ${err.retryAfter} seconds.`);
-      } else {
-        setError(err.response?.data?.message || 'Registration failed');
-      }
-
+      setError(err.response?.data?.message || 'Registration failed');
       throw err;
     }
+  };
+
+  // Verify the emailed OTP. On success the backend issues a real session, so
+  // this DOES log the user in.
+  const verifyOtp = async ({ email, otp }) => {
+    try {
+      setError(null);
+      const res = await axios.post('/api/auth/verify-otp', { email, otp });
+      setUser(res.data.user);
+      setIsAuthenticated(true);
+      return res.data;
+    } catch (err) {
+      setError(err.response?.data?.message || 'Verification failed');
+      throw err;
+    }
+  };
+
+  const resendOtp = async (email) => {
+    const res = await axios.post('/api/auth/resend-otp', { email });
+    return res.data;
+  };
+
+  const forgotPassword = async (email) => {
+    const res = await axios.post('/api/auth/forgot-password', { email });
+    return res.data;
+  };
+
+  const resetPassword = async ({ token, password }) => {
+    const res = await axios.post(`/api/auth/reset-password/${token}`, { password });
+    return res.data;
+  };
+
+  const validateResetToken = async (token) => {
+    const res = await axios.get(`/api/auth/reset-password/${token}/validate`);
+    return res.data?.valid === true;
+  };
+
+  const getRegistrationStatus = async () => {
+    const res = await axios.get('/api/auth/registration-status');
+    return res.data;
   };
 
   // Login user
@@ -303,6 +353,18 @@ export const AuthProvider = ({ children }) => {
         const message = err.response.data?.error || err.response.data?.message || 'Too many attempts.';
         setError(message);
         throw new Error(message);
+      }
+
+      // Email not verified (403). Rethrown with the code attached, because
+      // every branch below flattens the error into a plain Error and the
+      // login page needs the code to route to /verify-email.
+      if (err.response?.status === 403 && err.response?.data?.code === 'EMAIL_NOT_VERIFIED') {
+        const errorMsg = err.response.data.message || 'Please verify your email address before signing in.';
+        setError(errorMsg);
+        const verifyError = new Error(errorMsg);
+        verifyError.code = 'EMAIL_NOT_VERIFIED';
+        verifyError.email = err.response.data.email;
+        throw verifyError;
       }
 
       // Handle blocked user (403) - Check before network errors
@@ -355,6 +417,12 @@ export const AuthProvider = ({ children }) => {
         error,
         updateUserData,
         register,
+        verifyOtp,
+        resendOtp,
+        forgotPassword,
+        resetPassword,
+        validateResetToken,
+        getRegistrationStatus,
         login,
         logout,
         clearErrors

@@ -12,9 +12,6 @@ const Blog = require('../models/Blog');
 const Tutorial = require('../models/Tutorial');
 const Contact = require('../models/Contact');
 const RegistrationStatus = require('../models/RegistrationStatus');
-const Event = require('../models/Event');
-const EventParticipation = require('../models/EventParticipation');
-const EventState = require('../models/EventState');
 
 // Secret code for reset operations - must be set explicitly, no default.
 // A hardcoded fallback here would let anyone who reads the source code
@@ -112,15 +109,6 @@ const fullPlatformReset = async (adminId, securityCode) => {
     // Delete all login logs
     const loginLogDeleteResult = await LoginLog.deleteMany({}, { session });
 
-    // Delete all events
-    const eventDeleteResult = await Event.deleteMany({}, { session });
-
-    // Delete all event participations
-    const eventParticipationDeleteResult = await EventParticipation.deleteMany({}, { session });
-
-    // Delete all event states
-    const eventStateDeleteResult = await EventState.deleteMany({}, { session });
-
     // Delete all registration status records
     const registrationDeleteResult = await RegistrationStatus.deleteMany({}, { session });
 
@@ -150,9 +138,6 @@ const fullPlatformReset = async (adminId, securityCode) => {
       contactsDeleted: contactDeleteResult.deletedCount,
       newslettersDeleted: newsletterDeleteResult.deletedCount,
       loginLogsDeleted: loginLogDeleteResult.deletedCount,
-      eventsDeleted: eventDeleteResult.deletedCount,
-      eventParticipationsDeleted: eventParticipationDeleteResult.deletedCount,
-      eventStatesDeleted: eventStateDeleteResult.deletedCount,
       registrationsDeleted: registrationDeleteResult.deletedCount,
       adminId: adminId,
       timestamp: new Date()
